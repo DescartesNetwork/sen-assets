@@ -1,5 +1,11 @@
 import { Provider } from 'react-redux'
-import { UIProvider } from 'senhub/providers'
+import {
+  UIProvider,
+  WalletProvider,
+  PoolProvider,
+  MintProvider,
+  AccountProvider,
+} from 'senhub/providers'
 
 import WidgetView from 'app/widget'
 
@@ -18,9 +24,17 @@ export const widgetConfig: WidgetConfig = {
 const Widget = () => {
   return (
     <UIProvider appId={appId}>
-      <Provider store={model}>
-        <WidgetView />
-      </Provider>
+      <WalletProvider>
+        <PoolProvider>
+          <MintProvider>
+            <AccountProvider>
+              <Provider store={model}>
+                <WidgetView />
+              </Provider>
+            </AccountProvider>
+          </MintProvider>
+        </PoolProvider>
+      </WalletProvider>
     </UIProvider>
   )
 }

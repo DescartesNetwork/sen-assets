@@ -1,8 +1,8 @@
-import { Row, Col, Card } from 'antd'
-import MintAvatar from 'app/components/mintAvatar'
+import { Card, Col, Row } from 'antd'
+import MintAvatar from '../../components/mintAvatar'
 import { useAccount } from 'senhub/providers'
 
-const Widget = () => {
+const SenAssets = () => {
   const { accounts } = useAccount()
   return (
     <Row gutter={[12, 12]}>
@@ -19,5 +19,4 @@ const Widget = () => {
     </Row>
   )
 }
-
-export default Widget
+export default SenAssets
