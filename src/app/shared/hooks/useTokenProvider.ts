@@ -29,4 +29,5 @@ const useTokenProvider = (mintAddress: string) => {
 
   return tokenInfo
 }
+
 export default useTokenProvider

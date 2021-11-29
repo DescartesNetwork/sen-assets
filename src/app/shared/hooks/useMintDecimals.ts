@@ -6,13 +6,12 @@ const useMintDecimals = (mintAddress: string): number => {
   const { tokenProvider, getMint } = useMint()
 
   const fetchTokenDecimals = useCallback(async () => {
-    //Find in token provider
+    // Find in token provider
     const token = await tokenProvider.findByAddress(mintAddress)
     if (token) return setDecimals(token.decimals)
-
-    //Find on blockchain (slow than token provider)
+    // Find on blockchain (slow than token provider)
     const mint = await getMint({ address: mintAddress })
-    setDecimals(mint[mintAddress].decimals)
+    return setDecimals(mint[mintAddress].decimals)
   }, [getMint, mintAddress, tokenProvider])
 
   useEffect(() => {
@@ -21,4 +20,5 @@ const useMintDecimals = (mintAddress: string): number => {
 
   return decimals
 }
+
 export default useMintDecimals
