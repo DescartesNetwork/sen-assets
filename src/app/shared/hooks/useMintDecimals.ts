@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useMint } from 'senhub/providers'
 
 const useMintDecimals = (mintAddress: string): number => {
-  const [decimals, setDecimals] = useState(9)
+  const [decimals, setDecimals] = useState(0)
   const { tokenProvider, getMint } = useMint()
 
   const fetchTokenDecimals = useCallback(async () => {

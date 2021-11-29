@@ -28,9 +28,10 @@ const AccountItem = ({
 
   const decimals = useMintDecimals(mint)
   const cgkData = useMintCgk(mint)
-  const tokenInfo = useTokenProvider(mint)
+  const tokens = useTokenProvider(mint)
 
-  const ticket = tokenInfo?.extensions?.coingeckoId
+  let ticket = null
+  if (tokens?.length === 1) ticket = tokens[0]?.extensions?.coingeckoId
   const balance = utils.undecimalize(amount, decimals)
 
   return (

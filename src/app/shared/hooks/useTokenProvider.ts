@@ -1,16 +1,27 @@
-import { TokenInfo } from '@solana/spl-token-registry'
 import { useCallback, useEffect, useState } from 'react'
-import { useMint } from 'senhub/providers'
+import { TokenInfo } from '@solana/spl-token-registry'
+
+import { useMint, usePool } from 'senhub/providers'
 
 const useTokenProvider = (mintAddress: string) => {
   const { tokenProvider } = useMint()
-  const [tokenInfo, setTokenInfo] = useState<TokenInfo>()
+  const { pools } = usePool()
+  const [tokenInfo, setTokenInfo] = useState<(TokenInfo | undefined)[]>()
 
   const fetchTokenInfo = useCallback(async () => {
+    // Normal mint
     const token = await tokenProvider.findByAddress(mintAddress)
-    if (!token) return setTokenInfo(undefined)
-    return setTokenInfo(token)
-  }, [mintAddress, tokenProvider])
+    if (token) return setTokenInfo([token])
+    // LP mint
+    const poolData = Object.values(pools).find(
+      ({ mint_lpt }) => mint_lpt === mintAddress,
+    )
+    if (!poolData) return setTokenInfo([undefined])
+    const { mint_a, mint_b } = poolData
+    const tokenA = await tokenProvider.findByAddress(mint_a)
+    const tokenB = await tokenProvider.findByAddress(mint_b)
+    return setTokenInfo([tokenA, tokenB])
+  }, [mintAddress, pools, tokenProvider])
 
   useEffect(() => {
     fetchTokenInfo()

@@ -18,13 +18,14 @@ const Header = () => {
   const account = accounts[accountSelected] || {}
   const mint = account.mint
 
-  const token = useTokenProvider(mint)
+  const tokens = useTokenProvider(mint)
   const decimals = useMintDecimals(mint)
   const balance = utils.undecimalize(account.amount, decimals)
   const cgkData = useMintCgk(mint)
 
   const total = cgkData.price * Number(balance)
-  const ticket = token?.extensions?.coingeckoId
+  let ticket = null
+  if (tokens?.length === 1) ticket = tokens[0]?.extensions?.coingeckoId
 
   return (
     <Row className="header-balance" gutter={[16, 16]}>
