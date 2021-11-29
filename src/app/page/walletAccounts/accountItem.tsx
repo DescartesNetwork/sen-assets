@@ -2,7 +2,7 @@ import { Card, Col, Row, Space, Typography } from 'antd'
 import MintAvatar from 'app/shared/components/mintAvatar'
 import MintName from 'app/shared/components/mintName'
 import MintSymbol from 'app/shared/components/mintSymbol'
-import Price, { PriceChange } from 'os/components/price'
+import Price, { PriceChange, PriceIndicator } from 'app/components/price'
 
 import useMintCgk from 'app/shared/hooks/useMintCgk'
 import useMintDecimals from 'app/shared/hooks/useMintDecimals'
@@ -79,10 +79,13 @@ const AccountItem = ({
           <Col>
             <Space direction="vertical" size={0} align="end">
               <Typography.Text>
-                <PriceChange ticket={ticket} colorized />
+                <Space size={2}>
+                  <PriceIndicator mintAddress={mint} colorized />
+                  <PriceChange mintAddress={mint} colorized />
+                </Space>
               </Typography.Text>
               <Typography.Text type="secondary" className="caption">
-                <Price ticket={ticket} />
+                <Price mintAddress={mint} />
               </Typography.Text>
             </Space>
           </Col>
