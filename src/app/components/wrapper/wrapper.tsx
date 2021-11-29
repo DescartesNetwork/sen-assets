@@ -1,9 +1,9 @@
 import { utils } from '@senswap/sen-js'
 import { Button, Col, Input, Row, Typography } from 'antd'
-import useMintDecimals from 'app/hooks/useMintDecimals'
+import useMintDecimals from 'app/shared/hooks/useMintDecimals'
 
 import { useAccount } from 'senhub/providers'
-import MintSymbol from '../mint/mintSymbol'
+import MintSymbol from '../../shared/components/mintSymbol'
 
 const Wrapper = ({ accountAddr }: { accountAddr: string }) => {
   const { accounts } = useAccount()
@@ -13,7 +13,7 @@ const Wrapper = ({ accountAddr }: { accountAddr: string }) => {
   const balance = utils.undecimalize(maxAmount, decimals)
 
   return (
-    <Row justify="center" gutter={[16, 16]}>
+    <Row gutter={[16, 16]}>
       <Col span={24}>
         <Row gutter={[8, 8]}>
           <Col span={24}>

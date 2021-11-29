@@ -1,19 +1,18 @@
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Row, Col, Button, Space, Popover, Typography, Switch } from 'antd'
+import IonIcon from 'shared/ionicon'
 
 import { AppState } from 'app/model'
 import {
   setHiddenUnknownTokens,
   setHiddenZeros,
 } from 'app/model/settings.controller'
-import IonIcon from 'shared/ionicon'
 
 const Settings = () => {
   const dispatch = useDispatch()
-  const { hiddenZeros, hiddenUnknownTokens } = useSelector(
-    (state: AppState) => state.settings,
-  )
+  const settings = useSelector((state: AppState) => state.settings)
+  const { hiddenZeros, hiddenUnknownTokens } = settings
 
   return (
     <Popover

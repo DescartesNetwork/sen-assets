@@ -1,16 +1,16 @@
 import { Col, Row, Space, Typography, Divider } from 'antd'
-import MintAvatar from 'app/components/mint/mintAvatar'
-import MintSymbol from 'app/components/mint/mintSymbol'
-import Address from './address/address'
+import MintAvatar from 'app/shared/components/mintAvatar'
+import MintSymbol from 'app/shared/components/mintSymbol'
+import Address from '../../components/address/address'
 import Price, { PriceChange } from 'os/components/price'
 import { useAccount } from 'senhub/providers'
-import useMintCgk from 'app/hooks/useMintCgk'
+import useMintCgk from 'app/shared/hooks/useMintCgk'
 import { utils } from '@senswap/sen-js'
 import { numeric } from 'shared/util'
 import { useSelector } from 'react-redux'
 import { AppState } from 'app/model'
-import useMintDecimals from 'app/hooks/useMintDecimals'
-import useTokenProvider from 'app/hooks/useTokenProvider'
+import useMintDecimals from 'app/shared/hooks/useMintDecimals'
+import useTokenProvider from 'app/shared/hooks/useTokenProvider'
 
 const Header = () => {
   const { accountSelected } = useSelector((state: AppState) => state.account)

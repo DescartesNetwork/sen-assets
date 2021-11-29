@@ -1,49 +1,67 @@
 import { useState } from 'react'
-import PropTypes from 'prop-types'
-import { account, utils } from '@senswap/sen-js'
 
 import { Row, Col, Button } from 'antd'
 import Source from './source'
-import { useAccount, useWallet } from 'senhub/providers'
-import useMintDecimals from 'app/hooks/useMintDecimals'
 import Destination from './destination'
 
+import { useAccount } from 'senhub/providers'
+import { explorer } from 'shared/util'
+import { account, utils } from '@senswap/sen-js'
+import useMintDecimals from 'app/shared/hooks/useMintDecimals'
+
 const Transfer = ({ accountAddr }: { accountAddr: string }) => {
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
   const { accounts } = useAccount()
   const [amount, setAmount] = useState<string>('')
   const [dstAddress, setDstAddress] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const accountData = accounts[accountAddr] || {}
-  const { mint, amount: maxAmount, state } = accountData
+  const { mint, amount: maxAmount } = accounts[accountAddr] || {}
   const decimals = useMintDecimals(mint)
 
-  const disabled =
-    !amount ||
-    Number(amount) > maxAmount ||
-    !account.isAddress(dstAddress) ||
-    state === 2
+  const disabledTransfer = () => {
+    if (!account.isAddress(dstAddress)) return true
+    const amountTransfer = utils.decimalize(amount, decimals)
+    if (!amountTransfer || amountTransfer > maxAmount) return true
+    return false
+  }
+
+  const getDstAssociatedAddr = async (): Promise<string | undefined> => {
+    const { splt, wallet } = window.sentre
+    if (!account.isAddress(dstAddress) || !account.isAddress(mint) || !wallet)
+      return
+
+    let associatedAddr = dstAddress
+    if (!account.isAssociatedAddress(associatedAddr))
+      associatedAddr = await splt.deriveAssociatedAddress(dstAddress, mint)
+    try {
+      // Validate existing account
+      await splt.getAccountData(associatedAddr)
+    } catch (error) {
+      await splt.initializeAccount(mint, dstAddress, wallet)
+    }
+    return associatedAddr
+  }
 
   const transfer = async () => {
     setLoading(true)
     try {
       const { splt, wallet } = window.sentre
       if (!wallet) return
-      if (!state) await splt.initializeAccount(mint, walletAddress, wallet)
 
+      const dstAssociatedAddr = await getDstAssociatedAddr()
+      if (!dstAssociatedAddr) throw new Error('Invalid destination address')
       const amountTransfer = utils.decimalize(Number(amount), decimals)
       const { txId } = await splt.transfer(
         amountTransfer,
         accountAddr,
-        dstAddress,
+        dstAssociatedAddr,
         wallet,
       )
-      await window.notify({
+
+      window.notify({
         type: 'success',
         description: `Transfer successfully`,
+        onClick: () => window.open(explorer(txId), '_blank'),
       })
     } catch (er: any) {
       window.notify({
@@ -64,22 +82,18 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
         <Source accountAddr={accountAddr} onChange={setAmount} value={amount} />
       </Col>
       <Col span={24}>
-        <Button type="primary" onClick={transfer} block loading={loading} disabled={disabled}>
+        <Button
+          type="primary"
+          onClick={transfer}
+          block
+          loading={loading}
+          disabled={disabledTransfer()}
+        >
           Transfer
         </Button>
       </Col>
     </Row>
   )
-}
-
-Transfer.defaultProps = {
-  data: {},
-  onChange: () => {},
-}
-
-Transfer.propTypes = {
-  data: PropTypes.object,
-  onChange: PropTypes.func,
 }
 
 export default Transfer

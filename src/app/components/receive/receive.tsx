@@ -1,15 +1,12 @@
-import { Button, Col, Input, Row, Typography } from 'antd'
+import { Col, Input, Row, Typography } from 'antd'
 import QRcode from 'qrcode.react'
-import React from 'react'
-import { useWallet } from 'senhub/providers'
 
-const Receive = () => {
-  const { wallet } = useWallet()
+const Receive = ({ accountAddr }: { accountAddr: string }) => {
   return (
-    <Row justify="center" gutter={[16,16]} >
-      <Col>
+    <Row justify="center" gutter={[16, 16]}>
+      <Col style={{ background: '#fff', paddingTop: 8 }}>
         <QRcode
-          value={wallet.address}
+          value={accountAddr}
           size={84}
           bgColor="#ffffff"
           fgColor="#1f1f1f"
@@ -21,17 +18,9 @@ const Receive = () => {
             <Typography.Text>SOL receive address</Typography.Text>
           </Col>
           <Col span={24}>
-            <Input
-              size="large"
-              value={'dev.sentre.io/lklnafs8s98ád98ád90a09d0ád-0'}
-            />
+            <Input size="large" value={accountAddr} />
           </Col>
         </Row>
-      </Col>
-      <Col span={24}>
-        <Button type="primary" block>
-          Receive
-        </Button>
       </Col>
     </Row>
   )

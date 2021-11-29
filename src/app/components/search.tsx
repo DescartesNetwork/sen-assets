@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
-import { AccountData } from '@senswap/sen-js'
+import { useSelector } from 'react-redux'
 
 import { Row, Col, Input, Button } from 'antd'
 import IonIcon from 'shared/ionicon'
 
+import { AccountData } from '@senswap/sen-js'
 import { useAccount, useMint, usePool } from 'senhub/providers'
-import { useSelector } from 'react-redux'
 import { AppState } from 'app/model'
 
 const KEY_SIZE = 2
@@ -23,10 +23,10 @@ const Search = ({
   const { tokenProvider } = useMint()
   const { pools } = usePool()
 
-  const validateSetting = useCallback(
+  // Check visible account with settings
+  const checkVisible = useCallback(
     async (account: AccountData) => {
       const { mint, amount } = account
-
       if (!amount && hiddenZeros) return false
 
       const mintData = await tokenProvider.findByAddress(mint)
@@ -41,21 +41,18 @@ const Search = ({
 
   const onSearch = useCallback(async () => {
     const accountFilter: Record<string, AccountData> = {}
-
     for (const accAddr in accounts) {
       const account = accounts[accAddr]
-
-      if (keyword || keyword.length > KEY_SIZE) {
+      if (keyword && keyword.length > KEY_SIZE) {
         const tokens = await tokenProvider.find(keyword)
         const mints = tokens.map((token) => token.address)
         if (!mints.includes(account.mint)) continue
       }
-
-      const visible = await validateSetting(account)
+      const visible = await checkVisible(account)
       if (visible) accountFilter[accAddr] = account
     }
     return onChange(accountFilter)
-  }, [accounts, keyword, onChange, tokenProvider, validateSetting])
+  }, [accounts, keyword, onChange, tokenProvider, checkVisible])
 
   useEffect(() => {
     onSearch()

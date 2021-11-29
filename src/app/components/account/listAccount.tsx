@@ -20,12 +20,13 @@ const ListAccount = () => {
   const onSearch = useCallback(
     async (accounts: Record<string, AccountData>) => {
       const listAccount: string[] = []
-      //Sort, prioritize sen account
+      // sort, prioritize sen account
       const prioritizeAccount = []
       for (const addr in accounts) {
         const acc = accounts[addr]
         const token = await tokenProvider.findByAddress(acc.mint)
         if (token) {
+          // check prioritize
           if (token.symbol === 'SEN') prioritizeAccount.push(addr)
           else listAccount.unshift(addr)
           continue

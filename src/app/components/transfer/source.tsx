@@ -1,23 +1,20 @@
-import { useEffect, useState } from 'react'
-import PropTypes from 'prop-types'
-import { useDispatch } from 'react-redux'
 import { utils } from '@senswap/sen-js'
 
-import { Row, Col, Typography, Button, Input } from 'antd'
-import IonIcon from 'shared/ionicon'
+import { Row, Col, Typography, Button } from 'antd'
+import MintSymbol from 'app/shared/components/mintSymbol'
+import NumericInput from 'app/shared/components/numericInput'
 
 import { useAccount } from 'senhub/providers'
-import useMintDecimals from 'app/hooks/useMintDecimals'
-import MintSymbol from '../mint/mintSymbol'
+import useMintDecimals from 'app/shared/hooks/useMintDecimals'
 
 const Source = ({
   accountAddr,
   onChange,
-  value
+  value,
 }: {
   accountAddr: string
   onChange: (amount: string) => void
-  value:string
+  value: string
 }) => {
   const { accounts } = useAccount()
 
@@ -31,9 +28,13 @@ const Source = ({
         <Typography.Text>Amount</Typography.Text>
       </Col>
       <Col span={24}>
-        <Input
-          placeholder={'0'}
-          prefix={<MintSymbol mintAddress={mint} />}
+        <NumericInput
+          placeholder={0}
+          prefix={
+            <Typography.Text type="secondary">
+              <MintSymbol mintAddress={mint} />
+            </Typography.Text>
+          }
           suffix={
             <Button
               type="text"
@@ -44,7 +45,7 @@ const Source = ({
             </Button>
           }
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={onChange}
           max={balance}
         />
       </Col>

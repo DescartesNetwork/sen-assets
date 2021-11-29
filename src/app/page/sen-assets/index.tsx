@@ -1,24 +1,16 @@
 import { Card, Col, Row } from 'antd'
-
-import CardHeader from './header/header'
-import ListAccount from './content/listAccount'
-
-import { useEffect, useRef, useState } from 'react'
+import ListAccount from 'app/components/account/listAccount'
+import Header from './header'
 
 const SenAssets = () => {
-  const ref = useRef(null)
-  const [height, setHeight] = useState(0)
-
-  useEffect(() => {
-    setHeight((ref?.current as any)?.offsetWidth)
-  }, [])
-
   return (
-    <Card style={{ height, overflow: 'auto' }}>
-      <Row gutter={[24, 24]} ref={ref}>
+    <Card className="card-page">
+      <Row gutter={[24, 24]}>
+        {/* Header */}
         <Col span={24}>
-          <CardHeader />
+          <Header />
         </Col>
+        {/* Body + Search */}
         <Col span={24}>
           <Row gutter={[12, 12]}>
             <ListAccount />
