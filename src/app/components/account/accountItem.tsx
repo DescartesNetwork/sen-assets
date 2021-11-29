@@ -37,12 +37,12 @@ const AccountItem = ({
   return (
     <Card
       className="account-item"
-      bodyStyle={{
-        padding: 12,
-        borderColor: '#F9575E',
+      bodyStyle={{ padding: 12 }}
+      style={{
+        border: `1px solid ${active ? '#F9575E' : 'transparent'}`,
         borderRadius: 8,
       }}
-      bordered={active}
+      bordered={false}
       hoverable
       onClick={() => onClick(address)}
     >
