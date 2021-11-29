@@ -1,0 +1,88 @@
+import { useState, useEffect, useCallback } from 'react'
+import { AccountData } from '@senswap/sen-js'
+
+import { Row, Col, Input, Button } from 'antd'
+import IonIcon from 'shared/ionicon'
+
+import { useAccount, useMint, usePool } from 'senhub/providers'
+import { useSelector } from 'react-redux'
+import { AppState } from 'app/model'
+
+const KEY_SIZE = 2
+
+const Search = ({
+  onChange,
+}: {
+  onChange: (account: Record<string, AccountData>) => void
+}) => {
+  const { hiddenZeros, hiddenUnknownTokens } = useSelector(
+    (state: AppState) => state.settings,
+  )
+  const [keyword, setKeyword] = useState('')
+  const { accounts } = useAccount()
+  const { tokenProvider } = useMint()
+  const { pools } = usePool()
+
+  const validateSetting = useCallback(
+    async (account: AccountData) => {
+      const { mint, amount } = account
+
+      if (!amount && hiddenZeros) return false
+
+      const mintData = await tokenProvider.findByAddress(mint)
+      if (mintData) return true
+      for (const pool of Object.values(pools)) {
+        if (pool.mint_lpt === mint) return true
+      }
+      return !hiddenUnknownTokens
+    },
+    [hiddenUnknownTokens, hiddenZeros, pools, tokenProvider],
+  )
+
+  const onSearch = useCallback(async () => {
+    const accountFilter: Record<string, AccountData> = {}
+
+    for (const accAddr in accounts) {
+      const account = accounts[accAddr]
+
+      if (keyword || keyword.length > KEY_SIZE) {
+        const tokens = await tokenProvider.find(keyword)
+        const mints = tokens.map((token) => token.address)
+        if (!mints.includes(account.mint)) continue
+      }
+
+      const visible = await validateSetting(account)
+      if (visible) accountFilter[accAddr] = account
+    }
+    return onChange(accountFilter)
+  }, [accounts, keyword, onChange, tokenProvider, validateSetting])
+
+  useEffect(() => {
+    onSearch()
+  }, [onSearch])
+
+  return (
+    <Row gutter={[16, 16]}>
+      <Col span={24}>
+        <Input
+          placeholder="Search"
+          value={keyword}
+          size="large"
+          prefix={
+            <Button
+              type="text"
+              style={{ marginLeft: -7 }}
+              size="small"
+              onClick={keyword ? () => setKeyword('') : () => {}}
+              icon={
+                <IonIcon name={keyword ? 'close-outline' : 'search-outline'} />
+              }
+            />
+          }
+          onChange={(e) => setKeyword(e.target.value)}
+        />
+      </Col>
+    </Row>
+  )
+}
+export default Search

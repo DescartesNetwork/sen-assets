@@ -5,31 +5,29 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
  */
 
 export type State = {
-  counter: number
+  accountSelected: string
 }
 
 /**
  * Store constructor
  */
 
-const NAME = 'main'
+const NAME = 'account'
 const initialState: State = {
-  counter: 0,
+  accountSelected: '',
 }
 
 /**
  * Actions
  */
 
-export const increaseCounter = createAsyncThunk<State, void, { state: any }>(
-  `${NAME}/increaseCounter`,
-  async (_, { getState }) => {
-    const {
-      main: { counter },
-    } = getState()
-    return { counter: counter + 1 }
-  },
-)
+export const selectAccount = createAsyncThunk<
+  State,
+  { account: string },
+  { state: State }
+>(`${NAME}/selectAccount`, async ({ account }) => {
+  return { accountSelected: account }
+})
 
 /**
  * Usual procedure
@@ -41,7 +39,7 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     void builder.addCase(
-      increaseCounter.fulfilled,
+      selectAccount.fulfilled,
       (state, { payload }) => void Object.assign(state, payload),
     ),
 })

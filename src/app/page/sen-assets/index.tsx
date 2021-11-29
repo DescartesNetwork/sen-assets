@@ -1,22 +1,31 @@
 import { Card, Col, Row } from 'antd'
-import MintAvatar from '../../components/mintAvatar'
-import { useAccount } from 'senhub/providers'
+
+import CardHeader from './header/header'
+import ListAccount from './content/listAccount'
+
+import { useEffect, useRef, useState } from 'react'
 
 const SenAssets = () => {
-  const { accounts } = useAccount()
+  const ref = useRef(null)
+  const [height, setHeight] = useState(0)
+
+  useEffect(() => {
+    setHeight((ref?.current as any)?.offsetWidth)
+  }, [])
+
   return (
-    <Row gutter={[12, 12]}>
-      {Object.keys(accounts).map((addr) => (
+    <Card style={{ height, overflow: 'auto' }}>
+      <Row gutter={[24, 24]} ref={ref}>
         <Col span={24}>
-          <Card bodyStyle={{ padding: '16px 12px' }} bordered={false}>
-            <MintAvatar
-              mintAddress={accounts[addr].mint}
-              size={32}
-            ></MintAvatar>
-          </Card>
+          <CardHeader />
         </Col>
-      ))}
-    </Row>
+        <Col span={24}>
+          <Row gutter={[12, 12]}>
+            <ListAccount />
+          </Row>
+        </Col>
+      </Row>
+    </Card>
   )
 }
 export default SenAssets

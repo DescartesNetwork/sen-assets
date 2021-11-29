@@ -1,7 +1,8 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { devTools, bigintSerializationMiddleware } from 'shared/devTools'
 
-import main from 'app/model/main.controller'
+import settings from 'app/model/settings.controller'
+import account from './account.controller'
 
 /**
  * Isolated store
@@ -11,7 +12,8 @@ const model = configureStore({
     getDefaultMiddleware(bigintSerializationMiddleware),
   devTools: devTools('myapp'),
   reducer: {
-    main,
+    settings,
+    account
   },
 })
 export type AppState = ReturnType<typeof model.getState>
