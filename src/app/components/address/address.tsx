@@ -3,9 +3,9 @@ import { useState } from 'react'
 import { Tooltip, Space, Typography, Popover } from 'antd'
 import QRCode from 'qrcode.react'
 import CopyToClipboard from 'react-copy-to-clipboard'
+import IconButton from './iconButton'
 
 import { explorer, shortenAddress } from 'shared/util'
-import IconButton from './iconButton'
 import { useWallet } from 'senhub/providers'
 
 const QR = ({ address }: { address: string }) => {
