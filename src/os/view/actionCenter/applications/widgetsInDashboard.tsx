@@ -7,14 +7,20 @@ import AppIcon from 'os/components/appIcon'
 import WidgetLayout from './widgetLayout'
 
 import { RootDispatch, RootState } from 'os/store'
-import { addWidget, removeWidget, updateDashboard } from 'os/store/page.reducer'
+import {
+  addWidgets,
+  removeWidget,
+  updateDashboard,
+} from 'os/store/page.reducer'
 
 const WidgetsInDashboard = () => {
   const dispatch = useDispatch<RootDispatch>()
   const [disabled, setDisabled] = useState(true)
   const [visible, setVisible] = useState(false)
   const [selectedWidgets, setSelectedWidgets] = useState<AppIds>([])
-  const { appIds, widgetIds } = useSelector((state: RootState) => state.page)
+  const { register, appIds, widgetIds } = useSelector(
+    (state: RootState) => state.page,
+  )
 
   const onChange = (appIds: AppIds) => dispatch(updateDashboard(appIds))
   const onRemove = (appId: string) => dispatch(removeWidget(appId))
@@ -28,7 +34,7 @@ const WidgetsInDashboard = () => {
     return setVisible(false)
   }
   const onAdd = () => {
-    dispatch(addWidget(selectedWidgets))
+    dispatch(addWidgets(selectedWidgets))
     return onClose()
   }
 
@@ -88,7 +94,11 @@ const WidgetsInDashboard = () => {
       >
         <Row gutter={[12, 12]}>
           {appIds
-            .filter((appId) => !widgetIds.includes(appId))
+            .filter(
+              (appId) =>
+                !widgetIds.includes(appId) &&
+                register[appId]?.supportedViews?.includes('widget'),
+            )
             .map((appId) => (
               <Col span={24} key={appId}>
                 <Row gutter={[12, 12]} justify="space-between" align="middle">

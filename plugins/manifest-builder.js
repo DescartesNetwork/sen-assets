@@ -3,6 +3,7 @@ const {
   parsed: {
     REACT_APP_ID,
     REACT_APP_NAME,
+    REACT_APP_SUPPORTED_VIEWS,
     REACT_APP_AUTHOR_NAME,
     REACT_APP_AUTHOR_EMAIL,
     REACT_APP_TAGS,
@@ -45,7 +46,6 @@ if (!REACT_APP_NAME)
 
 // Validate app ID
 const expectedAppID = REACT_APP_NAME.toLowerCase().replace(/ /g, '_')
-
 if (!REACT_APP_ID) return logError(`Invalid AppID. AppID cannot be blank!`)
 if (expectedAppID !== REACT_APP_ID)
   return logError(
@@ -56,15 +56,15 @@ if (/\W/g.test(REACT_APP_ID))
 
 // Validate URL
 if (!REACT_APP_URL) return logError(`Invalid Github. Github cannot be blank!`)
-if (!REACT_APP_URL.endsWith(`.github.io/${REACT_APP_ID}`))
-  return logError(
-    `Invalid Github. Github should be ends with '.github.io/${REACT_APP_ID}'`,
-  )
 
-const myApp = {
-  url: `${REACT_APP_URL}/index.js`,
+const manifest = {
+  url: REACT_APP_URL,
   appId: REACT_APP_ID,
   name: REACT_APP_NAME,
+  supportedViews: (REACT_APP_SUPPORTED_VIEWS || '')
+    .split(',')
+    .map((view) => view.trim())
+    .filter((view) => ['page', 'widget'].includes(view)),
   author: {
     name: REACT_APP_AUTHOR_NAME,
     email: REACT_APP_AUTHOR_EMAIL,
@@ -78,7 +78,7 @@ const myApp = {
 }
 
 const fileName = `${REACT_APP_ID}.manifest.json`
-fs.writeFileSync(fileName, JSON.stringify(myApp, null, 2))
+fs.writeFileSync(fileName, JSON.stringify(manifest, null, 2))
 
 console.log(
   GREEN_TEXT,

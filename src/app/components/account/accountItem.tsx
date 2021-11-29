@@ -39,10 +39,10 @@ const AccountItem = ({
       className="account-item"
       bodyStyle={{
         padding: 12,
-        border: active ? '1px solid #F9575E' : undefined,
+        borderColor: '#F9575E',
         borderRadius: 8,
       }}
-      bordered={false}
+      bordered={active}
       hoverable
       onClick={() => onClick(address)}
     >
