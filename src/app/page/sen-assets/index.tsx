@@ -1,14 +1,17 @@
-import { Card, Col, Row } from 'antd'
+import { Card, Col, Row, Typography } from 'antd'
 import ListAccount from 'app/components/account/listAccount'
-import Header from './header'
+import Settings from 'app/components/settings/settings'
 
 const SenAssets = () => {
   return (
     <Card className="card-page">
       <Row gutter={[24, 24]}>
         {/* Header */}
-        <Col span={24}>
-          <Header />
+        <Col flex="auto">
+          <Typography.Title level={4}>Sen Assets</Typography.Title>
+        </Col>
+        <Col>
+          <Settings />
         </Col>
         {/* Body + Search */}
         <Col span={24}>

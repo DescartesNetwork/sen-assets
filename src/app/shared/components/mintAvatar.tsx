@@ -16,22 +16,17 @@ const MintAvatar = ({
 
   const getLogoURIs = useCallback(async () => {
     // Normal mint
-    const { logoURI } = (await tokenProvider.findByAddress(mintAddress)) || {}
-    if (logoURI) return setLogoURIs([logoURI])
+    const token = await tokenProvider.findByAddress(mintAddress)
+    if (token) return setLogoURIs([token?.logoURI])
     // LP mint
     const poolData = Object.values(pools).find(
       ({ mint_lpt }) => mint_lpt === mintAddress,
     )
-    if (poolData) {
-      const { mint_a, mint_b } = poolData
-      const { logoURI: logoURIA } =
-        (await tokenProvider.findByAddress(mint_a)) || {}
-      const { logoURI: logoURIB } =
-        (await tokenProvider.findByAddress(mint_b)) || {}
-      return setLogoURIs([logoURIA, logoURIB])
-    }
-    // Unknown mint
-    return setLogoURIs([undefined])
+    if (!poolData) return setLogoURIs([undefined])
+    const { mint_a, mint_b } = poolData
+    const tokenA = await tokenProvider.findByAddress(mint_a)
+    const tokenB = await tokenProvider.findByAddress(mint_b)
+    return setLogoURIs([tokenA?.logoURI, tokenB?.logoURI])
   }, [mintAddress, pools, tokenProvider])
 
   useEffect(() => {

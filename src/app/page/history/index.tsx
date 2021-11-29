@@ -11,4 +11,5 @@ const History = () => {
     </Card>
   )
 }
+
 export default History

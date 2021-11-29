@@ -82,4 +82,5 @@ const Search = ({
     </Row>
   )
 }
+
 export default Search

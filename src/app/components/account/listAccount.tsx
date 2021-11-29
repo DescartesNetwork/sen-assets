@@ -4,7 +4,7 @@ import { AccountData } from '@senswap/sen-js'
 
 import { Col, Row } from 'antd'
 import AccountItem from './accountItem'
-import Search from 'app/components/search'
+import Search from 'app/components/search/search'
 import LazyLoad from 'react-lazyload'
 
 import { useMint } from 'senhub/providers'
@@ -62,4 +62,5 @@ const ListAccount = () => {
     </Row>
   )
 }
+
 export default ListAccount

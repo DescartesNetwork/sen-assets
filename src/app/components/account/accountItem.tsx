@@ -37,7 +37,7 @@ const AccountItem = ({
     <Card
       className="account-item"
       bodyStyle={{
-        padding: '12px 12px',
+        padding: 12,
         border: active ? '1px solid #F9575E' : undefined,
         borderRadius: 8,
       }}
@@ -47,6 +47,7 @@ const AccountItem = ({
     >
       <Row align="middle">
         <Col span={12}>
+          {/* Token Info */}
           <Space>
             <MintAvatar mintAddress={mint} size={32} />
             <Space direction="vertical" size={0}>
@@ -59,6 +60,7 @@ const AccountItem = ({
             </Space>
           </Space>
         </Col>
+        {/* Balance */}
         <Col flex="auto">
           <Space direction="vertical" size={0}>
             <Typography.Text>
@@ -71,6 +73,7 @@ const AccountItem = ({
             )}
           </Space>
         </Col>
+        {/* Token Price */}
         {ticket && (
           <Col>
             <Space direction="vertical" size={0} align="end">
