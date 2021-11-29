@@ -1,16 +1,19 @@
+import { useSelector } from 'react-redux'
+
 import { Col, Row, Space, Typography, Divider } from 'antd'
 import MintAvatar from 'app/shared/components/mintAvatar'
 import MintSymbol from 'app/shared/components/mintSymbol'
-import Address from '../../components/address/address'
-import Price, { PriceChange } from 'os/components/price'
-import { useAccount } from 'senhub/providers'
-import useMintCgk from 'app/shared/hooks/useMintCgk'
+import WalletAddress from './walletAddress/walletAddress'
+
 import { utils } from '@senswap/sen-js'
+import { useAccount } from 'senhub/providers'
 import { numeric } from 'shared/util'
-import { useSelector } from 'react-redux'
 import { AppState } from 'app/model'
+import useMintCgk from 'app/shared/hooks/useMintCgk'
 import useMintDecimals from 'app/shared/hooks/useMintDecimals'
 import useTokenProvider from 'app/shared/hooks/useTokenProvider'
+
+import Price, { PriceChange } from 'os/components/price'
 
 const Header = () => {
   const { accountSelected } = useSelector((state: AppState) => state.account)
@@ -33,51 +36,51 @@ const Header = () => {
       <Col span={24}>
         <Row>
           <Col flex="auto">
-            <Typography.Text className="secondary">
+            <Typography.Text className="text-secondary">
               Your balance
             </Typography.Text>
           </Col>
           <Col>
-            <Address />
+            <WalletAddress />
           </Col>
         </Row>
       </Col>
       <Col span={24}>
         <Row gutter={[8, 8]}>
           <Col flex="auto">
-            {/* Sol icon + symbol */}
+            {/* Mint icon + symbol */}
             <Space direction="vertical">
               <Space>
                 <MintAvatar mintAddress={mint} />
-                <Typography.Title className="title" level={5}>
+                <Typography.Title className="title-color" level={5}>
                   <MintSymbol mintAddress={mint} />
                 </Typography.Title>
               </Space>
               {/* Balance */}
               <Space align="center">
-                <Typography.Title className="title" level={3}>
+                <Typography.Title className="title-color" level={3}>
                   {numeric(balance).format('0,0.[000]')}
                 </Typography.Title>
-                <Typography.Text className="secondary">
+                <Typography.Text className="text-secondary">
                   ~{numeric(total).format('0,0.[000]')}
                 </Typography.Text>
               </Space>
             </Space>
           </Col>
           <Col>
-            {/* Sol Price */}
+            {/* Mint Price */}
             {ticket && (
               <Space size={1} align="end">
-                <Typography.Text className="text">
+                <Typography.Text className="text-color">
                   <PriceChange ticket={ticket} colorized />
                 </Typography.Text>
                 <Divider
-                  className="secondary"
+                  className="text-secondary"
                   type="vertical"
                   style={{ padding: 0 }}
                 />
 
-                <Typography.Text className="text">
+                <Typography.Text className="text-color">
                   <Price ticket={ticket} />
                 </Typography.Text>
               </Space>

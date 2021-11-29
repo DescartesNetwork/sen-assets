@@ -1,9 +1,9 @@
 import { useSelector } from 'react-redux'
 
 import { Card, Tabs } from 'antd'
-import Transfer from 'app/components/transfer'
-import Receive from 'app/components/receive/receive'
-import Wrapper from 'app/components/wrapper/wrapper'
+import Transfer from 'app/page/accountAction/body/transfer'
+import Receive from 'app/page/accountAction/body/receive'
+import Wrapper from 'app/page/accountAction/body/wrapper'
 
 import { AppState } from 'app/model'
 

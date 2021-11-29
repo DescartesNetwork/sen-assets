@@ -30,7 +30,7 @@ const QR = ({ address }: { address: string }) => {
   )
 }
 
-const Address = () => {
+const WalletAddress = () => {
   const {
     wallet: { address },
   } = useWallet()
@@ -60,4 +60,4 @@ const Address = () => {
   )
 }
 
-export default Address
+export default WalletAddress

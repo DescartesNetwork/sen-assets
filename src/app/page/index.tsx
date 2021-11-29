@@ -1,11 +1,11 @@
 import { Row, Col } from 'antd'
 
-import SenAssets from './sen-assets'
-import Balance from './balance'
-import WormHold from './wormhold'
+import SenAssets from './walletAccounts'
+import Balance from './accountAction'
+import WormHold from './wormHold'
 import History from './history'
 
-import './styles/index.less'
+import 'app/static/styles/index.less'
 
 const Page = () => {
   return (

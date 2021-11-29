@@ -4,7 +4,7 @@ import { AccountData } from '@senswap/sen-js'
 
 import { Col, Row } from 'antd'
 import AccountItem from './accountItem'
-import Search from 'app/components/search/search'
+import Search from 'app/page/walletAccounts/search/search'
 import LazyLoad from 'react-lazyload'
 
 import { useMint } from 'senhub/providers'

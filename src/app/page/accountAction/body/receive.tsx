@@ -4,7 +4,7 @@ import QRcode from 'qrcode.react'
 const Receive = ({ accountAddr }: { accountAddr: string }) => {
   return (
     <Row justify="center" gutter={[16, 16]}>
-      <Col style={{ background: '#fff', paddingTop: 8 }}>
+      <Col style={{ background: '#f4f4f5', paddingTop: 8 }}>
         <QRcode
           value={accountAddr}
           size={84}

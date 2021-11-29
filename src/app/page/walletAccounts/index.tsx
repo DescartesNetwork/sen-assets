@@ -1,6 +1,6 @@
 import { Card, Col, Row, Typography } from 'antd'
-import ListAccount from 'app/components/account/listAccount'
-import Settings from 'app/components/settings/settings'
+import ListAccount from 'app/page/walletAccounts/listAccount'
+import Settings from 'app/page/walletAccounts/settings/settings'
 
 const SenAssets = () => {
   return (

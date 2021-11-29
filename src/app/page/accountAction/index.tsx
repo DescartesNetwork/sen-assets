@@ -1,5 +1,5 @@
 import { Card, Col, Row } from 'antd'
-import Header from './header'
+import Header from './header/header'
 import Body from './body'
 
 const Balance = () => {
