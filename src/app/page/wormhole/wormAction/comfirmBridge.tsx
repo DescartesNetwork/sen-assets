@@ -15,7 +15,7 @@ const ConfirmBridge = ({
           <Typography.Title level={4}>Confirm transfer</Typography.Title>
         </Col>
         <Col span={24}>
-          <Card bordered={false} hoverable={false}>
+          <Card bordered={false}>
             <Row className="confirm-transfer-header">
               <Col span={12}>
                 <MintAvatar mintAddress={''} size={32} />

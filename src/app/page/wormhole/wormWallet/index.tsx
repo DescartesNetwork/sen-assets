@@ -10,7 +10,7 @@ const WormWallet = () => {
   const [soucreWallet, setSoucreWallet] = useState('Select')
 
   return (
-    <Card bordered={false} hoverable={false}>
+    <Card bordered={false}>
       <Row gutter={[12, 12]} justify="center">
         <Col span={24}>
           <WalletTitle title="title" label="Source" />
