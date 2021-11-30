@@ -6,7 +6,7 @@ const ConfirmBridge = ({
   onCancel = () => {},
 }: {
   visible?: boolean
-  onCancel?: (visible: any) => void
+  onCancel?: (visible: boolean) => void
 }) => {
   return (
     <Modal visible={visible} footer={false}>

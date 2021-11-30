@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Button, Col, Row, Select, Space, Typography } from 'antd'
+import IonIcon from 'shared/ionicon'
 import MintAvatar from 'app/shared/components/mintAvatar'
 
 import { useAccount, useMint } from 'senhub/providers'
-import IonIcon from 'shared/ionicon'
 
 const WalletConnections = ({
   solWallet = false,
