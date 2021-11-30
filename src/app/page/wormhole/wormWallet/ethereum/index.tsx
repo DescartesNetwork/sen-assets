@@ -1,5 +1,5 @@
 import { Space, Typography } from 'antd'
-import MintAvatar from 'app/shared/components/mintAvatar'
+import { MintAvatar } from 'app/shared/components/mint'
 
 const Ethereum = () => {
   const isConnect = false

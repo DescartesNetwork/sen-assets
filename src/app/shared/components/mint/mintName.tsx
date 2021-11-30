@@ -15,7 +15,7 @@ const MintName = ({ mintAddress }: { mintAddress: string }) => {
         if (symbol) return symbol
         return shortenAddress(address)
       })
-      .join(' • ')
+      .join(' / ')
     //Normal token
     if (tokens.length === 1) return names
     //LPT token
