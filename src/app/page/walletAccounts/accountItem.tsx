@@ -1,38 +1,29 @@
 import { Card, Col, Row, Space, Typography } from 'antd'
-import MintAvatar from 'app/shared/components/mintAvatar'
-import MintName from 'app/shared/components/mintName'
-import MintSymbol from 'app/shared/components/mintSymbol'
+import { MintAvatar, MintName, MintSymbol } from 'app/shared/components/mint'
 import Price, { PriceChange, PriceIndicator } from 'app/components/price'
 
-import useMintCgk from 'app/shared/hooks/useMintCgk'
-import useMintDecimals from 'app/shared/hooks/useMintDecimals'
 import useTokenProvider from 'app/shared/hooks/useTokenProvider'
 import { useAccount } from 'senhub/providers'
-import { numeric } from 'shared/util'
-import { utils } from '@senswap/sen-js'
+import Balance from 'app/components/balance'
 
 const AccountItem = ({
-  address,
+  accountAddr,
   active = false,
   onClick = () => {},
 }: {
-  address: string
+  accountAddr: string
   active?: boolean
   onClick?: (address: string) => void
 }) => {
   const {
     accounts: {
-      [address]: { mint, amount },
+      [accountAddr]: { mint },
     },
   } = useAccount()
 
-  const decimals = useMintDecimals(mint)
-  const cgkData = useMintCgk(mint)
   const tokens = useTokenProvider(mint)
-
   let ticket = null
   if (tokens?.length === 1) ticket = tokens[0]?.extensions?.coingeckoId
-  const balance = utils.undecimalize(amount, decimals)
 
   return (
     <Card
@@ -44,9 +35,9 @@ const AccountItem = ({
       }}
       bordered={false}
       hoverable
-      onClick={() => onClick(address)}
+      onClick={() => onClick(accountAddr)}
     >
-      <Row align="middle">
+      <Row>
         <Col span={12}>
           {/* Token Info */}
           <Space>
@@ -62,16 +53,14 @@ const AccountItem = ({
           </Space>
         </Col>
         {/* Balance */}
-        <Col flex="auto">
-          <Space direction="vertical" size={0}>
+        <Col flex="auto" style={{ height: '100%' }}>
+          <Space direction="vertical" size={0} align="start">
             <Typography.Text>
-              {numeric(balance).format('0,0.[00]')}
+              <Balance accountAddr={accountAddr} />
             </Typography.Text>
-            {cgkData.price && (
-              <Typography.Text type="secondary" className="caption">
-                <MintName mintAddress={mint} />
-              </Typography.Text>
-            )}
+            <Typography.Text type="secondary" className="caption">
+              <Balance accountAddr={accountAddr} inUSD autoHidden />
+            </Typography.Text>
           </Space>
         </Col>
         {/* Token Price */}

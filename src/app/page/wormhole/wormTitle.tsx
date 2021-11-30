@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux'
 
 import { Col, Row, Space, Typography } from 'antd'
-import MintAvatar from 'app/shared/components/mintAvatar'
+import { MintAvatar } from 'app/shared/components/mint'
 
 import { useAccount } from 'senhub/providers'
 import { AppState } from 'app/model'

@@ -1,9 +1,9 @@
-import { utils } from '@senswap/sen-js'
 import { Button, Col, Input, Row, Typography } from 'antd'
-import useMintDecimals from 'app/shared/hooks/useMintDecimals'
+import { MintSymbol } from 'app/shared/components/mint'
 
+import useMintDecimals from 'app/shared/hooks/useMintDecimals'
+import { utils } from '@senswap/sen-js'
 import { useAccount } from 'senhub/providers'
-import MintSymbol from '../../../shared/components/mintSymbol'
 
 const Wrapper = ({ accountAddr }: { accountAddr: string }) => {
   const { accounts } = useAccount()
