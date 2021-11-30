@@ -1,8 +1,10 @@
-import { Card, Col, Row } from 'antd'
 import { useState } from 'react'
-import IonIcon from 'shared/ionicon'
+
+import { Card, Col, Row } from 'antd'
 import WalletConnections from './walletConnections'
 import WalletTitle from './walletTitle'
+
+import IonIcon from 'shared/ionicon'
 
 const WormWallet = () => {
   const [soucreWallet, setSoucreWallet] = useState('Select')
