@@ -7,7 +7,7 @@
 
 .card-page {
   height: 442px;
-  overflow: auto
+  overflow: auto;
 }
 
 .header-balance {
@@ -22,5 +22,42 @@
   }
   .text-color {
     color: #e9e9eb !important;
+  }
+}
+
+.custom-selector {
+  .sentre-select-selector {
+    height: 50px;
+    .sentre-select-selection-item {
+      line-height: normal !important;
+    }
+  }
+}
+
+.confirm-transfer-header {
+  position: relative;
+  &::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    width: 93px;
+    height: 93px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #f9575e 0%, #5d6ccf 100%);
+    z-index: 9;
+  }
+  .sentre-col {
+    padding: 7px 16px;
+    &:first-child {
+      border-radius: 8px 0 0 8px;
+      background: #f9575e;
+    }
+    &:nth-of-type(2) {
+      border-radius: 0 8px 8px 0;
+      text-align: right;
+      background: #5d6ccf;
+    }
   }
 }

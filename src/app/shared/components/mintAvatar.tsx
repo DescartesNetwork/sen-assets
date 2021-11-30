@@ -1,14 +1,17 @@
+import { ReactNode, useCallback, useEffect, useState } from 'react'
+
 import { Avatar } from 'antd'
-import { useCallback, useEffect, useState } from 'react'
 import { useMint, usePool } from 'senhub/providers'
 import IonIcon from 'shared/ionicon'
 
 const MintAvatar = ({
   mintAddress,
   size = 24,
+  icon = <IonIcon name="diamond-outline" />,
 }: {
   mintAddress: string
   size?: number
+  icon?: ReactNode
 }) => {
   const { pools } = usePool()
   const { tokenProvider } = useMint()
@@ -42,7 +45,7 @@ const MintAvatar = ({
           size={size}
           style={{ backgroundColor: '#2D3355', border: 'none' }}
         >
-          <IonIcon name="diamond-outline" />
+          {icon}
         </Avatar>
       ))}
     </Avatar.Group>
