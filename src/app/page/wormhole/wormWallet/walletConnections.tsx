@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Button, Col, Row, Select, Space, Typography } from 'antd'
 import IonIcon from 'shared/ionicon'
-import MintAvatar from 'app/shared/components/mintAvatar'
+import { MintAvatar } from 'app/shared/components/mint'
 
 import { useAccount, useMint } from 'senhub/providers'
 

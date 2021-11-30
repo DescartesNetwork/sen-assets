@@ -52,7 +52,7 @@ const ListAccount = () => {
         <Col span={24} key={address}>
           <LazyLoad height={64} overflow>
             <AccountItem
-              address={address}
+              accountAddr={address}
               active={accountSelected === address}
               onClick={(account) => dispatch(selectAccount({ account }))}
             />

@@ -1,5 +1,5 @@
 import { Button, Card, Checkbox, Col, Modal, Row, Typography } from 'antd'
-import MintAvatar from 'app/shared/components/mintAvatar'
+import { MintAvatar } from 'app/shared/components/mint'
 
 const ConfirmBridge = ({
   visible = false,

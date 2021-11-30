@@ -1,6 +1,5 @@
 import { Col, Divider, Row, Space, Typography } from 'antd'
-import MintAvatar from 'app/shared/components/mintAvatar'
-import MintSymbol from 'app/shared/components/mintSymbol'
+import { MintAvatar, MintSymbol } from 'app/shared/components/mint'
 import Price, { PriceChange, PriceIndicator } from 'app/components/price'
 
 export const TokenPrice = ({ mintAddress }: { mintAddress: string }) => {

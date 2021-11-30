@@ -1,7 +1,7 @@
 import { utils } from '@senswap/sen-js'
 
 import { Row, Col, Typography, Button } from 'antd'
-import MintSymbol from 'app/shared/components/mintSymbol'
+import { MintSymbol } from 'app/shared/components/mint'
 import NumericInput from 'app/shared/components/numericInput'
 
 import { useAccount } from 'senhub/providers'
