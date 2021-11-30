@@ -11,7 +11,7 @@ const MintSymbol = ({ mintAddress }: { mintAddress: string }) => {
         if (!token) return 'UNKN'
         return token.symbol
       })
-      .join('/')
+      .join(' • ')
   }, [tokens])
   return <span>{symbols}</span>
 }

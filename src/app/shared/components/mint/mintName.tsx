@@ -7,14 +7,19 @@ const MintName = ({ mintAddress }: { mintAddress: string }) => {
   const tokens = useTokenProvider(mintAddress)
 
   const names = useMemo(() => {
-    return tokens
+    let names = tokens
       .map((token) => {
         if (!token) return 'Unknown'
-        const { name, address } = token
-        if (name) return name
+        const { name, address, symbol } = token
+        if (tokens.length === 1 && name) return name
+        if (symbol) return symbol
         return shortenAddress(address)
       })
-      .join('/')
+      .join(' • ')
+    //Normal token
+    if (tokens.length === 1) return names
+    //LPT token
+    return `${names} LPT`
   }, [tokens])
   return <span>{names}</span>
 }
