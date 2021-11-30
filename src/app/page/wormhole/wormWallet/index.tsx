@@ -8,20 +8,38 @@ import IonIcon from 'shared/ionicon'
 
 const WormWallet = () => {
   const [soucreWallet, setSoucreWallet] = useState('Select')
+  const [targetWallet, setTargetWallet] = useState('solana')
+
+  const onSwapWallet = () => {
+    const cloneTargetWallet = deepClone(targetWallet)
+    const cloneSourceWallet = deepClone(soucreWallet)
+
+    setSoucreWallet(cloneTargetWallet)
+    setTargetWallet(cloneSourceWallet)
+  }
+
+  const deepClone = (value: string) => {
+    if (!value) return
+    return JSON.parse(JSON.stringify(value))
+  }
 
   return (
     <Card bordered={false}>
       <Row gutter={[12, 12]} justify="center">
         <Col span={24}>
           <WalletTitle title="title" label="Source" />
-          <WalletConnections solWallet />
+          <WalletConnections value={soucreWallet} onChange={setSoucreWallet} />
         </Col>
         <Col>
-          <IonIcon name="git-compare-outline" />
+          <IonIcon
+            onClick={onSwapWallet}
+            name="git-compare-outline"
+            style={{ cursor: 'pointer' }}
+          />
         </Col>
         <Col span={24}>
           <WalletTitle title="title 2" label="Target" />
-          <WalletConnections value={soucreWallet} onChange={setSoucreWallet} />
+          <WalletConnections value={targetWallet} onChange={setTargetWallet} />
         </Col>
       </Row>
     </Card>
