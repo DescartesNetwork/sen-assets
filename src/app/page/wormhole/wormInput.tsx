@@ -24,15 +24,11 @@ const WormInput = ({
 
   return (
     <Row gutter={[8, 8]}>
-      <Col span={24}>
-        <Row>
-          <Col flex="auto">
-            <Typography.Text>Amount</Typography.Text>
-          </Col>
-          <Col>
-            <Typography.Text>Availble: {0}</Typography.Text>
-          </Col>
-        </Row>
+      <Col flex="auto">
+        <Typography.Text>Amount</Typography.Text>
+      </Col>
+      <Col>
+        <Typography.Text>Availble: {0}</Typography.Text>
       </Col>
       <Col span={24}>
         <NumericInput
