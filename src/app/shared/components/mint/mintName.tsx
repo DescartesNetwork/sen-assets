@@ -9,7 +9,7 @@ const MintName = ({ mintAddress }: { mintAddress: string }) => {
   const names = useMemo(() => {
     let names = tokens
       .map((token) => {
-        if (!token) return 'Unknown'
+        if (!token) return shortenAddress(mintAddress)
         const { name, address, symbol } = token
         if (tokens.length === 1 && name) return name
         if (symbol) return symbol
@@ -20,7 +20,7 @@ const MintName = ({ mintAddress }: { mintAddress: string }) => {
     if (tokens.length === 1) return names
     //LPT token
     return `${names} LPT`
-  }, [tokens])
+  }, [mintAddress, tokens])
   return <span>{names}</span>
 }
 
