@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
-// import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
+import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { ChainID } from '@certusone/wormhole-sdk/lib/proto/publicrpc/v1/publicrpc'
 import { EtherWallet } from 'app/libWormhole/etherWallet'
 
-const CHAIN_ID_ETH = ChainID.CHAIN_ID_ETHEREUM
-const CHAIN_ID_SOLANA = ChainID.CHAIN_ID_SOLANA
+// const CHAIN_ID_ETH = ChainID.CHAIN_ID_ETHEREUM
+// const CHAIN_ID_SOLANA = ChainID.CHAIN_ID_SOLANA
 type ChainId = ChainID
 /**
  * Interface & Utility
@@ -15,11 +15,11 @@ const etherWallet = new EtherWallet()
 
 export type State = {
   // source wallet
-  sourceChain: ChainId
+  sourceChain: any
   sourceWalletAddress: string
   // target wallet
   targetWalletAddress: string
-  targetChain: ChainId
+  targetChain: any
   // other
   amount: bigint
 }
@@ -126,11 +126,11 @@ const slice = createSlice({
       .addCase(
         connectTargetWallet.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
-      )
-      // .addCase(
-      //   disconnectSourceWallet.fulfilled,
-      //   (state, { payload }) => void Object.assign(state, payload),
-      // ),
+      ),
+  // .addCase(
+  //   disconnectSourceWallet.fulfilled,
+  //   (state, { payload }) => void Object.assign(state, payload),
+  // ),
 })
 
 export default slice.reducer
