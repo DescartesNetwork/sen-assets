@@ -1,10 +1,11 @@
 import { useState } from 'react'
 
 import { Card, Col, Row } from 'antd'
-import WalletConnections from './walletConnections'
 import WalletTitle from './walletTitle'
 
 import IonIcon from 'shared/ionicon'
+import SourceWallet from './networkConnect/sourceWallet'
+import TargetWallet from './networkConnect/targetWallet'
 
 const WormWallet = () => {
   const [soucreWallet, setSoucreWallet] = useState('Select')
@@ -28,7 +29,7 @@ const WormWallet = () => {
       <Row gutter={[12, 12]} justify="center">
         <Col span={24}>
           <WalletTitle title="title" label="Source" />
-          <WalletConnections value={soucreWallet} onChange={setSoucreWallet} />
+          <SourceWallet />
         </Col>
         <Col>
           <IonIcon
@@ -39,7 +40,7 @@ const WormWallet = () => {
         </Col>
         <Col span={24}>
           <WalletTitle title="title 2" label="Target" />
-          <WalletConnections value={targetWallet} onChange={setTargetWallet} />
+          <TargetWallet />
         </Col>
       </Row>
     </Card>

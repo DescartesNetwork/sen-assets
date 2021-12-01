@@ -1,5 +1,8 @@
-import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+
+import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
+import { WalletInterface } from '@senswap/sen-js'
+import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
 
 /**
  * Interface & Utility
@@ -20,7 +23,7 @@ export type State = {
  * Store constructor
  */
 
-const NAME = 'account'
+const NAME = 'wormhole'
 const initialState: State = {
   // source wallet
   sourceChain: CHAIN_ID_ETH,
@@ -36,22 +39,33 @@ const initialState: State = {
  * Actions
  */
 
-export const setSourceChain = createAsyncThunk<
+export const connectSourceWallet = createAsyncThunk<
   State,
-  { chainId: ChainId },
+  { wallet: IEtherWallet },
   { state: State }
->(`${NAME}/setSourceChain`, async ({ chainId }, { getState }) => {
+>(`${NAME}/connectSourceWallet`, async ({ wallet }, { getState }) => {
   const state = getState()
-  return { ...state, sourceChain: chainId }
+  const address = await wallet.getAddress()
+  return { ...state, sourceWalletAddress: address }
 })
 
-export const connectSourceWallet = createAsyncThunk<
+export const disconnectSourceWallet = createAsyncThunk<
   State,
   void,
   { state: State }
->(`${NAME}/setSourceChain`, async (_, { getState }) => {
+>(`${NAME}/disconnectSourceWallet`, async (_, { getState }) => {
   const state = getState()
-  return { ...state }
+  return { ...state, sourceWalletAddress: '' }
+})
+
+export const connectTargetWallet = createAsyncThunk<
+  State,
+  { wallet: WalletInterface },
+  { state: State }
+>(`${NAME}/connectTargetWallet`, async ({ wallet }, { getState }) => {
+  const state = getState()
+  const address = await wallet.getAddress()
+  return { ...state, targetWalletAddress: address }
 })
 
 /**
@@ -63,10 +77,19 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) =>
-    void builder.addCase(
-      setSourceChain.fulfilled,
-      (state, { payload }) => void Object.assign(state, payload),
-    ),
+    void builder
+      .addCase(
+        connectSourceWallet.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        disconnectSourceWallet.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        connectTargetWallet.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      ),
 })
 
 export default slice.reducer

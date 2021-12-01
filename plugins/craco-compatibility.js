@@ -16,6 +16,7 @@ const overrideWebpackConfig = ({ context, webpackConfig, pluginOptions }) => {
   // (For IPFS compatibility)
   webpackConfig.resolve.fallback = {
     util: require.resolve('util/'),
+    stream: require.resolve('stream-browserify'),
   }
   // Fix unrecognized change / caching problem
   webpackConfig.cache.buildDependencies.config.push(

@@ -3,7 +3,7 @@ import { devTools, bigintSerializationMiddleware } from 'shared/devTools'
 
 import settings from 'app/model/settings.controller'
 import account from './account.controller'
-
+import wormhole from './wormhole.controller'
 /**
  * Isolated store
  */
@@ -13,7 +13,8 @@ const model = configureStore({
   devTools: devTools('myapp'),
   reducer: {
     settings,
-    account
+    account,
+    wormhole
   },
 })
 export type AppState = ReturnType<typeof model.getState>
