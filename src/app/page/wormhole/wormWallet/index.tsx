@@ -4,8 +4,8 @@ import { Card, Col, Row } from 'antd'
 import WalletTitle from './walletTitle'
 
 import IonIcon from 'shared/ionicon'
-import SourceWallet from './networkWallet/sourceWallet'
-import TargetWallet from './networkWallet/targetWallet'
+import SourceWallet from './networkConnect/sourceWallet'
+import TargetWallet from './networkConnect/targetWallet'
 
 const WormWallet = () => {
   const [soucreWallet, setSoucreWallet] = useState('Select')

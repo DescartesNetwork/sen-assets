@@ -1,9 +1,10 @@
 import { Avatar, Button, Col, Row, Select, Space, Typography } from 'antd'
 import IonIcon from 'shared/ionicon'
 
-import { WORMHOLE_NETWORK } from 'app/libWormhole/config'
+import { WORMHOLE_NETWORK } from 'app/lib/wormhole/config'
 import { shortenAddress } from 'shared/util'
 import { useWallet } from 'senhub/providers'
+import { ChainId } from '@certusone/wormhole-sdk'
 
 const NetworkConnect = ({
   address,
@@ -45,9 +46,9 @@ const Network = ({
   onConnect = () => {},
   onDisconnect = () => {},
 }: {
-  chainId: number
+  chainId: ChainId
   address: string
-  onChange?: (chainId: number) => void
+  onChange?: (chainId: ChainId) => void
   onConnect?: () => void
   onDisconnect?: () => void
 }) => {
@@ -55,7 +56,7 @@ const Network = ({
     <Row gutter={[16, 16]}>
       <Col flex="auto">
         <Select
-          onChange={(value) => onChange(Number(value))}
+          onChange={(value) => onChange(Number(value) as ChainId)}
           value={String(chainId)}
           bordered={false}
           suffixIcon={<IonIcon name="chevron-down-outline" />}
@@ -63,6 +64,7 @@ const Network = ({
           style={{ marginLeft: -4 }}
           className="custom-selector"
           dropdownStyle={{ lineHeight: 'normal' }}
+          disabled
         >
           {WORMHOLE_NETWORK.map((network) => (
             <Select.Option value={String(network.chainID)}>

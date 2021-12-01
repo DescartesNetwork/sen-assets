@@ -1,3 +1,4 @@
+import { ChainId } from '@certusone/wormhole-sdk'
 import { AppState } from 'app/model'
 import {
   connectSourceWallet,
@@ -13,7 +14,7 @@ const SourceWallet = () => {
   const { sourceWalletAddress, sourceChain } = useSelector(
     (state: AppState) => state.wormhole,
   )
-  const onChange = (chainId: number) => dispatch(setSourceChain({ chainId }))
+  const onChange = (chainId: ChainId) => dispatch(setSourceChain({ chainId }))
 
   const onConnect = () => {
     dispatch(connectSourceWallet())

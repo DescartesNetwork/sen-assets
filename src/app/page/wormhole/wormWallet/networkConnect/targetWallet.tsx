@@ -1,3 +1,4 @@
+import { ChainId } from '@certusone/wormhole-sdk'
 import { AppState } from 'app/model'
 import { setTargetChain } from 'app/model/wormhole.controller'
 import { useEffect } from 'react'
@@ -12,7 +13,7 @@ const TargetWallet = () => {
     (state: AppState) => state.wormhole,
   )
 
-  const onChange = (chainId: number) => dispatch(setTargetChain({ chainId }))
+  const onChange = (chainId: ChainId) => dispatch(setTargetChain({ chainId }))
 
   useEffect(() => {
     dispatch(setTargetChain({ chainId: CHAIN_ID_SOLANA }))

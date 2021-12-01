@@ -1,12 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
-import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
-import { ChainID } from '@certusone/wormhole-sdk/lib/proto/publicrpc/v1/publicrpc'
-import { EtherWallet } from 'app/libWormhole/etherWallet'
+import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
+import { EtherWallet } from 'app/lib/wormhole/etherWallet'
 
-// const CHAIN_ID_ETH = ChainID.CHAIN_ID_ETHEREUM
-// const CHAIN_ID_SOLANA = ChainID.CHAIN_ID_SOLANA
-type ChainId = ChainID
 /**
  * Interface & Utility
  */
@@ -43,7 +39,7 @@ const initialState: State = {
 /**
  * Actions
  */
-const getWalletAddress = async (chainId: ChainID) => {
+const getWalletAddress = async (chainId: ChainId) => {
   const { wallet } = window.sentre
   if (chainId === CHAIN_ID_SOLANA) {
     const walletAddress = await wallet?.getAddress()
