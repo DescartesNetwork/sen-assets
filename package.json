@@ -2,9 +2,10 @@
   "name": "senhub",
   "version": "2.0.0",
   "dependencies": {
-    "@certusone/wormhole-sdk": "^0.1.1",
+    "@certusone/wormhole-sdk": "0.0.7",
     "@dnd-kit/core": "^4.0.1",
     "@dnd-kit/sortable": "^5.0.0",
+    "@metamask/detect-provider": "^1.2.0",
     "@project-serum/sol-wallet-adapter": "^0.2.6",
     "@reduxjs/toolkit": "^1.6.2",
     "@senswap/sen-js": "^1.1.0",
