@@ -1,7 +1,7 @@
 import { Avatar, Button, Col, Row, Select, Space, Typography } from 'antd'
 import IonIcon from 'shared/ionicon'
 
-import { WORMHOLE_NETWORK } from 'app/lib/wormhole/config'
+import { WORMHOLE_NETWORK } from 'app/lib/wormhole/config/wormhole'
 import { shortenAddress } from 'shared/util'
 import { useWallet } from 'senhub/providers'
 import { ChainId } from '@certusone/wormhole-sdk'
@@ -70,7 +70,7 @@ const Network = ({
             <Select.Option value={String(network.chainID)} key={network.chainID}>
               <Space>
                 <Avatar
-                  src={network.icon}
+                  src={network.logo}
                   size={32}
                   style={{ backgroundColor: '#2D3355', border: 'none' }}
                 />

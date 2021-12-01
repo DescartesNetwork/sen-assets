@@ -4,18 +4,6 @@ export type SolAddressConfig = {
   devnet: string
 }
 
-export const WORMHOLE_RPC_HOST: SolAddressConfig = {
-  mainnet: 'https://wormhole-v2-mainnet-api.certus.one',
-  testnet: '',
-  devnet: 'https://wormhole-v2-testnet-api.certus.one',
-}
-
-export const SOL_RPC_HOST: SolAddressConfig = {
-  mainnet: 'https://api.mainnet-beta.solana.com',
-  testnet: 'https://api.testnet.solana.com',
-  devnet: 'https://api.devnet.solana.com',
-}
-
 export const SOL_BRIDGE_ADDRESS: SolAddressConfig = {
   mainnet: 'worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth',
   testnet: 'Brdguy7BmNB4qwEbcqqMbyV5CyJd2sxQNUn6NEpMSsUb',
