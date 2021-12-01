@@ -1,23 +1,25 @@
-import { ChainId } from '@certusone/wormhole-sdk'
+import MetamaskWallet from 'app/lib/etherWallet/metamask'
 import { AppState } from 'app/model'
 import {
   connectSourceWallet,
   disconnectSourceWallet,
-  setSourceChain,
 } from 'app/model/wormhole.controller'
 import { useDispatch, useSelector } from 'react-redux'
 import Network from './network'
 
 const SourceWallet = () => {
   const dispatch = useDispatch()
-
   const { sourceWalletAddress, sourceChain } = useSelector(
     (state: AppState) => state.wormhole,
   )
-  const onChange = (chainId: ChainId) => dispatch(setSourceChain({ chainId }))
+
+  const reconnect = () => {
+    return new MetamaskWallet()
+  }
 
   const onConnect = () => {
-    dispatch(connectSourceWallet())
+    const wallet = reconnect()
+    dispatch(connectSourceWallet({ wallet }))
   }
 
   const onDisconnect = () => {
@@ -28,7 +30,6 @@ const SourceWallet = () => {
     <Network
       address={sourceWalletAddress}
       chainId={sourceChain}
-      onChange={onChange}
       onConnect={onConnect}
       onDisconnect={onDisconnect}
     />

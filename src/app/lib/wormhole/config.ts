@@ -1,5 +1,7 @@
+import { ChainId } from '@certusone/wormhole-sdk'
+
 export const WORMHOLE_NETWORK: {
-  chainID: number
+  chainID: ChainId
   name: string
   icon: string
 }[] = [

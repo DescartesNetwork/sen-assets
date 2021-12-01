@@ -1,11 +1,8 @@
-import { ChainId } from '@certusone/wormhole-sdk'
 import { AppState } from 'app/model'
-import { setTargetChain } from 'app/model/wormhole.controller'
+import { connectTargetWallet } from 'app/model/wormhole.controller'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Network from './network'
-
-const CHAIN_ID_SOLANA = 1
 
 const TargetWallet = () => {
   const dispatch = useDispatch()
@@ -13,19 +10,13 @@ const TargetWallet = () => {
     (state: AppState) => state.wormhole,
   )
 
-  const onChange = (chainId: ChainId) => dispatch(setTargetChain({ chainId }))
-
   useEffect(() => {
-    dispatch(setTargetChain({ chainId: CHAIN_ID_SOLANA }))
+    const wallet = window.sentre.wallet
+    if (!wallet) return
+    dispatch(connectTargetWallet({ wallet }))
   }, [dispatch])
 
-  return (
-    <Network
-      address={targetWalletAddress}
-      chainId={targetChain}
-      onChange={onChange}
-    />
-  )
+  return <Network address={targetWalletAddress} chainId={targetChain} />
 }
 
 export default TargetWallet

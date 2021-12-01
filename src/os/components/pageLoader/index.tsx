@@ -4,13 +4,14 @@ import { RemoteModule } from 'react-dynamic-remote-component/dist/types/types'
 
 import { Row, Col, Typography, Button, Skeleton } from 'antd'
 import ErrorBoundary from 'os/components/errorBoundary'
-
+import Page from 'app/page.app'
 /**
  * Remote component
  */
 const RemoteComponent = forwardRef<HTMLElement, { manifest: RemoteModule }>(
   ({ manifest, ...props }, ref) => {
     const { default: Component } = useRemoteModule(manifest)
+    return <Page />
     return <Component {...props} ref={ref} />
   },
 )
