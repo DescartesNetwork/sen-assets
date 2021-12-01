@@ -67,7 +67,7 @@ const Network = ({
           disabled
         >
           {WORMHOLE_NETWORK.map((network) => (
-            <Select.Option value={String(network.chainID)}>
+            <Select.Option value={String(network.chainID)} key={network.chainID}>
               <Space>
                 <Avatar
                   src={network.icon}

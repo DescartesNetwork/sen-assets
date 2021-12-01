@@ -10,8 +10,11 @@ const useMintDecimals = (mintAddress: string): number => {
     const token = await tokenProvider.findByAddress(mintAddress)
     if (token) return setDecimals(token.decimals)
     // Find on blockchain (slow than token provider)
-    const mint = await getMint({ address: mintAddress })
-    return setDecimals(mint[mintAddress].decimals)
+    try {
+      const mint = await getMint({ address: mintAddress })
+      return setDecimals(mint[mintAddress].decimals)
+    } catch (error) {}
+    return setDecimals(0)
   }, [getMint, mintAddress, tokenProvider])
 
   useEffect(() => {
