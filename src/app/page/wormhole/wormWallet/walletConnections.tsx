@@ -4,7 +4,6 @@ import IonIcon from 'shared/ionicon'
 import { MintAvatar } from 'app/shared/components/mint'
 import Solana from './solana'
 import Ethereum from './ethereum'
-import { useAccount, useMint } from 'senhub/providers'
 
 const WalletConnections = ({
   value = 'Select',

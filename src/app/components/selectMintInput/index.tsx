@@ -1,13 +1,14 @@
+import { useState } from 'react'
 import { utils } from '@senswap/sen-js'
 
 import { Row, Col, Typography, Button } from 'antd'
-import { MintSymbol } from 'app/shared/components/mint'
+import SelectMint from './selectMint'
 import NumericInput from 'app/shared/components/numericInput'
 
 import { useAccount } from 'senhub/providers'
 import useMintDecimals from 'app/shared/hooks/useMintDecimals'
 
-const WormInput = ({
+const SelectMintInput = ({
   accountAddr,
   onChange,
   value,
@@ -17,6 +18,7 @@ const WormInput = ({
   value: string
 }) => {
   const { accounts } = useAccount()
+  const [token, setToken] = useState('Select')
 
   const { amount: maxAmount, mint } = accounts[accountAddr] || {}
   const decimals = useMintDecimals(mint)
@@ -33,11 +35,7 @@ const WormInput = ({
       <Col span={24}>
         <NumericInput
           placeholder={0}
-          prefix={
-            <Typography.Text type="secondary">
-              <MintSymbol mintAddress={mint} />
-            </Typography.Text>
-          }
+          prefix={<SelectMint value={token} onSelectMint={setToken} />}
           suffix={
             <Button
               type="text"
@@ -56,4 +54,4 @@ const WormInput = ({
   )
 }
 
-export default WormInput
+export default SelectMintInput

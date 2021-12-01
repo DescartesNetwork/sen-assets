@@ -49,6 +49,7 @@ const Settings = () => {
       <Button
         type="text"
         shape="circle"
+        style={{ minWidth: 'unset', width: 'auto' }}
         icon={<IonIcon name="cog-outline" />}
       />
     </Popover>

@@ -11,9 +11,12 @@
 }
 
 .header-balance {
-  background-color: #5d6ccf;
-  padding: 16px;
-  padding-bottom: 42px;
+  background-image: url('../images/assets-bg.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  padding: 16px 16px 42px 16px;
+  margin: 0 !important;
   .title-color {
     color: #e9e9eb !important;
   }
@@ -33,31 +36,42 @@
     }
   }
 }
+.confirm-transfer-wrap {
+  border-radius: 8px !important;
+  .confirm-transfer-header {
+    position: relative;
+    .sentre-col {
+      padding: 7px 16px;
+      &:first-child {
+        border-radius: 8px 0 0 8px;
+        background: #f9575e;
+      }
+      &:nth-of-type(2) {
+        border-radius: 0 8px 8px 0;
+        text-align: right;
+        background: #5d6ccf;
+      }
+    }
+    .amount {
+      position: absolute !important;
+      text-align: center;
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      width: 93px;
+      height: 93px;
+      padding: 20px 0;
+      border-radius: 50%;
+      background: linear-gradient(90deg, #f9575e 0%, #5d6ccf 100%);
+      z-index: 9;
+    }
+  }
+}
 
-.confirm-transfer-header {
-  position: relative;
-  &::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    bottom: 14px;
-    transform: translateX(-50%);
-    width: 93px;
-    height: 93px;
-    border-radius: 50%;
-    background: linear-gradient(90deg, #f9575e 0%, #5d6ccf 100%);
-    z-index: 9;
-  }
-  .sentre-col {
-    padding: 7px 16px;
-    &:first-child {
-      border-radius: 8px 0 0 8px;
-      background: #f9575e;
-    }
-    &:nth-of-type(2) {
-      border-radius: 0 8px 8px 0;
-      text-align: right;
-      background: #5d6ccf;
-    }
-  }
+// card sen assets
+.card-sen-assets {
+  background-image: url('../images/sen-assets-bg.png') !important;
+  background-size: cover !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
 }
