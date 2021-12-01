@@ -218,7 +218,7 @@ const Bridge = () => {
   }
 
   return (
-    <Row gutter={[16, 16]}>
+    <Row gutter={[16, 16]} justify="center">
       <Col span={24}>
         <Table
           columns={COLUMNS}
@@ -230,7 +230,7 @@ const Bridge = () => {
           scroll={{ x: 1000, y: 240 }}
         />
       </Col>
-      <Col span={24} style={{ textAlign: 'center' }}>
+      <Col>
         <Button
           onClick={() => onHanldeViewMore()}
           icon={<IonIcon name="chevron-down-outline" />}
