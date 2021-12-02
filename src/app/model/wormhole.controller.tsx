@@ -1,13 +1,13 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-
 import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { WalletInterface } from '@senswap/sen-js'
-import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
-import { WormholeEtherSol } from 'app/lib/wormhole/wormhole'
+
 import storage from 'shared/storage'
 import { explorer } from 'shared/util'
+
+import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
+import { WormholeProvider } from 'app/lib/wormhole/wormhole'
 import { fetchTokenEther } from 'app/lib/wormhole/helper'
-import util from '@senswap/sen-js/dist/utils'
 
 /**
  * Interface & Utility
@@ -32,7 +32,7 @@ export type TokenEtherInfo = {
 }
 
 const network = storage.get('network') || 'mainnet'
-const etherNetwork = network === 'mainnet' ? 'ether' : 'goerli'
+const etherNetwork = network === 'mainnet' ? 'mainnet' : 'goerli'
 
 export type State = {
   // source wallet
@@ -140,19 +140,12 @@ export const transfer = createAsyncThunk<State, void, { state: any }>(
     const { ether: etherWallet, solana: solWallet } = netWorkWallet
     if (!etherWallet || !solWallet || !tokenTransfer) return { ...state }
 
-    const network = storage.get('network') || 'mainnet'
-    const wormholeEther = new WormholeEtherSol(
+    const wormholeEther = new WormholeProvider(
       etherWallet,
       solWallet,
-      tokenTransfer.address,
-      network,
+      tokenTransfer,
     )
-    const { attested } = await wormholeEther.isAttested()
-    if (!attested) await wormholeEther.attest()
-    const amountTransfer = util.decimalize(amount, tokenTransfer.decimals)
-    const vaaHex = await wormholeEther.transfer(amountTransfer)
-    const txId = await wormholeEther.redeem(vaaHex)
-
+    const txId = await wormholeEther.transfer(amount)
     window.notify({
       type: 'success',
       description: 'Transfer successfully',
