@@ -1,22 +1,23 @@
 import { useState } from 'react'
 
 import { Button, Col, Row } from 'antd'
-import ConfirmBridge from './comfirmBridge'
-import { transfer } from 'app/model/wormhole.controller'
-import { useDispatch } from 'react-redux'
+import ConfirmBridge from './networkTransfer'
+import { useSelector } from 'react-redux'
+import { AppState } from 'app/model'
 
 const WormAction = () => {
+  const { amount } = useSelector((state: AppState) => state.wormhole)
   const [visible, setVisible] = useState(false)
-  const dispatch = useDispatch()
 
-  const onTransfer = () => {
-    dispatch(transfer())
-  }
-  
   return (
     <Row>
       <Col span={24}>
-        <Button type="primary" onClick={onTransfer} block>
+        <Button
+          disabled={!Number(amount)}
+          type="primary"
+          onClick={() => setVisible(true)}
+          block
+        >
           Next
         </Button>
       </Col>

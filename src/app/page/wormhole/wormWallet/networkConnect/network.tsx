@@ -20,15 +20,16 @@ const NetworkConnect = ({
   } = useWallet()
   if (!address)
     return (
-      <Button size="small" onClick={onConnect}>
+      <Button size="small" onClick={onConnect} type="primary">
         Connect
       </Button>
     )
 
+  // senhub system wallet
   if (address === walletAddress)
     return (
       <Button size="small" disabled>
-        Senhub wallet
+        Connected
       </Button>
     )
 
@@ -67,7 +68,10 @@ const Network = ({
           disabled
         >
           {WORMHOLE_NETWORK.map((network) => (
-            <Select.Option value={String(network.chainID)} key={network.chainID}>
+            <Select.Option
+              value={String(network.chainID)}
+              key={network.chainID}
+            >
               <Space>
                 <Avatar
                   src={network.logo}

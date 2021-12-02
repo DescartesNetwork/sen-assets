@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Checkbox, Col, Progress, Row } from 'antd'
+
+import { transfer } from 'app/model/wormhole.controller'
+import { AppState } from 'app/model'
 
 const TIME_INTERVAL = 50
 const PERCENTAGE = 100
@@ -11,9 +15,16 @@ const ConfirmAction = ({
 }: {
   onClose?: (visible: boolean) => void
 }) => {
+  const { amount } = useSelector((state: AppState) => state.wormhole)
   const [acceptable, setAcceptable] = useState(false)
   const [percent, setPercent] = useState(0)
   const [loading, setLoading] = useState(false)
+  const dispatch = useDispatch()
+
+  const onTransfer = async () => {
+    setLoading(true)
+    await dispatch(transfer())
+  }
 
   const closeModal = useCallback(() => {
     setLoading(false)
@@ -67,12 +78,12 @@ const ConfirmAction = ({
       </Col>
       <Col span={24}>
         <Button
-          onClick={() => setLoading(true)}
+          onClick={onTransfer}
           type="primary"
           block
           disabled={!acceptable}
         >
-          Approve {10} token
+          Approve {amount} token
         </Button>
       </Col>
       <Col>

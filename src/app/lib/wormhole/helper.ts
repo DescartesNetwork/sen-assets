@@ -1,6 +1,9 @@
-import { getSignedVAA } from '@certusone/wormhole-sdk'
-import { account, WalletInterface } from '@senswap/sen-js'
+import axios from 'axios'
 import { Connection, Transaction } from '@solana/web3.js'
+import { getSignedVAA } from '@certusone/wormhole-sdk'
+
+import { account, WalletInterface, utils } from '@senswap/sen-js'
+import { TokenEtherInfo } from 'app/model/wormhole.controller'
 import { asyncWait } from 'shared/util'
 
 export const getSignedVAAWithRetry = async (
@@ -17,6 +20,29 @@ export const getSignedVAAWithRetry = async (
       // Nothing
     }
   }
+}
+
+export const fetchTokenEther = async (
+  address: string,
+  networkName: string,
+): Promise<TokenEtherInfo[]> => {
+  const tokens = []
+  const { data } = await axios({
+    method: 'get',
+    url: `https://deep-index.moralis.io/api/v2/${address}/erc20?chain=${networkName}`,
+    headers: {
+      'X-API-Key':
+        'N6yeIUl1FxCPZWbXyxLHWPAjSr6ahQeJTX3d19pSKCwHsLCzpWE7z1hilon4xDOd',
+    },
+  })
+  for (const token of data) {
+    token.decimals = Number(token.decimals)
+    token.balance = BigInt(token.balance)
+    token.amount = utils.undecimalize(token.balance, token.decimals)
+    token.address = token.token_address
+    tokens.push(token)
+  }
+  return tokens
 }
 
 export const sendTransaction = async (

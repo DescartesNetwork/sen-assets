@@ -161,9 +161,6 @@ export class WormholeEtherSol {
    * @returns
    */
   transfer = async (amount: bigint) => {
-    // Check token
-    let { wrappedMintAddress } = await this.isAttested()
-    if (!wrappedMintAddress) throw new Error('Attest the token first')
     // Approve & transfer token ETH
     const transferReceipt = await this.transferSourceNetWork(amount)
     // Wormhole

@@ -1,7 +1,11 @@
+import { useSelector } from 'react-redux'
+
 import { Card, Col, Modal, Row, Typography } from 'antd'
-import { MintAvatar } from 'app/shared/components/mint'
+import NetworkAvatar from 'app/components/network/networkAvatar'
 import ConfirmInfo from './confirmInfo'
-import ConfirmAction from './confirmAction'
+import ConfirmAction from './confirmTransfer'
+
+import { AppState } from 'app/model'
 
 const ConfirmBridge = ({
   visible = false,
@@ -10,6 +14,11 @@ const ConfirmBridge = ({
   visible?: boolean
   onCancel?: (visible: boolean) => void
 }) => {
+  const { sourceChain, targetChain, amount, sourceTokens, tokenAddress } =
+    useSelector((state: AppState) => state.wormhole)
+  const sourceToken = sourceTokens[tokenAddress]
+
+  if (!sourceToken) return null
   return (
     <Modal visible={visible} footer={false} closable={false} centered>
       <Row gutter={[16, 16]} justify="center">
@@ -25,14 +34,14 @@ const ConfirmBridge = ({
             {/* transfer header */}
             <Row className="confirm-transfer-header">
               <Col span={12}>
-                <MintAvatar mintAddress={''} size={32} />
+                <NetworkAvatar chainId={sourceChain} size={32} />
               </Col>
               <Col span={12}>
-                <MintAvatar mintAddress={''} size={32} />
+                <NetworkAvatar chainId={targetChain} size={32} />
               </Col>
               <Col className="amount">
-                <Typography.Title level={3}>10</Typography.Title>
-                <Typography.Text>SOL</Typography.Text>
+                <Typography.Title level={3}>{amount}</Typography.Title>
+                <Typography.Text>{sourceToken.symbol}</Typography.Text>
               </Col>
             </Row>
             {/* transfer infomations */}
