@@ -124,7 +124,6 @@ export const setSourceToken = createAsyncThunk<
   { tokenAddress?: string; amount?: string },
   { state: any }
 >(`${NAME}/setSourceToken`, async ({ tokenAddress, amount }, { getState }) => {
-  console.log('tokenAddress, amount ', tokenAddress, amount)
   const state = getState().wormhole
   const newTokenAddress = tokenAddress || state.tokenAddress
   const newAmount = amount || state.amount
@@ -151,7 +150,6 @@ export const transfer = createAsyncThunk<State, void, { state: any }>(
     const { attested } = await wormholeEther.isAttested()
     if (!attested) await wormholeEther.attest()
     const amountTransfer = util.decimalize(amount, tokenTransfer.decimals)
-    console.log("amountTransfer",amountTransfer)
     const vaaHex = await wormholeEther.transfer(amountTransfer)
     const txId = await wormholeEther.redeem(vaaHex)
 
