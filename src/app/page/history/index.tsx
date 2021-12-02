@@ -1,11 +1,22 @@
-import { Card, Col, Row, Typography } from 'antd'
+import { Card, Col, Row, Tabs } from 'antd'
+import Bridge from './bridge'
+import Transaction from './tracsaction'
+
+import './index.less'
 
 const History = () => {
   return (
-    <Card style={{ height: '33vw', overflow: 'auto' }}>
+    <Card bodyStyle={{ paddingTop: 12 }}>
       <Row gutter={[24, 24]}>
         <Col span={24}>
-          <Typography.Title level={4}>History</Typography.Title>
+          <Tabs>
+            <Tabs.TabPane tab="Bridge history" key="Bridge">
+              <Bridge />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="Transaction history" key="Transaction">
+              <Transaction />
+            </Tabs.TabPane>
+          </Tabs>
         </Col>
       </Row>
     </Card>
