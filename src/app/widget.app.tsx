@@ -18,7 +18,7 @@ const {
 
 export const widgetConfig: WidgetConfig = {
   size: 'small',
-  type: 'solid',
+  type: 'default',
 }
 
 const Widget = () => {
