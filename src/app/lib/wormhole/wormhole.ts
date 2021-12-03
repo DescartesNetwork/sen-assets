@@ -8,10 +8,11 @@ import { account, WalletInterface } from '@senswap/sen-js'
 
 import { TokenEtherInfo } from 'app/model/wormhole.controller'
 import { IEtherWallet } from './../etherWallet/walletInterface'
-import { SolNetWork } from './config/solConfig'
 import { WormholeTransfer } from './step/transfer'
 import { WormholeContext } from './wormholeData'
+import storage from 'shared/storage'
 
+const STORE_KEY = 'wormhole:provider'
 export class WormholeProvider {
   context: WormholeContext
   step: number = 0
@@ -30,6 +31,28 @@ export class WormholeProvider {
     this.context = new WormholeContext(tokenInfo)
     this.connection = window.sentre.splt.connection
   }
+
+  fetchAll = async (): Promise<Record<string, WormholeContext>> => {
+    const data = storage.get(STORE_KEY)
+    return data || {}
+  }
+
+  restore = async () => {
+    const contextId = this.context.id
+    const store = await this.fetchAll()
+    const data = store[contextId]
+    if (!data) throw new Error('Invalid context id')
+    this.context = data
+  }
+
+  backup = async () => {
+    if (!this.context) throw new Error('Invalid context')
+    const store = await this.fetchAll()
+    const id = this.context.id
+    store[id] = this.context
+    storage.set(STORE_KEY, store)
+  }
+
 
   /**
    * Check token is whether or not attested
