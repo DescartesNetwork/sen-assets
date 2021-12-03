@@ -6,6 +6,7 @@ import { account, WalletInterface, utils } from '@senswap/sen-js'
 import { TokenEtherInfo } from 'app/model/wormhole.controller'
 import { asyncWait } from 'shared/util'
 
+
 export const getSignedVAAWithRetry = async (
   ...args: Parameters<typeof getSignedVAA>
 ) => {
@@ -26,6 +27,7 @@ export const fetchTokenEther = async (
   address: string,
   networkName: string,
 ): Promise<TokenEtherInfo[]> => {
+  if (networkName === 'mainnet') networkName = 'ether'
   const tokens = []
   const { data } = await axios({
     method: 'get',
