@@ -2,7 +2,6 @@ import { Card, Col, Row, Space, Typography } from 'antd'
 import { MintAvatar, MintName, MintSymbol } from 'app/shared/components/mint'
 import Price, { PriceChange, PriceIndicator } from 'app/components/price'
 
-import useTokenProvider from 'app/shared/hooks/useTokenProvider'
 import { useAccount } from 'senhub/providers'
 import Balance from 'app/components/balance'
 
@@ -20,10 +19,6 @@ const AccountItem = ({
       [accountAddr]: { mint },
     },
   } = useAccount()
-
-  const tokens = useTokenProvider(mint)
-  let ticket = null
-  if (tokens?.length === 1) ticket = tokens[0]?.extensions?.coingeckoId
 
   return (
     <Card

@@ -1,3 +1,4 @@
+import { CHAIN_ID_ETH, ChainId, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { TokenEtherInfo } from 'app/model/wormhole.controller'
 import storage from 'shared/storage'
 import {
@@ -14,10 +15,13 @@ import { WORMHOLE_RPC_HOST } from './config/wormhole'
 
 export class WormholeContext {
   id: string
+  time: number
   // Source network
+  srcChainId: ChainId = CHAIN_ID_ETH
   srcTokenBridgeAddress: string
   srcBridgeAddress: string
   // Sol network
+  targetChainId: ChainId = CHAIN_ID_SOLANA
   targetTokenBridgeAddress: string
   targetBridgeAddress: string
   // Wormhole
@@ -45,6 +49,7 @@ export class WormholeContext {
     // Transfer
     this.tokenInfo = tokenInfo
     this.id = this.generateId()
+    this.time = new Date().getTime()
   }
 
   private generateId() {

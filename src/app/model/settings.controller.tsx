@@ -26,19 +26,19 @@ const initialState: State = {
 export const setHiddenZeros = createAsyncThunk<
   State,
   { checked: boolean },
-  { state: State }
+  { state: { settings: State } }
 >(`${NAME}/setHiddenZeros`, async ({ checked }, { getState }) => {
-  const prevState = getState()
-  return { ...prevState, hiddenZeros: checked }
+  const { settings } = getState()
+  return { ...settings, hiddenZeros: checked }
 })
 
 export const setHiddenUnknownTokens = createAsyncThunk<
   State,
   { checked: boolean },
-  { state: State }
+  { state: { settings: State } }
 >(`${NAME}/setHiddenUnknownTokens`, async ({ checked }, { getState }) => {
-  const prevState = getState()
-  return { ...prevState, hiddenUnknownTokens: checked }
+  const { settings } = getState()
+  return { ...settings, hiddenUnknownTokens: checked }
 })
 
 /**

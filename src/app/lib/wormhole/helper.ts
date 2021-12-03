@@ -6,6 +6,7 @@ import { account, WalletInterface, utils } from '@senswap/sen-js'
 import { TokenEtherInfo } from 'app/model/wormhole.controller'
 import { asyncWait } from 'shared/util'
 import storage from 'shared/storage'
+import PDB from 'shared/pdb'
 
 export const getSignedVAAWithRetry = async (
   ...args: Parameters<typeof getSignedVAA>
@@ -96,4 +97,11 @@ export const getAssociatedAddress = async (
   if (!initialized)
     await splt.initializeAccount(mintAddress, walletAddress, wallet)
   return targetAddress
+}
+
+export const getDB = async () => {
+  const address = await window.sentre.wallet?.getAddress()
+  if (!address) throw new Error('Login fist')
+  const db = new PDB(address).createInstance('wormhole')
+  return db
 }

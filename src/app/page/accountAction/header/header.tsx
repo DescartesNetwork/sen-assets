@@ -46,12 +46,12 @@ const Header = () => {
           <Col span={24}>
             {/* Balance */}
             <Space direction="vertical">
-              <Space align="center">
+              <Space align="baseline">
                 <Typography.Title className="title-color" level={3}>
                   {numeric(balance).format('0,0.[000]')}
                 </Typography.Title>
                 <Typography.Text className="text-secondary">
-                  ~{numeric(total).format('0,0.[000]')}
+                  ~ ${numeric(total).format('0,0.[000]')}
                 </Typography.Text>
               </Space>
             </Space>

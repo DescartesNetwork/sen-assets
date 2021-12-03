@@ -1,4 +1,3 @@
-import storage from 'shared/storage'
 import { account, utils } from '@senswap/sen-js'
 import {
   approveEth,
@@ -13,14 +12,17 @@ import {
 } from '@certusone/wormhole-sdk'
 import {
   getAssociatedAddress,
+  getDB,
   getSignedVAAWithRetry,
   sendTransaction,
 } from './helper'
 import { WormholeProvider } from './provider'
 
-type TransferData = {
+export type TransferData = {
   step: number
   amount: string
+  from: string
+  to: string
   sourceNetWork: {
     sequence: string
     emitterAddress: string
@@ -30,22 +32,31 @@ type TransferData = {
   }
 }
 
+const STORE_KEY = 'transfer'
+
+const transferProcess: Record<string, boolean> = {}
+
 export class WormholeTransfer {
   wormhole: WormholeProvider
   data: TransferData | undefined
-  key = 'wormhole:transfer'
   constructor(wormhole: WormholeProvider) {
     this.wormhole = wormhole
   }
 
-  fetchAll = async (): Promise<Record<string, TransferData>> => {
-    const data = storage.get(this.key)
-    return data || {}
+  static checkStatus = (id: string) => {
+    if (transferProcess[id]) return 'pending'
+    return 'error'
+  }
+
+  static fetchAll = async (): Promise<Record<string, TransferData>> => {
+    const DB = await getDB()
+    const db = await DB.getItem<Record<string, TransferData>>(STORE_KEY)
+    return db || {}
   }
 
   restore = async () => {
     const contextId = this.wormhole.context.id
-    const store = await this.fetchAll()
+    const store = await WormholeTransfer.fetchAll()
     const data = store[contextId]
     if (!data) throw new Error('Invalid context id')
     this.data = data
@@ -53,18 +64,24 @@ export class WormholeTransfer {
 
   backup = async () => {
     if (!this.data) throw new Error('Invalid data')
-    const store = await this.fetchAll()
-    const id = this.wormhole.context.id
-    store[id] = this.data
-    storage.set(this.key, store)
+    const store = await WormholeTransfer.fetchAll()
+    store[this.wormhole.context.id] = this.data
+    const DB = await getDB()
+    DB.setItem(STORE_KEY, store)
     return this.wormhole.backup()
   }
 
   transfer = async (amount: string) => {
+    transferProcess[this.wormhole.context.id] = true
     // init data transfer
+    const srcAddress = await this.wormhole.srcWallet.getAddress()
+    const targetAddress = await this.wormhole.targetWallet.getAddress()
+
     this.data = {
       step: 0,
       amount,
+      from: srcAddress,
+      to: targetAddress,
       sourceNetWork: {
         emitterAddress: '',
         sequence: '',
@@ -92,14 +109,16 @@ export class WormholeTransfer {
       this.data.amount,
       context.tokenInfo.decimals,
     )
-
+    // callback update
     await approveEth(
       context.srcTokenBridgeAddress,
       context.tokenInfo.address,
       signer,
       amountTransfer,
     )
+    // callback update
     await this.wormhole.callbackUpdate()
+
     const dstAddress = await getAssociatedAddress(
       wrappedMintAddress,
       targetWallet,

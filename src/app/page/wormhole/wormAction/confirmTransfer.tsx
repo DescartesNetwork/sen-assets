@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Checkbox, Col, Progress, Row } from 'antd'
 
 import { AppState } from 'app/model'
 import { WormholeProvider } from 'app/lib/wormhole/provider'
+import { fetchWormholeHistory } from 'app/model/history.controller'
 
 const TIME_INTERVAL = 50
 const PERCENTAGE = 100
@@ -15,16 +16,19 @@ const ConfirmAction = ({
 }: {
   onClose?: (visible: boolean) => void
 }) => {
+  const dispatch = useDispatch()
   const wormholeState = useSelector((state: AppState) => state.wormhole)
   const [acceptable, setAcceptable] = useState(false)
   const [percent, setPercent] = useState(0)
   const [loading, setLoading] = useState(false)
 
   const onReloadDataWormhole = () => {
+    dispatch(fetchWormholeHistory())
     console.log('Update here')
+    setLoading(true)
     window.notify({
-      type: 'success',
-      description: 'Transfer successfully',
+      type: 'warning',
+      description: 'Pending transfer from Ethereum',
     })
   }
   const onTransfer = async () => {
@@ -41,7 +45,6 @@ const ConfirmAction = ({
       onReloadDataWormhole,
     )
     wormholeEther.transfer(amount)
-    setLoading(true)
   }
 
   const closeModal = useCallback(() => {
@@ -63,36 +66,21 @@ const ConfirmAction = ({
     return () => clearInterval(interval)
   }, [closeModal, loading, percent])
 
-  // loading button
-  if (loading)
-    return (
-      <Row gutter={[8, 8]} justify="center">
-        <Col span={24}>
-          <Progress percent={percent} showInfo={false} />
-        </Col>
-        <Col span={24}>
-          <Button loading type="primary" block>
-            Loading
-          </Button>
-        </Col>
-        <Col>
-          <Button type="text" onClick={closeModal}>
-            Close
-          </Button>
-        </Col>
-      </Row>
-    )
-
   // confirm button
   return (
     <Row gutter={[8, 8]} justify="center">
       <Col span={24}>
-        <Checkbox
-          checked={acceptable}
-          onChange={() => setAcceptable(!acceptable)}
-        >
-          I have read and understood
-        </Checkbox>
+        {loading ? (
+          <Progress percent={percent} showInfo={false} />
+        ) : (
+          <Checkbox
+            checked={acceptable}
+            onChange={() => setAcceptable(!acceptable)}
+            disabled={loading}
+          >
+            I have read and understood
+          </Checkbox>
+        )}
       </Col>
       <Col span={24}>
         <Button
@@ -100,13 +88,14 @@ const ConfirmAction = ({
           type="primary"
           block
           disabled={!acceptable}
+          loading={loading}
         >
           Approve {wormholeState.amount} token
         </Button>
       </Col>
       <Col>
         <Button type="text" onClick={closeModal}>
-          Cancle
+          {loading ? 'Loading' : 'Cancel'}
         </Button>
       </Col>
     </Row>

@@ -10,7 +10,7 @@ import { TokenEtherInfo } from 'app/model/wormhole.controller'
 import { IEtherWallet } from '../etherWallet/walletInterface'
 import { WormholeTransfer } from './transfer'
 import { WormholeContext } from './context'
-import storage from 'shared/storage'
+import { getDB } from './helper'
 
 const STORE_KEY = 'wormhole:provider'
 export class WormholeProvider {
@@ -35,14 +35,15 @@ export class WormholeProvider {
     this.callbackUpdate = callbackUpdate
   }
 
-  fetchAll = async (): Promise<Record<string, WormholeContext>> => {
-    const data = storage.get(STORE_KEY)
-    return data || {}
+  static fetchAll = async (): Promise<Record<string, WormholeContext>> => {
+    const DB = await getDB()
+    const db = await DB.getItem<Record<string, WormholeContext>>(STORE_KEY)
+    return db || {}
   }
 
   restore = async () => {
     const contextId = this.context.id
-    const store = await this.fetchAll()
+    const store = await WormholeProvider.fetchAll()
     const data = store[contextId]
     if (!data) throw new Error('Invalid context id')
     this.context = data
@@ -50,10 +51,10 @@ export class WormholeProvider {
 
   backup = async () => {
     if (!this.context) throw new Error('Invalid context')
-    const store = await this.fetchAll()
-    const id = this.context.id
-    store[id] = this.context
-    storage.set(STORE_KEY, store)
+    const store = await WormholeProvider.fetchAll()
+    store[this.context.id] = this.context
+    const DB = await getDB()
+    DB.setItem(STORE_KEY, store)
   }
 
   /**
