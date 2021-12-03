@@ -2,22 +2,16 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { WalletInterface } from '@senswap/sen-js'
 
-import storage from 'shared/storage'
-import { explorer } from 'shared/util'
-
+import { getEtherNetwork } from 'app/lib/wormhole/helper'
 import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
-import { WormholeProvider } from 'app/lib/wormhole/wormhole'
 import { fetchTokenEther } from 'app/lib/wormhole/helper'
 
 /**
  * Interface & Utility
  */
-const netWorkWallet: {
-  ether: IEtherWallet | null
-  solana: WalletInterface | null
-} = {
-  ether: null,
-  solana: null,
+window.wormhole = {
+  sourceWallet: {},
+  targetWallet: {},
 }
 
 export type TokenEtherInfo = {
@@ -30,9 +24,6 @@ export type TokenEtherInfo = {
   address: string
   amount: number
 }
-
-const network = storage.get('network') || 'mainnet'
-const etherNetwork = network === 'mainnet' ? 'mainnet' : 'goerli'
 
 export type State = {
   // source wallet
@@ -74,9 +65,10 @@ export const connectSourceWallet = createAsyncThunk<
   { wallet: IEtherWallet },
   { state: any }
 >(`${NAME}/connectSourceWallet`, async ({ wallet }, { getState }) => {
+  window.wormhole.sourceWallet.ether = wallet
   const state = getState().wormhole
   const address = await wallet.getAddress()
-  netWorkWallet.ether = wallet
+  const etherNetwork = getEtherNetwork()
   // fetch wallet's tokens
   const tokenList = await fetchTokenEther(address, etherNetwork)
   const tokens: Record<string, TokenEtherInfo> = {}
@@ -113,9 +105,9 @@ export const connectTargetWallet = createAsyncThunk<
   { wallet: WalletInterface },
   { state: any }
 >(`${NAME}/connectTargetWallet`, async ({ wallet }, { getState }) => {
+  window.wormhole.targetWallet.sol = wallet
   const state = getState().wormhole
   const address = await wallet.getAddress()
-  netWorkWallet.solana = wallet
   return { ...state, targetWalletAddress: address }
 })
 
@@ -129,31 +121,6 @@ export const setSourceToken = createAsyncThunk<
   const newAmount = amount || state.amount
   return { ...state, tokenAddress: newTokenAddress, amount: newAmount }
 })
-
-export const transfer = createAsyncThunk<State, void, { state: any }>(
-  `${NAME}/transfer`,
-  async (_, { getState }) => {
-    const state = getState().wormhole
-    const { sourceTokens, tokenAddress, amount } = state
-    const tokenTransfer = sourceTokens[tokenAddress]
-    // get wallet provider
-    const { ether: etherWallet, solana: solWallet } = netWorkWallet
-    if (!etherWallet || !solWallet || !tokenTransfer) return { ...state }
-
-    const wormholeEther = new WormholeProvider(
-      etherWallet,
-      solWallet,
-      tokenTransfer,
-    )
-    const txId = await wormholeEther.transfer(amount)
-    window.notify({
-      type: 'success',
-      description: 'Transfer successfully',
-      onClick: () => window.open(explorer(txId), '_blank'),
-    })
-    return { ...state }
-  },
-)
 
 /**
  * Usual procedure

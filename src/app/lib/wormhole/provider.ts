@@ -7,9 +7,9 @@ import {
 import { account, WalletInterface } from '@senswap/sen-js'
 
 import { TokenEtherInfo } from 'app/model/wormhole.controller'
-import { IEtherWallet } from './../etherWallet/walletInterface'
-import { WormholeTransfer } from './step/transfer'
-import { WormholeContext } from './wormholeData'
+import { IEtherWallet } from '../etherWallet/walletInterface'
+import { WormholeTransfer } from './transfer'
+import { WormholeContext } from './context'
 import storage from 'shared/storage'
 
 const STORE_KEY = 'wormhole:provider'
@@ -21,15 +21,18 @@ export class WormholeProvider {
   targetWallet: WalletInterface
   // connection
   connection: Connection
+  callbackUpdate: () => void
   constructor(
     sourceWallet: IEtherWallet,
     targetWallet: WalletInterface,
     tokenInfo: TokenEtherInfo,
+    callbackUpdate: () => void,
   ) {
     this.srcWallet = sourceWallet
     this.targetWallet = targetWallet
     this.context = new WormholeContext(tokenInfo)
     this.connection = window.sentre.splt.connection
+    this.callbackUpdate = callbackUpdate
   }
 
   fetchAll = async (): Promise<Record<string, WormholeContext>> => {
@@ -52,7 +55,6 @@ export class WormholeProvider {
     store[id] = this.context
     storage.set(STORE_KEY, store)
   }
-
 
   /**
    * Check token is whether or not attested

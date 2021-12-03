@@ -5,7 +5,7 @@ import { getSignedVAA } from '@certusone/wormhole-sdk'
 import { account, WalletInterface, utils } from '@senswap/sen-js'
 import { TokenEtherInfo } from 'app/model/wormhole.controller'
 import { asyncWait } from 'shared/util'
-
+import storage from 'shared/storage'
 
 export const getSignedVAAWithRetry = async (
   ...args: Parameters<typeof getSignedVAA>
@@ -21,6 +21,17 @@ export const getSignedVAAWithRetry = async (
       // Nothing
     }
   }
+}
+
+export const getSolNetwork = () => {
+  const solNetwork = storage.get('network') || 'mainnet'
+  return solNetwork
+}
+
+export const getEtherNetwork = () => {
+  const solNetwork = getSolNetwork()
+  const etherNetwork = solNetwork === 'mainnet' ? 'mainnet' : 'goerli'
+  return etherNetwork
 }
 
 export const fetchTokenEther = async (
