@@ -10,6 +10,7 @@ import Close from './close'
 
 const Body = () => {
   const { accountSelected } = useSelector((state: AppState) => state.account)
+  console.log(accountSelected, 'tttttt')
 
   return (
     <Card

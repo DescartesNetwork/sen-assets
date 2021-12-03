@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { Row, Col, Button } from 'antd'
+import { Row, Col, Button, Typography } from 'antd'
 import Source from './source'
 import Destination from './destination'
 
@@ -75,23 +75,35 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
 
   return (
     <Row gutter={[16, 16]}>
-      <Col span={24}>
-        <Destination onChange={setDstAddress} value={dstAddress} />
-      </Col>
-      <Col span={24}>
-        <Source accountAddr={accountAddr} onChange={setAmount} value={amount} />
-      </Col>
-      <Col span={24}>
-        <Button
-          type="primary"
-          onClick={transfer}
-          block
-          loading={loading}
-          disabled={disabledTransfer()}
-        >
-          Transfer
-        </Button>
-      </Col>
+      {!Boolean(accountAddr) ? (
+        <Col span={24}>
+          <Typography.Text>No data</Typography.Text>
+        </Col>
+      ) : (
+        <>
+          <Col span={24}>
+            <Destination onChange={setDstAddress} value={dstAddress} />
+          </Col>
+          <Col span={24}>
+            <Source
+              accountAddr={accountAddr}
+              onChange={setAmount}
+              value={amount}
+            />
+          </Col>
+          <Col span={24}>
+            <Button
+              type="primary"
+              onClick={transfer}
+              block
+              loading={loading}
+              disabled={disabledTransfer()}
+            >
+              Transfer
+            </Button>
+          </Col>
+        </>
+      )}
     </Row>
   )
 }

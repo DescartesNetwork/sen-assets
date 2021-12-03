@@ -40,6 +40,7 @@ const AccountItem = ({
       <Row>
         <Col span={12}>
           {/* Token Info */}
+          <>Nguyen Duy Tra</>
           <Space>
             <MintAvatar mintAddress={mint} size={32} />
             <Space direction="vertical" size={0}>

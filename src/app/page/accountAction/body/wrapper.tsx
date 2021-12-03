@@ -14,27 +14,35 @@ const Wrapper = ({ accountAddr }: { accountAddr: string }) => {
 
   return (
     <Row gutter={[16, 16]}>
-      <Col span={24}>
-        <Row gutter={[8, 8]}>
+      {!Boolean(accountAddr) ? (
+        <Col span={24}>
+          <Typography.Text>No data</Typography.Text>
+        </Col>
+      ) : (
+        <>
           <Col span={24}>
-            <Typography.Text>Wrap Amount</Typography.Text>
+            <Row gutter={[8, 8]}>
+              <Col span={24}>
+                <Typography.Text>Wrap Amount</Typography.Text>
+              </Col>
+              <Col span={24}>
+                <Input
+                  size="large"
+                  placeholder={'0'}
+                  prefix={<MintSymbol mintAddress={mint} />}
+                  value={balance}
+                  max={balance}
+                />
+              </Col>
+            </Row>
           </Col>
           <Col span={24}>
-            <Input
-              size="large"
-              placeholder={'0'}
-              prefix={<MintSymbol mintAddress={mint} />}
-              value={balance}
-              max={balance}
-            />
+            <Button type="primary" block>
+              Wrap All
+            </Button>
           </Col>
-        </Row>
-      </Col>
-      <Col span={24}>
-        <Button type="primary" block>
-          Wrap All
-        </Button>
-      </Col>
+        </>
+      )}
     </Row>
   )
 }
