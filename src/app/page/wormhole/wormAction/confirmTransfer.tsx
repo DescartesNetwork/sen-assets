@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import { Button, Checkbox, Col, Progress, Row } from 'antd'
 
-import { transfer } from 'app/model/wormhole.controller'
 import { AppState } from 'app/model'
+import { WormholeProvider } from 'app/lib/wormhole/provider'
 
 const TIME_INTERVAL = 50
 const PERCENTAGE = 100
@@ -15,15 +15,33 @@ const ConfirmAction = ({
 }: {
   onClose?: (visible: boolean) => void
 }) => {
-  const { amount } = useSelector((state: AppState) => state.wormhole)
+  const wormholeState = useSelector((state: AppState) => state.wormhole)
   const [acceptable, setAcceptable] = useState(false)
   const [percent, setPercent] = useState(0)
   const [loading, setLoading] = useState(false)
-  const dispatch = useDispatch()
 
+  const onReloadDataWormhole = () => {
+    console.log('Update here')
+    window.notify({
+      type: 'success',
+      description: 'Transfer successfully',
+    })
+  }
   const onTransfer = async () => {
+    const { sourceTokens, tokenAddress, amount } = wormholeState
+    const tokenTransfer = sourceTokens[tokenAddress]
+    // get wallet provider
+    const { sourceWallet, targetWallet } = window.wormhole
+    if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
+      throw new Error('Login fist')
+    const wormholeEther = new WormholeProvider(
+      sourceWallet.ether,
+      targetWallet.sol,
+      tokenTransfer,
+      onReloadDataWormhole,
+    )
+    wormholeEther.transfer(amount)
     setLoading(true)
-    await dispatch(transfer())
   }
 
   const closeModal = useCallback(() => {
@@ -83,7 +101,7 @@ const ConfirmAction = ({
           block
           disabled={!acceptable}
         >
-          Approve {amount} token
+          Approve {wormholeState.amount} token
         </Button>
       </Col>
       <Col>

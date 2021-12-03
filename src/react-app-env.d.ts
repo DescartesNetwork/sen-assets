@@ -16,6 +16,14 @@ interface Window {
     splt: import('@senswap/sen-js').SPLT
     swap: import('@senswap/sen-js').Swap
   }
+  wormhole: {
+    sourceWallet: {
+      ether?: import('app/lib/etherWallet/walletInterface').IEtherWallet
+    },
+    targetWallet: {
+      sol?: import('@senswap/sen-js').WalletInterface
+    }
+  }
   // IPFS
   ipfs?: ReturnType<import('ipfs-core').create>
   // Utility

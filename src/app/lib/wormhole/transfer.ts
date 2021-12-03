@@ -15,8 +15,8 @@ import {
   getAssociatedAddress,
   getSignedVAAWithRetry,
   sendTransaction,
-} from '../helper'
-import { WormholeProvider } from '../wormhole'
+} from './helper'
+import { WormholeProvider } from './provider'
 
 type TransferData = {
   step: number
@@ -57,6 +57,7 @@ export class WormholeTransfer {
     const id = this.wormhole.context.id
     store[id] = this.data
     storage.set(this.key, store)
+    return this.wormhole.backup()
   }
 
   transfer = async (amount: string) => {
@@ -98,6 +99,7 @@ export class WormholeTransfer {
       signer,
       amountTransfer,
     )
+    await this.wormhole.callbackUpdate()
     const dstAddress = await getAssociatedAddress(
       wrappedMintAddress,
       targetWallet,
