@@ -1,4 +1,4 @@
-import { Avatar, Button, Col, Row, Select, Space, Typography } from 'antd'
+import { Avatar, Button, Col, Row, Select, Space, Typography, Tag } from 'antd'
 import IonIcon from 'shared/ionicon'
 
 import { WORMHOLE_NETWORK } from 'app/lib/wormhole/config/wormhole'
@@ -28,9 +28,18 @@ const NetworkConnect = ({
   // senhub system wallet
   if (address === walletAddress)
     return (
-      <Button size="small" disabled>
+      <Tag
+        style={{
+          margin: 0,
+          borderRadius: 4,
+          background: 'rgba(249, 87, 94, 0.1)',
+          color: '#F9575E',
+          textTransform: 'capitalize',
+          border: 'none'
+        }}
+      >
         Connected
-      </Button>
+      </Tag>
     )
 
   return (

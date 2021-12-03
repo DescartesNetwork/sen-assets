@@ -4,7 +4,7 @@ import Settings from 'app/page/walletAccounts/settings/settings'
 
 const SenAssets = () => {
   return (
-    <Card className="card-page card-sen-assets" bordered={false}>
+    <Card className="card-page card-sen-assets" bordered={false} style={{overflow: 'hidden'}}>
       <Row gutter={[24, 24]}>
         {/* Header */}
         <Col flex="auto">

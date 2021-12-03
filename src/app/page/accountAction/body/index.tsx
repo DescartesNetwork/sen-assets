@@ -4,11 +4,15 @@ import { Card, Tabs } from 'antd'
 import Transfer from 'app/page/accountAction/body/transfer'
 import Receive from 'app/page/accountAction/body/receive'
 import Wrapper from 'app/page/accountAction/body/wrapper'
+import { useAccount } from 'senhub/providers'
 
 import { AppState } from 'app/model'
 
 const Body = () => {
   const { accountSelected } = useSelector((state: AppState) => state.account)
+  const { accounts } = useAccount()
+
+  const { mint, owner } = accounts[accountSelected] || {}
 
   return (
     <Card
@@ -26,7 +30,7 @@ const Body = () => {
         <Tabs.TabPane tab="Receive" key="Receive">
           <Receive accountAddr={accountSelected} />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Wrapper" key="Wrapper">
+        <Tabs.TabPane tab="Wrapper" key="Wrapper" disabled={mint !== owner}>
           <Wrapper accountAddr={accountSelected} />
         </Tabs.TabPane>
       </Tabs>
