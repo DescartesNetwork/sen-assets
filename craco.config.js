@@ -7,6 +7,7 @@ const {
 const CracoTheme = require('./plugins/craco-theme')
 const CracoModuleFederation = require('./plugins/craco-module-federation')
 const CracoCompatibility = require('./plugins/craco-compatibility')
+const CracoWasm = require('./plugins/craco-wasm')
 const CracoSilence = require('./plugins/craco-silence')
 const CracoWasm = require('./plugins/craco-wasm')
 
@@ -52,6 +53,9 @@ module.exports = {
     },
     {
       plugin: CracoCompatibility,
+    },
+    {
+      plugin: CracoWasm,
     },
     {
       plugin: CracoSilence,
