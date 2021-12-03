@@ -17,6 +17,7 @@ const model = configureStore({
     wormhole
   },
 })
+
 export type AppState = ReturnType<typeof model.getState>
 export type AppDispatch = typeof model.dispatch
 export default model
