@@ -37,7 +37,7 @@ export const Page = () => {
 
 export const widgetConfig: WidgetConfig = {
   size: 'small',
-  type: 'solid',
+  type: 'default',
 }
 
 export const Widget = () => {
