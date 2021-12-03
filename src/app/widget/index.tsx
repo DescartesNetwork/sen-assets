@@ -6,7 +6,11 @@ import '../static/styles/index.less'
 
 const Widget = () => {
   return (
-    <Card className="card-sen-assets" bordered={false}>
+    <Card
+      style={{ height: '100%', overflow: 'auto' }}
+      className="card-sen-assets scrollbar"
+      bordered={false}
+    >
       <Row gutter={[24, 24]}>
         <Col span={24}>
           <WalletInfor />
