@@ -64,21 +64,19 @@ const AccountItem = ({
           </Space>
         </Col>
         {/* Token Price */}
-        {ticket && (
-          <Col>
-            <Space direction="vertical" size={0} align="end">
-              <Typography.Text>
-                <Space size={2}>
-                  <PriceIndicator mintAddress={mint} colorized />
-                  <PriceChange mintAddress={mint} colorized />
-                </Space>
-              </Typography.Text>
-              <Typography.Text type="secondary" className="caption">
-                <Price mintAddress={mint} />
-              </Typography.Text>
-            </Space>
-          </Col>
-        )}
+        <Col>
+          <Space direction="vertical" size={0} align="end">
+            <Typography.Text>
+              <Space size={2}>
+                <PriceIndicator mintAddress={mint} colorized />
+                <PriceChange mintAddress={mint} colorized />
+              </Space>
+            </Typography.Text>
+            <Typography.Text type="secondary" className="caption">
+              <Price mintAddress={mint} />
+            </Typography.Text>
+          </Space>
+        </Col>
       </Row>
     </Card>
   )
