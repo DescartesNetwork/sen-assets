@@ -20,8 +20,9 @@ const {
 const ListAccount = () => {
   const dispatch = useDispatch()
   const history = useHistory()
-  const [listAccount, setListAccount] = useState<string[]>([])
   const { tokenProvider } = useMint()
+  const [listAccount, setListAccount] = useState<string[]>([])
+  
   const onSearch = useCallback(
     async (accounts: Record<string, AccountData>) => {
       const listAccount: string[] = []
@@ -45,7 +46,7 @@ const ListAccount = () => {
 
   const handleOnClick = (account: string) => {
     dispatch(selectAccount({ account }))
-    history.push(`/app/${appId}`)
+    return history.push(`/app/${appId}`)
   }
 
   return (
