@@ -29,7 +29,7 @@ const Balance = ({
     return prefix + numeric(balance).format(format)
   }, [amount, cgkData.price, decimals, format, inUSD])
 
-  if (autoHidden && !cgkData.price) return null
+  if (autoHidden && !cgkData.price) return <span>--</span>
   return <span>{balanceDisplay}</span>
 }
 
