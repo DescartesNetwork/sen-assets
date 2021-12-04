@@ -1,24 +1,30 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import {
+  DEFAULT_TRANSFER_DATA,
+  STEP_TRANSFER_AMOUNT,
+  TransferData,
+  WormholeStatus,
+} from 'app/lib/wormhole/constant/wormhole'
 import { WormholeContext } from 'app/lib/wormhole/context'
 import { WormholeProvider } from 'app/lib/wormhole/provider'
-import { TransferData, WormholeTransfer } from 'app/lib/wormhole/transfer'
+import { WormholeTransfer } from 'app/lib/wormhole/transfer'
 
 /**
  * Interface & Utility
  */
 
 export type State = {
-  wormhole: WormholeContext[]
+  wormhole: HistoryWormhole[]
   transaction: []
 }
 
 /**
  * Store constructor
  */
-type HistoryWormhole = {
+export type HistoryWormhole = {
   context: WormholeContext
   transfer: TransferData
-  status: 'pending' | 'error' | 'success'
+  status: WormholeStatus
 }
 
 const NAME = 'history'
@@ -33,23 +39,60 @@ const initialState: State = {
 
 export const fetchWormholeHistory = createAsyncThunk<{
   wormhole: HistoryWormhole[]
-}>(`${NAME}/fetchWormholeHistory`, async () => {
+}>(`${NAME}/fetchWormholeHistory`, async (_, { getState }) => {
+  const {
+    wormhole: { processId },
+  } = getState() as any
   const wormHole = await WormholeProvider.fetchAll()
   const transferData = await WormholeTransfer.fetchAll()
   const history: HistoryWormhole[] = []
 
-  for (const key in transferData) {
-    const wormholeContext = wormHole[key]
-    if (!wormholeContext) continue
-    const status = WormholeTransfer.checkStatus(wormholeContext.id)
+  for (const id in transferData) {
+    const context = wormHole[id]
+    const transfer = transferData[id]
+    if (!context) continue
+    // check status
+    let status: WormholeStatus = 'error'
+    if (id === processId) status = 'pending'
+    if (transfer.step === STEP_TRANSFER_AMOUNT) status = 'success'
     history.push({
-      context: wormHole[key],
-      transfer: transferData[key],
-      status: status,
+      context,
+      transfer,
+      status,
     })
   }
-  console.log('history===>', history)
-  return { wormhole: history }
+
+  return {
+    wormhole: history.sort((a, b) =>
+      a.context.time < b.context.time ? 1 : -1,
+    ),
+  }
+})
+
+export const updateWormholeHistory = createAsyncThunk<
+  {
+    wormhole: HistoryWormhole[]
+  },
+  { provider: WormholeProvider },
+  { state: { history: State; wormhole: { processId: string } } }
+>(`${NAME}/updateWormholeHistory`, async ({ provider }, { getState }) => {
+  const {
+    history: { wormhole },
+    wormhole: { processId },
+  } = getState()
+  const id = provider.context.id
+  const newHistory = wormhole.filter((val) => val.context.id !== id)
+  let status: WormholeStatus = 'error'
+  if (id === processId) status = 'pending'
+  if (provider.transferProvider.data?.step === STEP_TRANSFER_AMOUNT)
+    status = 'success'
+  newHistory.unshift({
+    context: provider.context,
+    transfer: provider.transferProvider.data || { ...DEFAULT_TRANSFER_DATA },
+    status,
+  })
+
+  return { wormhole: newHistory }
 })
 
 /**

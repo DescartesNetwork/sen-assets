@@ -5,13 +5,13 @@ import {
   EtherNetwork,
   ETH_BRIDGE_ADDRESS,
   ETH_TOKEN_BRIDGE_ADDRESS,
-} from './config/ethConfig'
+} from './constant/ethConfig'
 import {
   SolNetWork,
   SOL_BRIDGE_ADDRESS,
   SOL_TOKEN_BRIDGE_ADDRESS,
-} from './config/solConfig'
-import { WORMHOLE_RPC_HOST } from './config/wormhole'
+} from './constant/solConfig'
+import { WORMHOLE_RPC_HOST } from './constant/wormhole'
 
 export class WormholeContext {
   id: string
@@ -48,7 +48,7 @@ export class WormholeContext {
     this.solNetWork = solNetWork
     // Transfer
     this.tokenInfo = tokenInfo
-    this.id = this.generateId()
+    this.id = new Date().getTime() + ""
     this.time = new Date().getTime()
   }
 

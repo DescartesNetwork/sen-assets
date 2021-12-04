@@ -1,17 +1,25 @@
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Col, Row, Table } from 'antd'
 import IonIcon from 'shared/ionicon'
 
 import { WORMHOLE_COLUMNS } from './column'
 import { AppState } from 'app/model'
+import { fetchWormholeHistory } from 'app/model/history.controller'
+
+const ROW_PER_PAGE = 4
 
 const Bridge = () => {
+  const dispatch = useDispatch()
   const { wormhole } = useSelector((state: AppState) => state.history)
-  const [amountRow, setAmountRow] = useState(4)
+  const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
 
-  const onHandleViewMore = () => setAmountRow(amountRow + 4)
+  useEffect(() => {
+    dispatch(fetchWormholeHistory())
+  }, [dispatch])
+
+  const onHandleViewMore = () => setAmountRow(amountRow + ROW_PER_PAGE)
   return (
     <Row gutter={[16, 16]} justify="center">
       <Col span={24}>
@@ -21,6 +29,7 @@ const Bridge = () => {
           rowClassName={(record, index) => (index % 2 ? 'odd-row' : 'even-row')}
           pagination={false}
           scroll={{ x: 1000, y: 240 }}
+          rowKey={(record)=>record.context.id}
         />
       </Col>
       <Col>

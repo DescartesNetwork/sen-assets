@@ -1,22 +1,26 @@
-import { Button, Space, Typography } from 'antd'
+import { Space, Typography } from 'antd'
 import NetworkAvatar from 'app/components/network/networkAvatar'
 import { WormholeContext } from 'app/lib/wormhole/context'
+import { HistoryWormhole } from 'app/model/history.controller'
 import { shortenAddress } from 'shared/util'
 import StatusTag from '../statusTags'
+import RetryTransfer from './retry'
 
 export const WORMHOLE_COLUMNS = [
   {
     title: 'TIME',
     dataIndex: 'context',
-    key: 'time',
     render: (context: WormholeContext) => {
-      return <Typography.Text>{context.time}</Typography.Text>
+      return (
+        <Typography.Text>
+          {new Date(context.time).toLocaleString()}
+        </Typography.Text>
+      )
     },
   },
   {
     title: 'TRANSACTION ID',
     dataIndex: 'context',
-    key: 'transactionID',
     render: (context: WormholeContext) => {
       return (
         <Typography.Text style={{ fontWeight: 700 }}>
@@ -28,7 +32,6 @@ export const WORMHOLE_COLUMNS = [
   {
     title: 'SOURCE - TARGET',
     dataIndex: 'context',
-    key: '',
     render: (context: WormholeContext) => (
       <Space>
         <NetworkAvatar chainId={context.srcChainId} />
@@ -40,8 +43,7 @@ export const WORMHOLE_COLUMNS = [
   },
   {
     title: 'AMOUNT',
-    key: 'amount',
-    render: (data: any) => {
+    render: (data: HistoryWormhole) => {
       return (
         <Typography.Text>
           {data?.transfer?.amount} {data?.context?.tokenInfo?.symbol}
@@ -51,23 +53,17 @@ export const WORMHOLE_COLUMNS = [
   },
   {
     title: 'STATUS',
-    key: 'status',
     dataIndex: 'status',
-    render: (status:string) => {
+    render: (status: string) => {
       return <StatusTag tag={status} />
     },
   },
   {
     title: 'ACTION',
-    key: 'action',
-    dataIndex: 'status',
-    render: (status: string) => {
-      if(status === 'pending') return null
-      return (
-        <Button type="primary" size="small">
-          Retry
-        </Button>
-      )
+    render: (data: HistoryWormhole) => {
+      if (data.status === 'pending') return null
+      if (data.status === 'success') return null
+      return <RetryTransfer data={data} />
     },
   },
 ]

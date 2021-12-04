@@ -1,7 +1,7 @@
 import { Avatar, Button, Col, Row, Select, Space, Typography } from 'antd'
 import IonIcon from 'shared/ionicon'
 
-import { WORMHOLE_NETWORK } from 'app/lib/wormhole/config/wormhole'
+import { WORMHOLE_NETWORK } from 'app/lib/wormhole/constant/wormhole'
 import { shortenAddress } from 'shared/util'
 import { useWallet } from 'senhub/providers'
 import { ChainId } from '@certusone/wormhole-sdk'
