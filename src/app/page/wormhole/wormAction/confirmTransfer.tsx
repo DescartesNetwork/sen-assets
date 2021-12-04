@@ -31,7 +31,7 @@ const ConfirmAction = ({
   const onTransfer = async () => {
     setLoading(true)
     try {
-      dispatch(transfer({ onUpdate }))
+      await dispatch(transfer({ onUpdate }))
     } catch (error) {
       window.notify({
         type: 'error',

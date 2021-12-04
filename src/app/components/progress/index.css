@@ -1,11 +1,9 @@
 .progress {
-  width: 100%;
-  max-width: 260px;
   height: 6px;
-  background: #e1e4e8;
   border-radius: 3px;
   overflow: hidden;
 }
+
 .progress .progress-bar {
   display: block;
   height: 100%;
