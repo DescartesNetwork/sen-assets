@@ -2,7 +2,6 @@ import { Card, Col, Row, Space, Typography } from 'antd'
 import { MintAvatar, MintName, MintSymbol } from 'app/shared/components/mint'
 import Price, { PriceChange, PriceIndicator } from 'app/components/price'
 
-import useTokenProvider from 'app/shared/hooks/useTokenProvider'
 import { useAccount } from 'senhub/providers'
 import Balance from 'app/components/balance'
 
@@ -20,10 +19,6 @@ const AccountItem = ({
       [accountAddr]: { mint },
     },
   } = useAccount()
-
-  const tokens = useTokenProvider(mint)
-  let ticket = null
-  if (tokens?.length === 1) ticket = tokens[0]?.extensions?.coingeckoId
 
   return (
     <Card
@@ -64,21 +59,19 @@ const AccountItem = ({
           </Space>
         </Col>
         {/* Token Price */}
-        {ticket && (
-          <Col>
-            <Space direction="vertical" size={0} align="end">
-              <Typography.Text>
-                <Space size={2}>
-                  <PriceIndicator mintAddress={mint} colorized />
-                  <PriceChange mintAddress={mint} colorized />
-                </Space>
-              </Typography.Text>
-              <Typography.Text type="secondary" className="caption">
-                <Price mintAddress={mint} />
-              </Typography.Text>
-            </Space>
-          </Col>
-        )}
+        <Col>
+          <Space direction="vertical" size={0} align="end">
+            <Typography.Text>
+              <Space size={2}>
+                <PriceIndicator mintAddress={mint} colorized />
+                <PriceChange mintAddress={mint} colorized />
+              </Space>
+            </Typography.Text>
+            <Typography.Text type="secondary" className="caption">
+              <Price mintAddress={mint} />
+            </Typography.Text>
+          </Space>
+        </Col>
       </Row>
     </Card>
   )

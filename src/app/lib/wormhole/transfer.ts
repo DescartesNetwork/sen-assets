@@ -1,5 +1,3 @@
-import storage from 'shared/storage'
-import { account, utils } from '@senswap/sen-js'
 import {
   approveEth,
   CHAIN_ID_ETH,
@@ -11,73 +9,80 @@ import {
   redeemOnSolana,
   transferFromEth,
 } from '@certusone/wormhole-sdk'
+import { account, utils } from '@senswap/sen-js'
+
 import {
   getAssociatedAddress,
   getSignedVAAWithRetry,
+  getWormholeDb,
   sendTransaction,
+  setWormholeDb,
 } from './helper'
 import { WormholeProvider } from './provider'
-
-type TransferData = {
-  step: number
-  amount: string
-  sourceNetWork: {
-    sequence: string
-    emitterAddress: string
-  }
-  wormholeNetWork: {
-    vaaHex: string
-  }
-}
+import {
+  DEFAULT_TRANSFER_DATA,
+  TransferData,
+  WormholeStoreKey,
+} from './constant/wormhole'
 
 export class WormholeTransfer {
   wormhole: WormholeProvider
   data: TransferData | undefined
-  key = 'wormhole:transfer'
   constructor(wormhole: WormholeProvider) {
     this.wormhole = wormhole
   }
 
-  fetchAll = async (): Promise<Record<string, TransferData>> => {
-    const data = storage.get(this.key)
+  static fetchAll = async (): Promise<Record<string, TransferData>> => {
+    const data = await getWormholeDb<Record<string, TransferData>>(
+      WormholeStoreKey.Transfer,
+    )
     return data || {}
   }
 
   restore = async () => {
     const contextId = this.wormhole.context.id
-    const store = await this.fetchAll()
-    const data = store[contextId]
+    const database = await WormholeTransfer.fetchAll()
+    const data = database[contextId]
     if (!data) throw new Error('Invalid context id')
     this.data = data
+    return this.data
   }
 
   backup = async () => {
     if (!this.data) throw new Error('Invalid data')
-    const store = await this.fetchAll()
-    const id = this.wormhole.context.id
-    store[id] = this.data
-    storage.set(this.key, store)
-    return this.wormhole.backup()
+    // next step
+    this.data.step++
+    // write to database
+    const transferData = await WormholeTransfer.fetchAll()
+    transferData[this.wormhole.context.id] = this.data
+    setWormholeDb(WormholeStoreKey.Transfer, transferData)
+    await this.wormhole.backup()
+    // update status
+    await this.wormhole.callbackUpdate(this.wormhole)
+    return this.wormhole
   }
 
   transfer = async (amount: string) => {
     // init data transfer
-    this.data = {
-      step: 0,
-      amount,
-      sourceNetWork: {
-        emitterAddress: '',
-        sequence: '',
-      },
-      wormholeNetWork: {
-        vaaHex: '',
-      },
+    if (!this.data) {
+      this.data = { ...DEFAULT_TRANSFER_DATA }
+      this.data.from = await this.wormhole.srcWallet.getAddress()
+      this.data.to = await this.wormhole.targetWallet.getAddress()
+      this.data.amount = amount
     }
-    await this.backup()
-    return this.transferSourceNetWork()
+
+    switch (this.data.step) {
+      case 0:
+        return this.transferSourceNetWork()
+      case 1:
+        return this.waitSignedWormhole()
+      case 2:
+        return this.redeemSolana()
+    }
+    throw new Error('Invalid step transfer')
   }
 
-  //Fist step
+  // step 0
   private transferSourceNetWork = async () => {
     if (!this.wormhole) throw new Error('Invalid context')
     if (!this.data) throw new Error('Invalid data')
@@ -93,13 +98,15 @@ export class WormholeTransfer {
       context.tokenInfo.decimals,
     )
 
+    // callback update
     await approveEth(
       context.srcTokenBridgeAddress,
       context.tokenInfo.address,
       signer,
       amountTransfer,
     )
-    await this.wormhole.callbackUpdate()
+    // callback update
+
     const dstAddress = await getAssociatedAddress(
       wrappedMintAddress,
       targetWallet,
@@ -127,6 +134,7 @@ export class WormholeTransfer {
     return this.waitSignedWormhole()
   }
 
+  // step 1
   private async waitSignedWormhole() {
     if (!this.wormhole) throw new Error('Invalid context')
     if (!this.data) throw new Error('Invalid data')
@@ -148,6 +156,7 @@ export class WormholeTransfer {
     return this.redeemSolana()
   }
 
+  // step 2
   private async redeemSolana() {
     if (!this.wormhole) throw new Error('Invalid context')
     if (!this.data) throw new Error('Invalid data')
@@ -174,6 +183,9 @@ export class WormholeTransfer {
     )
     const signedTx = await targetWallet.signTransaction(tx)
     const txId = await sendTransaction(signedTx, connection)
+    //
+    this.data.redeemSolana.txId = txId
+    await this.backup()
     return txId
   }
 }

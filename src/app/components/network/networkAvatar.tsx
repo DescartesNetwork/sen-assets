@@ -1,7 +1,7 @@
 import { Avatar } from 'antd'
 
 import { ChainId } from '@certusone/wormhole-sdk'
-import { WORMHOLE_NETWORK } from 'app/lib/wormhole/config/wormhole'
+import { WORMHOLE_NETWORK } from 'app/lib/wormhole/constant/wormhole'
 
 const NetworkAvatar = ({
   chainId,

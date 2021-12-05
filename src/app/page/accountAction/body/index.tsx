@@ -7,13 +7,17 @@ import Wrapper from 'app/page/accountAction/body/wrapper'
 import { useAccount } from 'senhub/providers'
 
 import { AppState } from 'app/model'
+import { useWallet } from 'senhub/providers'
 
 const Body = () => {
   const { accountSelected } = useSelector((state: AppState) => state.account)
-  const { accounts } = useAccount()
-
+   const {
+    wallet: { address },
+   } = useWallet()
+   const { accounts } = useAccount()
   const { mint, owner } = accounts[accountSelected] || {}
 
+  
   return (
     <Card
       bordered={false}
@@ -28,9 +32,9 @@ const Body = () => {
           <Transfer accountAddr={accountSelected} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="Receive" key="Receive">
-          <Receive accountAddr={accountSelected} />
+          <Receive accountAddr={address} />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Wrapper" key="Wrapper" disabled={mint !== owner}>
+        <Tabs.TabPane tab="Wrap" key="Wrap" disabled={mint !== owner}>
           <Wrapper accountAddr={accountSelected} />
         </Tabs.TabPane>
       </Tabs>

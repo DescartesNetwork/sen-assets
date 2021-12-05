@@ -25,11 +25,11 @@ const Balance = ({
   const balanceDisplay = useMemo(() => {
     let balance = Number(utils.undecimalize(amount, decimals))
     if (inUSD) balance = Number(balance) * cgkData.price
-    const prefix = inUSD ? '$' : ''
+    const prefix = inUSD ? '~ $' : ''
     return prefix + numeric(balance).format(format)
   }, [amount, cgkData.price, decimals, format, inUSD])
 
-  if (autoHidden && !cgkData.price) return null
+  if (autoHidden && !cgkData.price) return <span>--</span>
   return <span>{balanceDisplay}</span>
 }
 

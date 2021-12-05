@@ -10,50 +10,72 @@ import { TokenEtherInfo } from 'app/model/wormhole.controller'
 import { IEtherWallet } from '../etherWallet/walletInterface'
 import { WormholeTransfer } from './transfer'
 import { WormholeContext } from './context'
-import storage from 'shared/storage'
+import { WormholeStoreKey } from './constant/wormhole'
+import { getWormholeDb, setWormholeDb } from './helper'
 
-const STORE_KEY = 'wormhole:provider'
 export class WormholeProvider {
   context: WormholeContext
-  step: number = 0
+  transferProvider: WormholeTransfer
   // wallet provider
   srcWallet: IEtherWallet
   targetWallet: WalletInterface
   // connection
   connection: Connection
-  callbackUpdate: () => void
+  callbackUpdate: (wormhole: WormholeProvider) => void
   constructor(
     sourceWallet: IEtherWallet,
     targetWallet: WalletInterface,
     tokenInfo: TokenEtherInfo,
-    callbackUpdate: () => void,
+    callbackUpdate: (wormhole: WormholeProvider) => void,
   ) {
     this.srcWallet = sourceWallet
     this.targetWallet = targetWallet
     this.context = new WormholeContext(tokenInfo)
     this.connection = window.sentre.splt.connection
     this.callbackUpdate = callbackUpdate
+    this.transferProvider = new WormholeTransfer(this)
   }
 
-  fetchAll = async (): Promise<Record<string, WormholeContext>> => {
-    const data = storage.get(STORE_KEY)
+  static fetchAll = async (): Promise<Record<string, WormholeContext>> => {
+    const data = await getWormholeDb<Record<string, WormholeContext>>(
+      WormholeStoreKey.Provider,
+    )
     return data || {}
   }
 
-  restore = async () => {
-    const contextId = this.context.id
-    const store = await this.fetchAll()
-    const data = store[contextId]
+  static restore = async (
+    processId: string,
+    callbackUpdate: (wormhole: WormholeProvider) => void,
+  ) => {
+    // get context data
+    const store = await WormholeProvider.fetchAll()
+    const data = store[processId]
     if (!data) throw new Error('Invalid context id')
-    this.context = data
+    // get wallet provider
+    const {
+      sourceWallet: { ether },
+      targetWallet: { sol },
+    } = window.wormhole
+    if (!ether || !sol) throw new Error('Login fist')
+    // restore wormhole context
+    const wormhole = new WormholeProvider(
+      ether,
+      sol,
+      data.tokenInfo,
+      callbackUpdate,
+    )
+    wormhole.context = data
+    wormhole.context.time = new Date().getTime()
+    // restore transfer context
+    await wormhole.transferProvider.restore()
+    return wormhole
   }
 
   backup = async () => {
     if (!this.context) throw new Error('Invalid context')
-    const store = await this.fetchAll()
-    const id = this.context.id
-    store[id] = this.context
-    storage.set(STORE_KEY, store)
+    const contextData = await WormholeProvider.fetchAll()
+    contextData[this.context.id] = this.context
+    setWormholeDb(WormholeStoreKey.Provider, contextData)
   }
 
   /**
@@ -96,7 +118,6 @@ export class WormholeProvider {
    * @returns
    */
   transfer = async (amount: string) => {
-    const transferWormhole = new WormholeTransfer(this)
-    return transferWormhole.transfer(amount)
+    return this.transferProvider.transfer(amount)
   }
 }
