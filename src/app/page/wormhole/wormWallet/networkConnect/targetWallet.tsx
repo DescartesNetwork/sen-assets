@@ -3,6 +3,7 @@ import { AppState } from 'app/model'
 import { connectTargetWallet } from 'app/model/wormhole.controller'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useWallet } from 'senhub/providers'
 import Network from './network'
 
 const TargetWallet = () => {
@@ -10,12 +11,15 @@ const TargetWallet = () => {
   const { targetWalletAddress, targetChain } = useSelector(
     (state: AppState) => state.wormhole,
   )
+  const {
+    wallet: { address },
+  } = useWallet()
 
   useEffect(() => {
     const wallet = window.sentre.wallet
-    if (!wallet) return
+    if (!wallet || !address) return
     dispatch(connectTargetWallet({ wallet }))
-  }, [dispatch])
+  }, [address, dispatch])
 
   return (
     <Row gutter={[16, 16]} align="middle">

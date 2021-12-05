@@ -44,7 +44,7 @@ const ConfirmBridge = ({
                 <Typography.Text>{sourceToken.symbol}</Typography.Text>
               </Col>
             </Row>
-            {/* transfer infomations */}
+            {/* transfer information */}
             <ConfirmInfo />
           </Card>
         </Col>

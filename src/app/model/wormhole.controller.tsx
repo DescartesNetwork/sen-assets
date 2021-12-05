@@ -66,12 +66,14 @@ const initialState: State = {
  */
 
 export const connectSourceWallet = createAsyncThunk<
-  State,
-  { wallet: IEtherWallet },
-  { state: any }
->(`${NAME}/connectSourceWallet`, async ({ wallet }, { getState }) => {
+  {
+    sourceWalletAddress: string
+    sourceTokens: Record<string, TokenEtherInfo>
+    tokenAddress: string
+  },
+  { wallet: IEtherWallet }
+>(`${NAME}/connectSourceWallet`, async ({ wallet }) => {
   window.wormhole.sourceWallet.ether = wallet
-  const state = getState().wormhole
   const address = await wallet.getAddress()
   const etherNetwork = getEtherNetwork()
   // fetch wallet's tokens
@@ -84,7 +86,6 @@ export const connectSourceWallet = createAsyncThunk<
   const tokenAddress = tokenList[0]?.address || ''
 
   return {
-    ...state,
     sourceWalletAddress: address,
     sourceTokens: tokens,
     tokenAddress,
@@ -106,14 +107,13 @@ export const disconnectSourceWallet = createAsyncThunk<
 })
 
 export const connectTargetWallet = createAsyncThunk<
-  State,
-  { wallet: WalletInterface },
-  { state: any }
->(`${NAME}/connectTargetWallet`, async ({ wallet }, { getState }) => {
+  { targetWalletAddress: string },
+  { wallet: WalletInterface }
+>(`${NAME}/connectTargetWallet`, async ({ wallet }) => {
   window.wormhole.targetWallet.sol = wallet
-  const state = getState().wormhole
   const address = await wallet.getAddress()
-  return { ...state, targetWalletAddress: address }
+  console.log('address', address)
+  return { targetWalletAddress: address }
 })
 
 export const setSourceToken = createAsyncThunk<

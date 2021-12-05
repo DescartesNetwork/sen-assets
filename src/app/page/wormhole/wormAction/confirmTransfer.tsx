@@ -71,7 +71,7 @@ const ConfirmAction = ({
       </Col>
       <Col>
         <Button type="text" onClick={() => onClose(false)}>
-          {loading ? 'Loading' : 'Cancel'}
+          {loading ? 'Minimize' : 'Cancel'}
         </Button>
       </Col>
     </Row>
