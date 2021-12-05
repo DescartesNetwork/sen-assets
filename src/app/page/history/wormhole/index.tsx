@@ -10,7 +10,7 @@ import { fetchWormholeHistory } from 'app/model/history.controller'
 
 const ROW_PER_PAGE = 4
 
-const Bridge = () => {
+const WormholeHistory = () => {
   const dispatch = useDispatch()
   const { wormhole } = useSelector((state: AppState) => state.history)
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
@@ -20,6 +20,7 @@ const Bridge = () => {
   }, [dispatch])
 
   const onHandleViewMore = () => setAmountRow(amountRow + ROW_PER_PAGE)
+
   return (
     <Row gutter={[16, 16]} justify="center">
       <Col span={24}>
@@ -28,8 +29,8 @@ const Bridge = () => {
           dataSource={wormhole.slice(0, amountRow)}
           rowClassName={(record, index) => (index % 2 ? 'odd-row' : 'even-row')}
           pagination={false}
-          scroll={{ x: 1000, y: 240 }}
-          rowKey={(record)=>record.context.id}
+          scroll={{ x: 1000 }}
+          rowKey={(record) => record.context.id}
         />
       </Col>
       <Col>
@@ -46,4 +47,4 @@ const Bridge = () => {
   )
 }
 
-export default Bridge
+export default WormholeHistory

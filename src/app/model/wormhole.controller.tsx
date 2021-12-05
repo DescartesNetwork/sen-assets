@@ -7,6 +7,7 @@ import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
 import { fetchTokenEther } from 'app/lib/wormhole/helper'
 import { WormholeProvider } from 'app/lib/wormhole/provider'
 import { HistoryWormhole } from './history.controller'
+import { explorer } from 'shared/util'
 
 /**
  * Interface & Utility
@@ -164,12 +165,18 @@ export const transfer = createAsyncThunk<
       amountTransfer = wormholeEther.transferProvider.data?.amount || '0'
       onUpdate(wormholeEther)
     }
-    await wormholeEther.transfer(amountTransfer)
+    const txId = await wormholeEther.transfer(amountTransfer)
+    window.notify({
+      type: 'success',
+      description: 'Transfer successfully',
+      onClick: () => window.open(explorer(txId), '_blank'),
+    })
   } catch (error) {
     window.notify({ type: 'error', description: (error as any).message })
     await dispatch(setProcess({}))
+  } finally {
+    return { processId: '' }
   }
-  return { processId: '' }
 })
 
 export const restoreTransfer = createAsyncThunk<
@@ -216,6 +223,10 @@ const slice = createSlice({
       )
       .addCase(
         setSourceToken.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        transfer.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(

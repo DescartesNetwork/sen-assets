@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button } from 'antd'
+import IonIcon from 'shared/ionicon'
 
 import {
   STEP_TRANSFER_AMOUNT,
@@ -13,15 +14,12 @@ import {
   HistoryWormhole,
   updateWormholeHistory,
 } from 'app/model/history.controller'
-import {
-  restoreTransfer,
-  setProcess,
-  transfer,
-} from 'app/model/wormhole.controller'
+import { restoreTransfer, transfer } from 'app/model/wormhole.controller'
+import { explorer } from 'shared/util'
 
-const RetryTransfer = ({ data }: { data: HistoryWormhole }) => {
-  const { processId } = useSelector((state: AppState) => state.wormhole)
+const ColumAction = ({ data }: { data: HistoryWormhole }) => {
   const dispatch = useDispatch<AppDispatch>()
+  const { processId } = useSelector((state: AppState) => state.wormhole)
 
   const status = useMemo((): WormholeStatus => {
     if (data.transfer.step === STEP_TRANSFER_AMOUNT) return 'success'
@@ -30,20 +28,38 @@ const RetryTransfer = ({ data }: { data: HistoryWormhole }) => {
   }, [data.context.id, data.transfer.step, processId])
 
   const onUpdate = async (provider: WormholeProvider) => {
-    await dispatch(setProcess({ provider }))
-    await dispatch(updateWormholeHistory({ provider }))
+    return dispatch(updateWormholeHistory({ provider }))
   }
+
   const onRetry = async () => {
     const dataRestore = await dispatch(restoreTransfer({ historyData: data }))
     if (!dataRestore.payload) return
     return dispatch(transfer({ onUpdate }))
   }
 
-  if (status !== 'error') return null
-  return (
-    <Button type="primary" size="small" onClick={onRetry}>
-      Retry
-    </Button>
-  )
+  // action button success
+  if (status === 'success')
+    return (
+      <Button
+        type="text"
+        size="large"
+        onClick={() =>
+          window.open(explorer(data.transfer.redeemSolana.txId), '_blank')
+        }
+        icon={<IonIcon name="open-outline" />}
+      />
+    )
+
+  // action button retry
+  if (status === 'error')
+    return (
+      <Button type="primary" size="small" onClick={onRetry}>
+        Retry
+      </Button>
+    )
+
+  // status pending
+  return null
 }
-export default RetryTransfer
+
+export default ColumAction

@@ -1,16 +1,16 @@
 import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
 
+import StatusTag from '../statusTags'
+
 import { AppState } from 'app/model'
 import { HistoryWormhole } from 'app/model/history.controller'
-
 import {
   STEP_TRANSFER_AMOUNT,
   WormholeStatus,
 } from 'app/lib/wormhole/constant/wormhole'
-import StatusTag from '../statusTags'
 
-const HistoryStatus = ({ data }: { data: HistoryWormhole }) => {
+const ColumnStatus = ({ data }: { data: HistoryWormhole }) => {
   const { processId } = useSelector((state: AppState) => state.wormhole)
 
   const status = useMemo((): WormholeStatus => {
@@ -21,4 +21,5 @@ const HistoryStatus = ({ data }: { data: HistoryWormhole }) => {
 
   return <StatusTag tag={status} />
 }
-export default HistoryStatus
+
+export default ColumnStatus
