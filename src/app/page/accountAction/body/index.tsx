@@ -1,4 +1,6 @@
+import { useMemo } from 'react'
 import { useSelector } from 'react-redux'
+import { DEFAULT_EMPTY_ADDRESS, DEFAULT_WSOL } from '@senswap/sen-js'
 
 import { Card, Tabs } from 'antd'
 import Transfer from 'app/page/accountAction/body/transfer'
@@ -9,6 +11,17 @@ import { AppState } from 'app/model'
 
 const Body = () => {
   const { accountSelected } = useSelector((state: AppState) => state.account)
+
+  const isSolAccount = accountSelected === DEFAULT_EMPTY_ADDRESS
+  const transferAddress = useMemo(() => {
+    if (isSolAccount) return DEFAULT_EMPTY_ADDRESS
+    return accountSelected
+  }, [accountSelected, isSolAccount])
+
+  const wrapperAddress = useMemo(() => {
+    if (isSolAccount) return DEFAULT_WSOL
+    return accountSelected
+  }, [accountSelected, isSolAccount])
 
   return (
     <Card
@@ -21,13 +34,13 @@ const Body = () => {
     >
       <Tabs>
         <Tabs.TabPane tab="Send" key="Send">
-          <Transfer accountAddr={accountSelected} />
+          <Transfer accountAddr={transferAddress} />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Receive" key="Receive">
+        <Tabs.TabPane tab="Receive" key="Receive" disabled={isSolAccount}>
           <Receive accountAddr={accountSelected} />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Wrapper" key="Wrapper">
-          <Wrapper accountAddr={accountSelected} />
+        <Tabs.TabPane tab="Wrapper" key="Wrapper" disabled={!isSolAccount}>
+          <Wrapper accountAddr={wrapperAddress} />
         </Tabs.TabPane>
       </Tabs>
     </Card>

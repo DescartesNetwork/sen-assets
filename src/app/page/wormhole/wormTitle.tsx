@@ -5,6 +5,7 @@ import { MintAvatar } from 'app/shared/components/mint'
 
 import { useAccount } from 'senhub/providers'
 import { AppState } from 'app/model'
+import PowerBy from 'os/components/powerBy'
 
 const WormTitle = () => {
   const { accountSelected } = useSelector((state: AppState) => state.account)
@@ -20,12 +21,7 @@ const WormTitle = () => {
         </Typography.Title>
       </Col>
       <Col>
-        <Space>
-          <Typography.Text style={{ fontSize: 12, color: '#7A7B85' }}>
-            Power by
-          </Typography.Text>
-          <MintAvatar mintAddress={mint} size={16} />
-        </Space>
+        <PowerBy />
       </Col>
     </Row>
   )

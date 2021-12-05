@@ -1,17 +1,24 @@
-import { Col, Divider, Row, Space, Typography } from 'antd'
+import { Col, Divider, Row, Space, Typography, Avatar } from 'antd'
 import { MintAvatar, MintSymbol } from 'app/shared/components/mint'
 import Price, { PriceChange, PriceIndicator } from 'app/components/price'
+import IonIcon from 'shared/ionicon'
 
-export const TokenPrice = ({ mintAddress }: { mintAddress: string }) => {
+export const TokenPrice = ({ mintAddress, solWallet = false }: { mintAddress: string, solWallet?: boolean | string }) => {
   return (
     <Row>
       <Col flex="auto">
-        <Space>
+        {!solWallet ? <Space>
           <MintAvatar mintAddress={mintAddress} />
           <Typography.Title className="title-color" level={5}>
             <MintSymbol mintAddress={mintAddress} />
           </Typography.Title>
-        </Space>
+        </Space> :
+          <Space>
+            <Avatar src={solWallet} size={24}>
+              <IonIcon name="diamond-outline" />
+            </Avatar>
+            <Typography.Title className="title-color" level={5}>SOL</Typography.Title>
+          </Space>}
       </Col>
       <Col>
         <Space size={1} align="end">
