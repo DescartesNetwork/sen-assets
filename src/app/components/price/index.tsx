@@ -15,7 +15,9 @@ const Price = ({
   const color = parseColor(cgkData?.priceChange, configs)
   return (
     <span style={{ color: colorized ? color : 'inherit' }}>
-      ${numeric(cgkData?.price).format('0,0.[00]')}
+      {!cgkData?.price
+        ? '--'
+        : `$${numeric(cgkData?.price).format('0,0.[00]')}`}
     </span>
   )
 }

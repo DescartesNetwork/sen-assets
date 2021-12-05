@@ -1,3 +1,4 @@
+export type EtherNetwork = 'mainnet' | 'goerli'
 
 export type EthAddressConfig = {
   mainnet: string
@@ -17,7 +18,6 @@ export const ETH_TOKEN_BRIDGE_ADDRESS: EthAddressConfig = {
   ropsten: '0x0290FB167208Af455bB137780163b7B7a9a10C16',
 }
 
-
 export type EthChainIdConfig = {
   mainnet: number
   goerli: number
@@ -29,4 +29,3 @@ export const CHAIN_ID_ETH: EthChainIdConfig = {
   goerli: 5,
   ropsten: 3,
 }
-

@@ -5,6 +5,9 @@ import { getSignedVAA } from '@certusone/wormhole-sdk'
 import { account, WalletInterface, utils } from '@senswap/sen-js'
 import { TokenEtherInfo } from 'app/model/wormhole.controller'
 import { asyncWait } from 'shared/util'
+import storage from 'shared/storage'
+import PDB from 'shared/pdb'
+import { WormholeStoreKey } from './constant/wormhole'
 
 export const getSignedVAAWithRetry = async (
   ...args: Parameters<typeof getSignedVAA>
@@ -22,10 +25,22 @@ export const getSignedVAAWithRetry = async (
   }
 }
 
+export const getSolNetwork = () => {
+  const solNetwork = storage.get('network') || 'mainnet'
+  return solNetwork
+}
+
+export const getEtherNetwork = () => {
+  const solNetwork = getSolNetwork()
+  const etherNetwork = solNetwork === 'mainnet' ? 'mainnet' : 'goerli'
+  return etherNetwork
+}
+
 export const fetchTokenEther = async (
   address: string,
   networkName: string,
 ): Promise<TokenEtherInfo[]> => {
+  if (networkName === 'mainnet') networkName = 'ether'
   const tokens = []
   const { data } = await axios({
     method: 'get',
@@ -83,4 +98,29 @@ export const getAssociatedAddress = async (
   if (!initialized)
     await splt.initializeAccount(mintAddress, walletAddress, wallet)
   return targetAddress
+}
+
+export const getWormholeDb = async <T>(key: WormholeStoreKey) => {
+  const address = await window.sentre.wallet?.getAddress()
+  if (!address) throw new Error('Login fist')
+  const db = new PDB(address).createInstance('wormhole')
+  const data = db.getItem<T>(key)
+  return data
+}
+export const setWormholeDb = async (key: WormholeStoreKey, data: any) => {
+  const address = await window.sentre.wallet?.getAddress()
+  if (!address) throw new Error('Login fist')
+  const db = new PDB(address).createInstance('wormhole')
+  return db.setItem(key, data)
+}
+
+export const clearWormholeDb = async () => {
+  const address = await window.sentre.wallet?.getAddress()
+  if (!address) throw new Error('Login fist')
+  const db = new PDB(address).dropInstance('wormhole')
+  return db
+}
+
+export const logError = (error: unknown) => {
+  window.notify({ type: 'error', description: (error as any).message })
 }

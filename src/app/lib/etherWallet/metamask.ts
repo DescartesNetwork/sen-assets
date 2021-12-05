@@ -1,9 +1,14 @@
-import { IEtherWallet } from './walletInterface';
+import { IEtherWallet } from './walletInterface'
 
 import { ethers } from 'ethers'
 import detectEthereumProvider from '@metamask/detect-provider'
 
 class MetamaskWallet implements IEtherWallet {
+  detectedProvider = async () => {
+    const detectedProvider = await detectEthereumProvider()
+    return !!detectedProvider
+  }
+
   getProvider = async () => {
     const detectedProvider: any = await detectEthereumProvider()
     if (!detectedProvider) throw new Error('No provider')
