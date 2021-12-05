@@ -112,7 +112,6 @@ export const connectTargetWallet = createAsyncThunk<
 >(`${NAME}/connectTargetWallet`, async ({ wallet }) => {
   window.wormhole.targetWallet.sol = wallet
   const address = await wallet.getAddress()
-  console.log('address', address)
   return { targetWalletAddress: address }
 })
 
