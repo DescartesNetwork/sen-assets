@@ -1,3 +1,4 @@
+import { Col, Row, Tag } from 'antd'
 import { AppState } from 'app/model'
 import { connectTargetWallet } from 'app/model/wormhole.controller'
 import { useEffect } from 'react'
@@ -16,7 +17,27 @@ const TargetWallet = () => {
     dispatch(connectTargetWallet({ wallet }))
   }, [dispatch])
 
-  return <Network address={targetWalletAddress} chainId={targetChain} />
+  return (
+    <Row gutter={[16, 16]} align="middle">
+      <Col flex="auto">
+        <Network address={targetWalletAddress} chainId={targetChain} />
+      </Col>
+      <Col>
+        <Tag
+          style={{
+            margin: 0,
+            borderRadius: 4,
+            background: 'rgba(249, 87, 94, 0.1)',
+            color: '#F9575E',
+            textTransform: 'capitalize',
+            border: 'none',
+          }}
+        >
+          Connected
+        </Tag>
+      </Col>
+    </Row>
+  )
 }
 
 export default TargetWallet

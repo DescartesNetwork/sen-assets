@@ -48,11 +48,7 @@ export class WormholeContext {
     this.solNetWork = solNetWork
     // Transfer
     this.tokenInfo = tokenInfo
-    this.id = new Date().getTime() + ""
+    this.id = new Date().getTime() + ''
     this.time = new Date().getTime()
-  }
-
-  private generateId() {
-    return new Date().getTime() + Math.random().toString()
   }
 }

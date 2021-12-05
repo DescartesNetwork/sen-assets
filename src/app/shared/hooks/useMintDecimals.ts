@@ -6,6 +6,7 @@ const useMintDecimals = (mintAddress: string): number => {
   const { tokenProvider, getMint } = useMint()
 
   const fetchTokenDecimals = useCallback(async () => {
+    if (!mintAddress) return setDecimals(0)
     // Find in token provider
     const token = await tokenProvider.findByAddress(mintAddress)
     if (token) return setDecimals(token.decimals)
