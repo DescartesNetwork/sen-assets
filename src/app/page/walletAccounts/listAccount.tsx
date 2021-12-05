@@ -48,17 +48,21 @@ const ListAccount = () => {
       <Col span={24}>
         <Search onChange={onSearch} />
       </Col>
-      {listAccount.map((address) => (
-        <Col span={24} key={address}>
-          <LazyLoad height={64} overflow>
-            <AccountItem
-              accountAddr={address}
-              active={accountSelected === address}
-              onClick={(account) => dispatch(selectAccount({ account }))}
-            />
-          </LazyLoad>
-        </Col>
-      ))}
+      <Col span={24}>
+        <Row gutter={[12, 12]} className="card-scroll transparent-bg">
+          {listAccount.map((address) => (
+            <Col span={24} key={address}>
+              <LazyLoad height={64} overflow>
+                <AccountItem
+                  accountAddr={address}
+                  active={accountSelected === address}
+                  onClick={(account) => dispatch(selectAccount({ account }))}
+                />
+              </LazyLoad>
+            </Col>
+          ))}
+        </Row>
+      </Col>
     </Row>
   )
 }

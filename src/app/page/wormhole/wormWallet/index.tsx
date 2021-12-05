@@ -1,4 +1,4 @@
-import { Card, Col, Row } from 'antd'
+import { Card, Col, Row, Tooltip} from 'antd'
 import WalletTitle from './walletTitle'
 
 import IonIcon from 'shared/ionicon'
@@ -14,10 +14,12 @@ const WormWallet = () => {
           <SourceWallet />
         </Col>
         <Col>
-          <IonIcon
-            name="git-compare-outline"
-            style={{ cursor: 'not-allowed' }}
-          />
+          <Tooltip title="Comming soon" style={{background: 'red'}}>
+            <IonIcon
+              name="git-compare-outline"
+              style={{ cursor: 'not-allowed'}}
+            />
+          </Tooltip>
         </Col>
         <Col span={24}>
           <WalletTitle title="title 2" label="Target" />
