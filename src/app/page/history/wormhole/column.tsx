@@ -1,10 +1,11 @@
 import { Space, Typography } from 'antd'
 import NetworkAvatar from 'app/components/network/networkAvatar'
+import RetryTransfer from './retry'
+import HistoryStatus from './status'
+
 import { WormholeContext } from 'app/lib/wormhole/context'
 import { HistoryWormhole } from 'app/model/history.controller'
 import { shortenAddress } from 'shared/util'
-import StatusTag from '../statusTags'
-import RetryTransfer from './retry'
 
 export const WORMHOLE_COLUMNS = [
   {
@@ -53,16 +54,13 @@ export const WORMHOLE_COLUMNS = [
   },
   {
     title: 'STATUS',
-    dataIndex: 'status',
-    render: (status: string) => {
-      return <StatusTag tag={status} />
+    render: (data: HistoryWormhole) => {
+      return <HistoryStatus data={data} />
     },
   },
   {
     title: 'ACTION',
     render: (data: HistoryWormhole) => {
-      if (data.status === 'pending') return null
-      if (data.status === 'success') return null
       return <RetryTransfer data={data} />
     },
   },

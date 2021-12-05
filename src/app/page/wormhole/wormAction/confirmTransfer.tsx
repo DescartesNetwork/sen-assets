@@ -5,7 +5,7 @@ import { Button, Checkbox, Col, Row } from 'antd'
 
 import { AppState } from 'app/model'
 import { WormholeProvider } from 'app/lib/wormhole/provider'
-import { fetchWormholeHistory } from 'app/model/history.controller'
+import { updateWormholeHistory } from 'app/model/history.controller'
 import { Progress } from 'app/components/progress'
 import { setProcess, transfer } from 'app/model/wormhole.controller'
 
@@ -19,9 +19,9 @@ const ConfirmAction = ({
   const [acceptable, setAcceptable] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const onUpdate = async (wormhole: WormholeProvider) => {
-    await dispatch(setProcess({ provider: wormhole }))
-    await dispatch(fetchWormholeHistory())
+  const onUpdate = async (provider: WormholeProvider) => {
+    await dispatch(setProcess({ provider }))
+    await dispatch(updateWormholeHistory({ provider }))
     window.notify({
       type: 'warning',
       description: 'Pending transfer from Ethereum',

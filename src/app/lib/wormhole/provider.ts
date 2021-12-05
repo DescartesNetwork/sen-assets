@@ -65,6 +65,7 @@ export class WormholeProvider {
       callbackUpdate,
     )
     wormhole.context = data
+    wormhole.context.time = new Date().getTime()
     // restore transfer context
     await wormhole.transferProvider.restore()
     return wormhole

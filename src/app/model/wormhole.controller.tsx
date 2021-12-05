@@ -137,7 +137,7 @@ export const setProcess = createAsyncThunk<
 })
 
 export const transfer = createAsyncThunk<
-  void,
+  { processId: string },
   { onUpdate: (provider: WormholeProvider) => void },
   { state: { wormhole: State } }
 >(`${NAME}/transfer`, async ({ onUpdate }, { getState, dispatch }) => {
@@ -162,12 +162,14 @@ export const transfer = createAsyncThunk<
     if (processId) {
       wormholeEther = await WormholeProvider.restore(processId, onUpdate)
       amountTransfer = wormholeEther.transferProvider.data?.amount || '0'
+      onUpdate(wormholeEther)
     }
     await wormholeEther.transfer(amountTransfer)
   } catch (error) {
     window.notify({ type: 'error', description: (error as any).message })
-    dispatch(setProcess({}))
+    await dispatch(setProcess({}))
   }
+  return { processId: '' }
 })
 
 export const restoreTransfer = createAsyncThunk<
@@ -218,6 +220,10 @@ const slice = createSlice({
       )
       .addCase(
         restoreTransfer.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setProcess.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })
