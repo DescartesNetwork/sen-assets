@@ -6,18 +6,11 @@ import { Card, Tabs } from 'antd'
 import Transfer from 'app/page/accountAction/body/transfer'
 import Receive from 'app/page/accountAction/body/receive'
 import Wrapper from 'app/page/accountAction/body/wrapper'
-import { useAccount } from 'senhub/providers'
 
 import { AppState } from 'app/model'
-import { useWallet } from 'senhub/providers'
 
 const Body = () => {
   const { accountSelected } = useSelector((state: AppState) => state.account)
-   const {
-    wallet: { address },
-   } = useWallet()
-   const { accounts } = useAccount()
-  const { mint, owner } = accounts[accountSelected] || {}
 
   const isSolAccount = accountSelected === DEFAULT_EMPTY_ADDRESS
   const transferAddress = useMemo(() => {

@@ -16,7 +16,6 @@ import {
 import IonIcon from 'shared/ionicon'
 import { useAccount, useMint, useWallet } from 'senhub/providers'
 import { explorer } from 'shared/util'
-import { MintAvatar } from 'app/shared/components/mint'
 import { TokenInfo } from '@solana/spl-token-registry'
 import PowerBy from 'os/components/powerBy'
 
