@@ -12,18 +12,21 @@ import { TRANSACTION_COLUMNS } from './column'
 const ROW_PER_PAGE = 4
 const Transaction = () => {
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
+  const [isLoading, setIsLoading] = useState(true)
   const dispatch = useDispatch<AppDispatch>()
   const {
     wallet: { address },
   } = useWallet()
   const { transaction } = useSelector((state: AppState) => state.history)
-  const DATA_LENGHT = transaction.length
+  const DATA_LENGTH = transaction.length
 
   useEffect(() => {
-    dispatch(fetchTransactionHistory({ programId: address })).unwrap()
+    dispatch(fetchTransactionHistory({ addressWallet: address })).finally(() =>
+      setIsLoading(false),
+    )
   }, [dispatch, address])
 
-  const onHanldeViewMore = () => setAmountRow(amountRow + ROW_PER_PAGE)
+  const onHandleViewMore = () => setAmountRow(amountRow + ROW_PER_PAGE)
 
   return (
     <Row gutter={[16, 16]} justify="center">
@@ -31,24 +34,20 @@ const Transaction = () => {
         <Table
           columns={TRANSACTION_COLUMNS}
           dataSource={transaction.slice(0, amountRow)}
-          rowClassName={(record, index) =>
-            index % 2 === 0 ? 'even-row' : 'odd-row'
-          }
+          rowClassName={(record, index) => (index % 2 ? 'odd-row' : 'even-row')}
           pagination={false}
           scroll={{ x: 1000 }}
-          loading={DATA_LENGHT === 0}
+          loading={isLoading}
         />
       </Col>
       <Col>
-        {
-          <Button
-            onClick={() => onHanldeViewMore()}
-            icon={<IonIcon name="chevron-down-outline" />}
-            disabled={amountRow >= DATA_LENGHT}
-          >
-            View more
-          </Button>
-        }
+        <Button
+          onClick={onHandleViewMore}
+          icon={<IonIcon name="chevron-down-outline" />}
+          disabled={amountRow >= DATA_LENGTH}
+        >
+          View more
+        </Button>
       </Col>
     </Row>
   )

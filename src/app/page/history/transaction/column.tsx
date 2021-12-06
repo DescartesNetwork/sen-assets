@@ -55,6 +55,6 @@ export const TRANSACTION_COLUMNS = [
     title: 'STATUS',
     key: 'status',
     dataIndex: 'status',
-    render: (text: string) => <StatusTag tag={text} />,
+    render: (text: string) => <StatusTag tag="success" />,
   },
 ]

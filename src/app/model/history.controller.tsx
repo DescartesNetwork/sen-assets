@@ -28,12 +28,11 @@ export type HistoryWormhole = {
 export type TransactionTransferHistoryData = {
   time: string
   transactionId: string
-  from?: string
-  to?: string
-  amount?: number
-  status: string
+  from: string
+  to: string
+  amount: number
   key: string
-  mint?: string
+  mint: string
   isReceive: boolean
 }
 
@@ -74,41 +73,38 @@ export const updateWormholeHistory = createAsyncThunk<
 
 export const fetchTransactionHistory = createAsyncThunk<
   { transaction: TransactionTransferHistoryData[] },
-  { programId: string }
->(`${NAME}/fetchTransactionHistory`, async ({ programId }) => {
+  { addressWallet: string }
+>(`${NAME}/fetchTransactionHistory`, async ({ addressWallet }) => {
   const splt = window.sentre.splt
-  const useTranslogService = new TransLogService(programId)
-  const collectData = await useTranslogService.collect()
+  const TranslogService = new TransLogService(addressWallet)
+  const translogData = await TranslogService.collect()
   const history: TransactionTransferHistoryData[] = []
-  const address = (await window.sentre.wallet?.getAddress()) || ''
 
-  for (const transLogItem of collectData) {
-    const translog = {} as TransactionTransferHistoryData
-    if (transLogItem.programTransfer.length === 0) continue
+  for (const transLogItem of translogData) {
+    const historyItem = {} as TransactionTransferHistoryData
     const actionTransfer = transLogItem.programTransfer[0]
+
+    if (!actionTransfer) continue
+    if (!actionTransfer.destination || !actionTransfer.source) continue
+
+    const des = actionTransfer.destination
     const myWalletAddress = await splt.deriveAssociatedAddress(
-      address,
-      actionTransfer.destination?.mint || '',
+      addressWallet,
+      des.mint,
     )
     const time = new Date(transLogItem.blockTime * 1000)
 
-    translog.time = moment(time).format('DD MMM, YYYY hh:mm')
-    translog.key = transLogItem.signature
-    translog.transactionId = transLogItem.programId
-
-    translog.amount = Number(
-      utils.undecimalize(
-        BigInt(actionTransfer.amount),
-        actionTransfer.destination?.decimals || 9,
-      ),
+    historyItem.time = moment(time).format('DD MMM, YYYY hh:mm')
+    historyItem.key = transLogItem.signature
+    historyItem.transactionId = transLogItem.signature
+    historyItem.amount = Number(
+      utils.undecimalize(BigInt(actionTransfer.amount), des.decimals),
     )
-    translog.from = actionTransfer.source?.address
-    translog.to = actionTransfer.destination?.address
-    translog.status = 'success'
-    translog.mint = actionTransfer.destination?.mint
-    translog.isReceive =
-      myWalletAddress === actionTransfer.destination?.address ? true : false
-    history.push(translog)
+    historyItem.from = actionTransfer.source.address
+    historyItem.to = des.address
+    historyItem.mint = des.mint
+    historyItem.isReceive = myWalletAddress === des.address ? true : false
+    history.push(historyItem)
   }
 
   return { transaction: history }
