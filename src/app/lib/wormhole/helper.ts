@@ -8,6 +8,7 @@ import { asyncWait } from 'shared/util'
 import storage from 'shared/storage'
 import PDB from 'shared/pdb'
 import { WormholeStoreKey } from './constant/wormhole'
+import { MORALIS_INFO } from './constant/ethConfig'
 
 export const getSignedVAAWithRetry = async (
   ...args: Parameters<typeof getSignedVAA>
@@ -40,14 +41,13 @@ export const fetchTokenEther = async (
   address: string,
   networkName: string,
 ): Promise<TokenEtherInfo[]> => {
-  if (networkName === 'mainnet') networkName = 'ether'
+  if (networkName === 'mainnet') networkName = 'eth'
   const tokens = []
   const { data } = await axios({
     method: 'get',
-    url: `https://deep-index.moralis.io/api/v2/${address}/erc20?chain=${networkName}`,
+    url: `${MORALIS_INFO.url}/${address}/erc20?chain=${networkName}`,
     headers: {
-      'X-API-Key':
-        'N6yeIUl1FxCPZWbXyxLHWPAjSr6ahQeJTX3d19pSKCwHsLCzpWE7z1hilon4xDOd',
+      'X-API-Key': MORALIS_INFO.apiKey,
     },
   })
   for (const token of data) {
@@ -58,6 +58,30 @@ export const fetchTokenEther = async (
     tokens.push(token)
   }
   return tokens
+}
+
+export const fetchTransactionsAAddress = async (
+  address: string,
+  networkName: string,
+) => {
+  if (networkName === 'mainnet') networkName = 'eth'
+  const tokens = []
+  const  data = await axios({
+    method: 'get',
+    url: `${MORALIS_INFO.url}/${address}?chain=${networkName}`,
+    headers: {
+      'X-API-Key': MORALIS_INFO.apiKey,
+    },
+  })
+  console.log(data, 'nguyen Duy Yta')
+  // for (const token of data) {
+  //   token.decimals = Number(token.decimals)
+  //   token.balance = BigInt(token.balance)
+  //   token.amount = utils.undecimalize(token.balance, token.decimals)
+  //   token.address = token.token_address
+  //   tokens.push(token)
+  // }
+  // return tokens
 }
 
 export const sendTransaction = async (

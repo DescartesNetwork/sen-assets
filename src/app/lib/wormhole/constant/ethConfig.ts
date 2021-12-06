@@ -6,6 +6,8 @@ export type EthAddressConfig = {
   ropsten: string
 }
 
+
+
 export const ETH_BRIDGE_ADDRESS: EthAddressConfig = {
   mainnet: '0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B',
   goerli: '0x706abc4E45D419950511e474C7B9Ed348A4a716c',
@@ -28,4 +30,14 @@ export const CHAIN_ID_ETH: EthChainIdConfig = {
   mainnet: 1,
   goerli: 5,
   ropsten: 3,
+}
+
+export type MoralisStructure = {
+  url: string
+  apiKey: string
+}
+
+export const MORALIS_INFO: MoralisStructure = {
+  url: 'https://deep-index.moralis.io/api/v2',
+  apiKey: 'N6yeIUl1FxCPZWbXyxLHWPAjSr6ahQeJTX3d19pSKCwHsLCzpWE7z1hilon4xDOd'
 }

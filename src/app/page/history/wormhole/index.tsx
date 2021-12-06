@@ -7,6 +7,7 @@ import IonIcon from 'shared/ionicon'
 import { WORMHOLE_COLUMNS } from './column'
 import { AppState } from 'app/model'
 import { fetchWormholeHistory } from 'app/model/history.controller'
+import { fetchTransactionsAAddress } from '../../../lib/wormhole/helper'
 
 const ROW_PER_PAGE = 4
 

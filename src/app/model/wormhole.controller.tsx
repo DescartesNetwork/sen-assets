@@ -29,6 +29,10 @@ export type TokenEtherInfo = {
   amount: number
 }
 
+export type TransactionEtherInfo = {
+  
+}
+
 export type State = {
   // source wallet
   sourceTokens: Record<string, TokenEtherInfo>
