@@ -26,10 +26,6 @@ const ConfirmAction = ({
   const onUpdate = async (stateTransfer: TransferState) => {
     await dispatch(setProcess({ id: stateTransfer.context.id }))
     await dispatch(updateWormholeHistory({ stateTransfer }))
-    window.notify({
-      type: 'warning',
-      description: 'Pending transfer from Ethereum',
-    })
   }
 
   const onTransfer = async () => {
@@ -46,16 +42,19 @@ const ConfirmAction = ({
         targetWallet.sol,
         tokenTransfer,
       )
+      const { attested } = await wormholeTransfer.isAttested()
+      if (!attested) await wormholeTransfer.attest()
+
       const txId = await wormholeTransfer.transfer(amount, onUpdate)
       window.notify({
         type: 'success',
         description: 'Transfer successfully',
         onClick: () => window.open(explorer(txId), '_blank'),
       })
+      return onClose(false)
     } catch (error) {
-      await dispatch(setProcess({ id: '' })).unwrap()
+      await dispatch(setProcess({ id: '' }))
       window.notify({ type: 'error', description: (error as any).message })
-      console.log('error-->', error)
     } finally {
       setLoading(false)
     }

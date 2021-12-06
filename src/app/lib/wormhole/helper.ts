@@ -1,8 +1,9 @@
 import axios from 'axios'
+
 import { Connection, Transaction } from '@solana/web3.js'
 import { getSignedVAA } from '@certusone/wormhole-sdk'
-
 import { account, WalletInterface, utils } from '@senswap/sen-js'
+
 import { TokenEtherInfo } from 'app/model/wormhole.controller'
 import { asyncWait } from 'shared/util'
 import storage from 'shared/storage'
@@ -118,8 +119,4 @@ export const clearWormholeDb = async () => {
   if (!address) throw new Error('Login fist')
   const db = new PDB(address).dropInstance('wormhole')
   return db
-}
-
-export const logError = (error: unknown) => {
-  window.notify({ type: 'error', description: (error as any).message })
 }

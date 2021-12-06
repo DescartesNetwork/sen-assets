@@ -1,7 +1,6 @@
 import { CHAIN_ID_ETH, ChainId, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 
 import { TokenEtherInfo } from 'app/model/wormhole.controller'
-import storage from 'shared/storage'
 import {
   EtherNetwork,
   ETH_BRIDGE_ADDRESS,
@@ -13,6 +12,7 @@ import {
   SOL_TOKEN_BRIDGE_ADDRESS,
 } from './constant/solConfig'
 import { WORMHOLE_RPC_HOST } from './constant/wormhole'
+import { getEtherNetwork, getSolNetwork } from './helper'
 
 export type WormholeContext = {
   id: string
@@ -37,10 +37,8 @@ export type WormholeContext = {
 export const createWohContext = (
   tokenInfo: TokenEtherInfo,
 ): WormholeContext => {
-  let etherNetwork: EtherNetwork = 'goerli'
-  const solNetWork: SolNetWork = storage.get('network') || 'mainnet'
-  if (solNetWork === 'mainnet') etherNetwork = 'mainnet'
-
+  const etherNetwork: EtherNetwork = getEtherNetwork()
+  const solNetWork: SolNetWork = getSolNetwork()
   return {
     id: new Date().getTime() + '',
     time: new Date().getTime(),

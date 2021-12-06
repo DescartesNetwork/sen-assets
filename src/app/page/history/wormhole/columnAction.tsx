@@ -58,7 +58,6 @@ const ColumAction = ({ data }: { data: TransferState }) => {
         onClick: () => window.open(explorer(txId), '_blank'),
       })
     } catch (error) {
-      console.log('error', error)
       await dispatch(setProcess({ id: '' })).unwrap()
       window.notify({ type: 'error', description: (error as any).message })
     }

@@ -4,11 +4,10 @@ import {
   getForeignAssetSolana,
   getOriginalAssetEth,
 } from '@certusone/wormhole-sdk'
-import { account, WalletInterface } from '@senswap/sen-js'
 
+import { account, WalletInterface } from '@senswap/sen-js'
 import { TokenEtherInfo } from 'app/model/wormhole.controller'
 import { IEtherWallet } from '../etherWallet/walletInterface'
-
 import { createWohContext, WormholeContext } from './context'
 
 export class WormholeProvider {
@@ -26,7 +25,8 @@ export class WormholeProvider {
     this.srcWallet = sourceWallet
     this.targetWallet = targetWallet
     this.context = createWohContext(tokenInfo)
-    this.connection = window.sentre.splt.connection
+    const nodeUrl = window.sentre.splt.nodeUrl
+    this.connection = new Connection(nodeUrl)
   }
 
   isAttested = async (): Promise<{
@@ -56,4 +56,6 @@ export class WormholeProvider {
       wrappedMintAddress,
     }
   }
+
+  
 }

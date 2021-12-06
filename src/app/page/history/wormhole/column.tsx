@@ -7,6 +7,7 @@ import HistoryStatus from './columnStatus'
 import { WormholeContext } from 'app/lib/wormhole/context'
 import { shortenAddress } from 'shared/util'
 import { TransferState } from 'app/lib/wormhole/constant/wormhole'
+import NetworkName from 'app/components/network/networkName'
 
 export const WORMHOLE_COLUMNS = [
   {
@@ -37,9 +38,14 @@ export const WORMHOLE_COLUMNS = [
     render: (context: WormholeContext) => (
       <Space>
         <NetworkAvatar chainId={context.srcChainId} />
-        <Typography.Text>ETH</Typography.Text>-
+        <Typography.Text>
+          <NetworkName chainId={context.srcChainId} />
+        </Typography.Text>{' '}
+        -
         <NetworkAvatar chainId={context.targetChainId} />
-        <Typography.Text>SOL</Typography.Text>
+        <Typography.Text>
+          <NetworkName chainId={context.targetChainId} />
+        </Typography.Text>
       </Space>
     ),
   },

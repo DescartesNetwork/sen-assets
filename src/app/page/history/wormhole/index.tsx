@@ -34,14 +34,13 @@ const WormholeHistory = () => {
         />
       </Col>
       <Col>
-        {amountRow < wormhole.length && (
-          <Button
-            onClick={onHandleViewMore}
-            icon={<IonIcon name="chevron-down-outline" />}
-          >
-            View more
-          </Button>
-        )}
+        <Button
+          disabled={amountRow >= wormhole.length}
+          onClick={onHandleViewMore}
+          icon={<IonIcon name="chevron-down-outline" />}
+        >
+          View more
+        </Button>
       </Col>
     </Row>
   )

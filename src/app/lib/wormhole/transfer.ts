@@ -1,7 +1,9 @@
 import {
   approveEth,
+  attestFromEth,
   CHAIN_ID_ETH,
   CHAIN_ID_SOLANA,
+  createWrappedOnSolana,
   getEmitterAddressEth,
   hexToUint8Array,
   parseSequenceFromLogEth,
@@ -69,22 +71,7 @@ export class WormholeTransfer extends WormholeProvider {
     onUpdate: (state: TransferState) => void,
   ) => {
     // init data transfer
-    if (!this.data) {
-      this.data = {
-        step: 0,
-        amount: '0',
-        from: '',
-        to: '',
-        emitterAddress: '',
-        sequence: '',
-        vaaHex: '',
-        txId: '',
-      }
-
-      this.data.from = await this.srcWallet.getAddress()
-      this.data.to = await this.targetWallet.getAddress()
-      this.data.amount = amount
-    }
+    if (!this.data) this.data = await this.initializeDataTransfer(amount)
 
     let state = this.getState()
     if (this.data.step === 0) {
@@ -113,11 +100,27 @@ export class WormholeTransfer extends WormholeProvider {
     throw new Error('Invalid step transfer')
   }
 
+  private initializeDataTransfer = async (amount: string) => {
+    const from = await this.srcWallet.getAddress()
+    const to = await this.targetWallet.getAddress()
+    return {
+      step: 0,
+      amount: amount,
+      from,
+      to,
+      emitterAddress: '',
+      sequence: '',
+      vaaHex: '',
+      txId: '',
+    }
+  }
+
   private transferSourceNetWork = async () => {
     const { transferData, context } = this.getState()
     // get context
     let { wrappedMintAddress } = await this.isAttested()
     if (!wrappedMintAddress) throw new Error('Attest the token first')
+
     // get provider
     const provider = await this.srcWallet.getProvider()
     const signer = provider.getSigner()
@@ -192,6 +195,48 @@ export class WormholeTransfer extends WormholeProvider {
     )
 
     const tx = await redeemOnSolana(
+      this.connection,
+      context.targetBridgeAddress,
+      context.targetTokenBridgeAddress,
+      payerAddress,
+      vaaBytes,
+    )
+    const signedTx = await this.targetWallet.signTransaction(tx)
+    const txId = await sendTransaction(signedTx, this.connection)
+    return txId
+  }
+
+  attest = async (): Promise<string> => {
+    const payerAddress = await this.targetWallet.getAddress()
+    const provider = await this.srcWallet.getProvider()
+    const signer = provider.getSigner()
+    const context = this.context
+
+    // Send attest
+    const receipt = await attestFromEth(
+      this.context.srcTokenBridgeAddress,
+      signer,
+      context.tokenInfo.address,
+    )
+    // Fetch attestion info
+    const sequence = parseSequenceFromLogEth(receipt, context.srcBridgeAddress)
+    const emitterAddress = getEmitterAddressEth(context.srcTokenBridgeAddress)
+    // Get signedVAA
+    const { vaaBytes } = await getSignedVAAWithRetry(
+      context.wormholeRpc,
+      CHAIN_ID_ETH,
+      emitterAddress,
+      sequence,
+    )
+    // Post signedVAA
+    await postVaaSolana(
+      this.connection,
+      this.targetWallet.signTransaction,
+      context.targetBridgeAddress,
+      payerAddress,
+      Buffer.from(vaaBytes),
+    )
+    const tx = await createWrappedOnSolana(
       this.connection,
       context.targetBridgeAddress,
       context.targetTokenBridgeAddress,
