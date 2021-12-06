@@ -10,6 +10,7 @@ import { useWallet } from 'senhub/providers'
 import { TRANSACTION_COLUMNS } from './column'
 
 const ROW_PER_PAGE = 4
+
 const Transaction = () => {
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
   const [isLoading, setIsLoading] = useState(true)
@@ -18,7 +19,6 @@ const Transaction = () => {
     wallet: { address },
   } = useWallet()
   const { transaction } = useSelector((state: AppState) => state.history)
-  const DATA_LENGTH = transaction.length
 
   useEffect(() => {
     dispatch(fetchTransactionHistory({ addressWallet: address })).finally(() =>
@@ -44,7 +44,7 @@ const Transaction = () => {
         <Button
           onClick={onHandleViewMore}
           icon={<IonIcon name="chevron-down-outline" />}
-          disabled={amountRow >= DATA_LENGTH}
+          disabled={amountRow >= transaction.length}
         >
           View more
         </Button>
