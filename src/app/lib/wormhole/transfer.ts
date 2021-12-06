@@ -24,7 +24,6 @@ import {
   TransferState,
   WormholeStoreKey,
 } from './constant/wormhole'
-import { DEFAULT_TRANSFER_DATA } from './constant/default'
 
 export class WormholeTransfer extends WormholeProvider {
   data: TransferData | undefined
@@ -71,7 +70,17 @@ export class WormholeTransfer extends WormholeProvider {
   ) => {
     // init data transfer
     if (!this.data) {
-      this.data = { ...DEFAULT_TRANSFER_DATA }
+      this.data = {
+        step: 0,
+        amount: '0',
+        from: '',
+        to: '',
+        emitterAddress: '',
+        sequence: '',
+        vaaHex: '',
+        txId: '',
+      }
+
       this.data.from = await this.srcWallet.getAddress()
       this.data.to = await this.targetWallet.getAddress()
       this.data.amount = amount
