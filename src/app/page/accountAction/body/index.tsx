@@ -6,6 +6,7 @@ import { Card, Tabs } from 'antd'
 import Transfer from 'app/page/accountAction/body/transfer'
 import Receive from 'app/page/accountAction/body/receive'
 import Wrapper from 'app/page/accountAction/body/wrapper'
+import Close from './close'
 
 import { AppState } from 'app/model'
 
@@ -41,6 +42,9 @@ const Body = () => {
         </Tabs.TabPane>
         <Tabs.TabPane tab="Wrapper" key="Wrapper" disabled={!isSolAccount}>
           <Wrapper accountAddr={wrapperAddress} />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab="Close" key="Close">
+          <Close accountAddr={accountSelected} />
         </Tabs.TabPane>
       </Tabs>
     </Card>
