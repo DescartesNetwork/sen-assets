@@ -24,7 +24,7 @@ const ColumAction = ({ data }: { data: TransferState }) => {
   const status = useMemo((): WormholeStatus => {
     if (data.transferData.step === STEP_TRANSFER_AMOUNT) return 'success'
     if (processId === data.context.id) return 'pending'
-    return 'error'
+    return 'failed'
   }, [data.context.id, data.transferData.step, processId])
 
   const onUpdate = async (stateTransfer: TransferState) => {
@@ -60,6 +60,7 @@ const ColumAction = ({ data }: { data: TransferState }) => {
     } catch (error) {
       await dispatch(setProcess({ id: '' })).unwrap()
       window.notify({ type: 'error', description: (error as any).message })
+      console.log('error', error)
     }
   }
 
@@ -75,7 +76,7 @@ const ColumAction = ({ data }: { data: TransferState }) => {
     )
 
   // action button retry
-  if (status === 'error')
+  if (status === 'failed')
     return (
       <Button type="primary" size="small" onClick={onRetry}>
         Retry

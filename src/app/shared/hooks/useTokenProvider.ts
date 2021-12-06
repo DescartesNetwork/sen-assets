@@ -9,6 +9,7 @@ const useTokenProvider = (mintAddress: string) => {
   const [tokenInfo, setTokenInfo] = useState<(TokenInfo | undefined)[]>([])
 
   const fetchTokenInfo = useCallback(async () => {
+    if (!mintAddress) return setTokenInfo([undefined])
     // Normal mint
     const token = await tokenProvider.findByAddress(mintAddress)
     if (token) return setTokenInfo([token])
