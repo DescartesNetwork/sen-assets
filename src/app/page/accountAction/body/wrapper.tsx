@@ -3,11 +3,11 @@ import { account, DEFAULT_WSOL, utils } from '@senswap/sen-js'
 
 import { Button, Col, Row, Switch, Typography } from 'antd'
 import { MintSymbol } from 'app/shared/components/mint'
-import NumericInput from 'app/shared/components/numericInput'
 
 import useMintDecimals from 'app/shared/hooks/useMintDecimals'
 import { useAccount, useWallet } from 'senhub/providers'
 import { explorer } from 'shared/util'
+import NumericInput from 'app/shared/components/numericInput'
 
 const Wrapper = ({ accountAddr }: { accountAddr: string }) => {
   const [value, setValue] = useState('0')
