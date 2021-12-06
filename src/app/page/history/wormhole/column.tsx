@@ -4,7 +4,7 @@ import ColumAction from './columnAction'
 import HistoryStatus from './ColumnStatus'
 
 import { WormholeContext } from 'app/lib/wormhole/context'
-import { HistoryWormhole } from 'app/model/history.controller'
+import { TransferState } from 'app/model/history.controller'
 import { shortenAddress } from 'shared/util'
 
 export const WORMHOLE_COLUMNS = [
@@ -44,23 +44,23 @@ export const WORMHOLE_COLUMNS = [
   },
   {
     title: 'AMOUNT',
-    render: (data: HistoryWormhole) => {
+    render: (data: TransferState) => {
       return (
         <Typography.Text>
-          {data?.transfer?.amount} {data?.context?.tokenInfo?.symbol}
+          {data?.transferData?.amount} {data?.context?.tokenInfo?.symbol}
         </Typography.Text>
       )
     },
   },
   {
     title: 'STATUS',
-    render: (data: HistoryWormhole) => {
+    render: (data: TransferState) => {
       return <HistoryStatus data={data} />
     },
   },
   {
     title: 'ACTION',
-    render: (data: HistoryWormhole) => {
+    render: (data: TransferState) => {
       return <ColumAction data={data} />
     },
   },

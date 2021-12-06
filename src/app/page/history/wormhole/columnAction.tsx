@@ -11,24 +11,24 @@ import {
 import { WormholeProvider } from 'app/lib/wormhole/provider'
 import { AppDispatch, AppState } from 'app/model'
 import {
-  HistoryWormhole,
+  TransferState,
   updateWormholeHistory,
 } from 'app/model/history.controller'
 import { restoreTransfer, transfer } from 'app/model/wormhole.controller'
 import { explorer } from 'shared/util'
 
-const ColumAction = ({ data }: { data: HistoryWormhole }) => {
+const ColumAction = ({ data }: { data: TransferState }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { processId } = useSelector((state: AppState) => state.wormhole)
 
   const status = useMemo((): WormholeStatus => {
-    if (data.transfer.step === STEP_TRANSFER_AMOUNT) return 'success'
+    if (data.transferData.step === STEP_TRANSFER_AMOUNT) return 'success'
     if (processId === data.context.id) return 'pending'
     return 'error'
-  }, [data.context.id, data.transfer.step, processId])
+  }, [data.context.id, data.transferData.step, processId])
 
-  const onUpdate = async (provider: WormholeProvider) => {
-    return dispatch(updateWormholeHistory({ provider }))
+  const onUpdate = async (stateTransfer: TransferState) => {
+    return dispatch(updateWormholeHistory({ stateTransfer }))
   }
 
   const onRetry = async () => {
@@ -44,7 +44,7 @@ const ColumAction = ({ data }: { data: HistoryWormhole }) => {
         type="text"
         size="large"
         onClick={() =>
-          window.open(explorer(data.transfer.redeemSolana.txId), '_blank')
+          window.open(explorer(data.transferData.redeemSolana.txId), '_blank')
         }
         icon={<IonIcon name="open-outline" />}
       />
