@@ -7,9 +7,6 @@ import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
 import { fetchTokenEther } from 'app/lib/wormhole/helper'
 import { TransferState } from 'app/lib/wormhole/constant/wormhole'
 
-import { explorer } from 'shared/util'
-import { WormholeTransfer } from 'app/lib/wormhole/transfer'
-
 /**
  * Interface & Utility
  */
@@ -19,7 +16,7 @@ window.wormhole = {
 }
 
 export type TokenEtherInfo = {
-  balance: bigint
+  balance: string
   decimals: number
   logo: string
   name: string
@@ -140,66 +137,20 @@ export const setProcess = createAsyncThunk<
   return { ...wormhole, processId: id || '' }
 })
 
-export const transfer = createAsyncThunk<
-  { processId: string },
-  { onUpdate: (state: TransferState) => void },
-  { state: { wormhole: State } }
->(`${NAME}/transfer`, async ({ onUpdate }, { getState, dispatch }) => {
-  const {
-    wormhole: { sourceTokens, tokenAddress, amount, processId },
-  } = getState()
-
-  try {
-    const tokenTransfer = sourceTokens[tokenAddress]
-    const { sourceWallet, targetWallet } = window.wormhole
-    if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
-      throw new Error('Login fist')
-
-    let amountTransfer = amount
-    let wormholeEther = new WormholeTransfer(
-      sourceWallet.ether,
-      targetWallet.sol,
-      tokenTransfer,
-    )
-    // Restore with process ID
-    if (processId) {
-      await wormholeEther.restore(processId)
-      amountTransfer = wormholeEther.data?.amount || '0'
-      const stateTransfer = wormholeEther.getState()
-      onUpdate(stateTransfer)
-    }
-    const txId = await wormholeEther.transfer(amountTransfer, onUpdate)
-    window.notify({
-      type: 'success',
-      description: 'Transfer successfully',
-      onClick: () => window.open(explorer(txId), '_blank'),
-    })
-  } catch (error) {
-    window.notify({ type: 'error', description: (error as any).message })
-    await dispatch(setProcess({}))
-  } finally {
-    return { processId: '' }
-  }
-})
-
 export const restoreTransfer = createAsyncThunk<
   State | void,
   { historyData: TransferState },
   { state: { wormhole: State } }
 >(`${NAME}/restoreTransfer`, async ({ historyData }, { getState }) => {
-  try {
-    const { sourceWallet } = window.wormhole
-    if (!sourceWallet.ether) throw new Error('Login fist')
-    const { wormhole } = getState()
-    const { context } = historyData
-    // restore data
-    const dataRestore = { ...wormhole }
-    dataRestore.tokenAddress = context.tokenInfo.address
-    dataRestore.processId = context.id
-    return { ...dataRestore }
-  } catch (error) {
-    window.notify({ type: 'error', description: (error as any).message })
-  }
+  const { sourceWallet } = window.wormhole
+  if (!sourceWallet.ether) throw new Error('Login fist')
+  const { wormhole } = getState()
+  const { context } = historyData
+  // restore data
+  const dataRestore = { ...wormhole }
+  dataRestore.tokenAddress = context.tokenInfo.address
+  dataRestore.processId = context.id
+  return { ...dataRestore }
 })
 
 /**
@@ -226,10 +177,6 @@ const slice = createSlice({
       )
       .addCase(
         setSourceToken.fulfilled,
-        (state, { payload }) => void Object.assign(state, payload),
-      )
-      .addCase(
-        transfer.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(

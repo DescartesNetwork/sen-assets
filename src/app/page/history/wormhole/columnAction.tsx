@@ -11,12 +11,15 @@ import {
 } from 'app/lib/wormhole/constant/wormhole'
 import { AppDispatch, AppState } from 'app/model'
 import { updateWormholeHistory } from 'app/model/history.controller'
-import { restoreTransfer, transfer } from 'app/model/wormhole.controller'
+import { restoreTransfer, setProcess } from 'app/model/wormhole.controller'
 import { explorer } from 'shared/util'
+import { WormholeTransfer } from 'app/lib/wormhole/transfer'
 
 const ColumAction = ({ data }: { data: TransferState }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const { processId } = useSelector((state: AppState) => state.wormhole)
+  const { processId, sourceTokens, tokenAddress } = useSelector(
+    (state: AppState) => state.wormhole,
+  )
 
   const status = useMemo((): WormholeStatus => {
     if (data.transferData.step === STEP_TRANSFER_AMOUNT) return 'success'
@@ -29,9 +32,35 @@ const ColumAction = ({ data }: { data: TransferState }) => {
   }
 
   const onRetry = async () => {
-    const dataRestore = await dispatch(restoreTransfer({ historyData: data }))
-    if (!dataRestore.payload) return
-    return dispatch(transfer({ onUpdate }))
+    try {
+      await dispatch(restoreTransfer({ historyData: data })).unwrap()
+      await dispatch(setProcess({ id: data.context.id })).unwrap()
+      //Transfer
+      const { sourceWallet, targetWallet } = window.wormhole
+      const tokenTransfer = sourceTokens[tokenAddress]
+      if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
+        throw new Error('Login fist')
+
+      const wormholeTransfer = new WormholeTransfer(
+        sourceWallet.ether,
+        targetWallet.sol,
+        tokenTransfer,
+      )
+      await wormholeTransfer.restore(data.context.id)
+      await onUpdate(data)
+      const txId = await wormholeTransfer.transfer(
+        data.transferData.amount,
+        onUpdate,
+      )
+      window.notify({
+        type: 'success',
+        description: 'Transfer successfully',
+        onClick: () => window.open(explorer(txId), '_blank'),
+      })
+    } catch (error) {
+      await dispatch(setProcess({ id: '' })).unwrap()
+      window.notify({ type: 'error', description: (error as any).message })
+    }
   }
 
   // action button success
@@ -40,9 +69,7 @@ const ColumAction = ({ data }: { data: TransferState }) => {
       <Button
         type="text"
         size="large"
-        onClick={() =>
-          window.open(explorer(data.transferData.redeemSolana.txId), '_blank')
-        }
+        onClick={() => window.open(explorer(data.transferData.txId), '_blank')}
         icon={<IonIcon name="open-outline" />}
       />
     )

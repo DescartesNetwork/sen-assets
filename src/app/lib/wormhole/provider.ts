@@ -4,12 +4,11 @@ import {
   getForeignAssetSolana,
   getOriginalAssetEth,
 } from '@certusone/wormhole-sdk'
-import { account, WalletInterface } from '@senswap/sen-js'
 
+import { account, WalletInterface } from '@senswap/sen-js'
 import { TokenEtherInfo } from 'app/model/wormhole.controller'
 import { IEtherWallet } from '../etherWallet/walletInterface'
-
-import { WormholeContext } from './context'
+import { createWohContext, WormholeContext } from './context'
 
 export class WormholeProvider {
   context: WormholeContext
@@ -25,49 +24,10 @@ export class WormholeProvider {
   ) {
     this.srcWallet = sourceWallet
     this.targetWallet = targetWallet
-    this.context = new WormholeContext(tokenInfo)
-    this.connection = window.sentre.splt.connection
+    this.context = createWohContext(tokenInfo)
+    const nodeUrl = window.sentre.splt.nodeUrl
+    this.connection = new Connection(nodeUrl)
   }
-
-  // static restore = async (
-  //   processId: string,
-  //   callbackUpdate: (wormhole: WormholeProvider) => void,
-  // ) => {
-  //   // get context data
-  //   const store = await WormholeProvider.fetchAll()
-  //   const data = store[processId]
-  //   if (!data) throw new Error('Invalid context id')
-  //   // get wallet provider
-  //   const {
-  //     sourceWallet: { ether },
-  //     targetWallet: { sol },
-  //   } = window.wormhole
-  //   if (!ether || !sol) throw new Error('Login fist')
-  //   // restore wormhole context
-  //   const wormhole = new WormholeProvider(
-  //     ether,
-  //     sol,
-  //     data.tokenInfo,
-  //     callbackUpdate,
-  //   )
-  //   wormhole.context = data
-  //   wormhole.context.time = new Date().getTime()
-  //   // restore transfer context
-  //   await wormhole.transferProvider.restore()
-  //   return wormhole
-  // }
-
-  // backup = async () => {
-  //   if (!this.context) throw new Error('Invalid context')
-  //   const contextData = await WormholeProvider.fetchAll()
-  //   contextData[this.context.id] = this.context
-  //   setWormholeDb(WormholeStoreKey.Provider, contextData)
-  // }
-
-  /**
-   * Check token is whether or not attested
-   * @returns isAttested
-   */
 
   isAttested = async (): Promise<{
     attested: boolean
@@ -97,11 +57,5 @@ export class WormholeProvider {
     }
   }
 
-  /**
-   * Transfer: to brigde tokens from origin chain to destination chain
-   * The token must be attested beforehand
-   * @param amount
-   * @returns
-   */
   
 }

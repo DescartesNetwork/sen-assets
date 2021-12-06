@@ -34,7 +34,7 @@ const SelectMintInput = () => {
               type="text"
               style={{ marginRight: -7 }}
               disabled={!tokenAddress}
-              onClick={() => {}}
+              onClick={() => dispatch(setSourceToken({ amount: `${maxAmount}` }))}
             >
               MAX
             </Button>

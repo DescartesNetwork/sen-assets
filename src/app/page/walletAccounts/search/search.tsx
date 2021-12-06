@@ -71,7 +71,7 @@ const Search = ({
               type="text"
               style={{ marginLeft: -7 }}
               size="small"
-              onClick={keyword ? () => setKeyword('') : () => {}}
+              onClick={keyword ? () => setKeyword('') : () => { }}
               icon={
                 <IonIcon name={keyword ? 'close-outline' : 'search-outline'} />
               }

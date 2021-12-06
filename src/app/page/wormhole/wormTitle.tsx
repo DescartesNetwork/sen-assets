@@ -1,5 +1,5 @@
 import { Col, Row, Typography } from 'antd'
-import PowerBy from 'os/components/powerBy'
+import PoweredBy from 'os/components/poweredBy'
 
 const WormTitle = () => {
   return (
@@ -10,7 +10,7 @@ const WormTitle = () => {
         </Typography.Title>
       </Col>
       <Col>
-        <PowerBy />
+        <PoweredBy />
       </Col>
     </Row>
   )
