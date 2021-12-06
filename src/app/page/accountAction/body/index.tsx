@@ -4,13 +4,12 @@ import { Card, Tabs } from 'antd'
 import Transfer from 'app/page/accountAction/body/transfer'
 import Receive from 'app/page/accountAction/body/receive'
 import Wrapper from 'app/page/accountAction/body/wrapper'
+import Close from './close'
 
 import { AppState } from 'app/model'
-import Close from './close'
 
 const Body = () => {
   const { accountSelected } = useSelector((state: AppState) => state.account)
-  console.log(accountSelected, 'tttttt')
 
   return (
     <Card

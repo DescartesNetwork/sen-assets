@@ -1,6 +1,4 @@
-import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
-import { AccountData } from '@senswap/sen-js'
 
 import { Row, Col, Card, Typography, Button, Space } from 'antd'
 import IonIcon from 'shared/ionicon'
@@ -17,9 +15,7 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
   const close = async () => {
     try {
       const { splt, wallet } = window.sentre
-      if (!wallet) {
-        return
-      }
+      if (!wallet) return
       const { txId } = await splt.closeAccount(accountSelected, wallet)
       await window.notify({
         type: 'success',
@@ -33,8 +29,6 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
         } successfully. Click to view details.`,
         onClick: () => window.open(explorer(txId), '_blank'),
       })
-      //   await dispatch(deleteAccount({ accountSelected }))
-      //   return onChange(txId)
     } catch (er) {
       return window.notify({ type: 'error', description: 'error' })
     }

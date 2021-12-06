@@ -2,7 +2,7 @@ import { Button, Col, Input, Row, Typography } from 'antd'
 import { MintSymbol } from 'app/shared/components/mint'
 
 import useMintDecimals from 'app/shared/hooks/useMintDecimals'
-import { utils } from '@senswap/sen-js'
+import { utils, account } from '@senswap/sen-js'
 import { useAccount } from 'senhub/providers'
 
 const Wrapper = ({ accountAddr }: { accountAddr: string }) => {
@@ -14,7 +14,7 @@ const Wrapper = ({ accountAddr }: { accountAddr: string }) => {
 
   return (
     <Row gutter={[16, 16]}>
-      {!Boolean(accountAddr) ? (
+      {account.isAddress(accountAddr) ? (
         <Col span={24}>
           <Typography.Text>No data</Typography.Text>
         </Col>

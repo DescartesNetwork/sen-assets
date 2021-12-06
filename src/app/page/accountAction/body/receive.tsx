@@ -1,13 +1,11 @@
+import { account } from '@senswap/sen-js'
 import { Col, Input, Row, Typography } from 'antd'
 import QRcode from 'qrcode.react'
 
 const Receive = ({ accountAddr }: { accountAddr: string }) => {
-  console.log(accountAddr, 'nguyen duy tra')
   return (
     <Row justify="center" gutter={[16, 16]}>
-      {!Boolean(accountAddr) ? (
-        <Typography.Text>No data</Typography.Text>
-      ) : (
+      {account.isAddress(accountAddr) ? (
         <>
           <Col style={{ background: '#f4f4f5', paddingTop: 8 }}>
             <QRcode
@@ -28,6 +26,8 @@ const Receive = ({ accountAddr }: { accountAddr: string }) => {
             </Row>
           </Col>
         </>
+      ) : (
+        <Typography.Text>No data</Typography.Text>
       )}
     </Row>
   )
