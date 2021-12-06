@@ -9,15 +9,17 @@ import Wrap from 'app/page/accountAction/body/wrap'
 import Close from './close'
 
 import { AppState } from 'app/model'
-import { useWallet } from 'senhub/providers'
+import { useAccount, useWallet } from 'senhub/providers'
 
 const Body = () => {
   const [activeKey, setActiveKey] = useState('')
   const { accountSelected } = useSelector((state: AppState) => state.account)
   const { wallet: { address: walletAddress } } = useWallet();
+  const { accounts } = useAccount()
+  const { mint } = accounts[accountSelected] || {}
 
   const isSolAccount = accountSelected === DEFAULT_EMPTY_ADDRESS
-  const isWSolAccount = accountSelected === DEFAULT_WSOL
+  const isWSolAccount = mint === DEFAULT_WSOL
   const transferAddress = useMemo(() => {
     if (isSolAccount) return DEFAULT_EMPTY_ADDRESS
     return accountSelected
