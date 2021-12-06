@@ -1,25 +1,36 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-
 import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { WalletInterface } from '@senswap/sen-js'
+
+import { getEtherNetwork } from 'app/lib/wormhole/helper'
 import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
-import { WormholeEtherSol } from 'app/lib/wormhole/wormhole'
-import storage from 'shared/storage'
+import { fetchTokenEther } from 'app/lib/wormhole/helper'
+import { WormholeProvider } from 'app/lib/wormhole/provider'
+import { HistoryWormhole } from './history.controller'
 import { explorer } from 'shared/util'
 
 /**
  * Interface & Utility
  */
-const netWorkWallet: {
-  ether: IEtherWallet | null
-  solana: WalletInterface | null
-} = {
-  ether: null,
-  solana: null,
+window.wormhole = {
+  sourceWallet: {},
+  targetWallet: {},
+}
+
+export type TokenEtherInfo = {
+  balance: bigint
+  decimals: number
+  logo: string
+  name: string
+  symbol: string
+  thumbnail: string
+  address: string
+  amount: number
 }
 
 export type State = {
   // source wallet
+  sourceTokens: Record<string, TokenEtherInfo>
   sourceChain: ChainId
   sourceWalletAddress: string
   // target wallet
@@ -27,7 +38,8 @@ export type State = {
   targetChain: ChainId
   // other
   tokenAddress: string
-  amount: bigint
+  amount: string
+  processId: string
 }
 
 /**
@@ -37,14 +49,16 @@ export type State = {
 const NAME = 'wormhole'
 const initialState: State = {
   // source wallet
+  sourceTokens: {},
   sourceChain: CHAIN_ID_ETH,
   sourceWalletAddress: '',
   // target wallet
   targetWalletAddress: '',
   targetChain: CHAIN_ID_SOLANA,
-  // other
-  tokenAddress: '0xBA62BCfcAaFc6622853cca2BE6Ac7d845BC0f2Dc',
-  amount: BigInt(10 ** 16),
+  // process
+  tokenAddress: '',
+  amount: '',
+  processId: '',
 }
 
 /**
@@ -52,63 +66,138 @@ const initialState: State = {
  */
 
 export const connectSourceWallet = createAsyncThunk<
-  State,
-  { wallet: IEtherWallet },
-  { state: State }
->(`${NAME}/connectSourceWallet`, async ({ wallet }, { getState }) => {
-  const state = getState()
+  {
+    sourceWalletAddress: string
+    sourceTokens: Record<string, TokenEtherInfo>
+    tokenAddress: string
+  },
+  { wallet: IEtherWallet }
+>(`${NAME}/connectSourceWallet`, async ({ wallet }) => {
+  window.wormhole.sourceWallet.ether = wallet
   const address = await wallet.getAddress()
-  netWorkWallet.ether = wallet
-  return { ...state, sourceWalletAddress: address }
+  const etherNetwork = getEtherNetwork()
+  // fetch wallet's tokens
+  const tokenList = await fetchTokenEther(address, etherNetwork)
+  const tokens: Record<string, TokenEtherInfo> = {}
+  for (const token of tokenList) {
+    tokens[token.address] = token
+  }
+  // select fist token
+  const tokenAddress = tokenList[0]?.address || ''
+
+  return {
+    sourceWalletAddress: address,
+    sourceTokens: tokens,
+    tokenAddress,
+  }
 })
 
 export const disconnectSourceWallet = createAsyncThunk<
   State,
   void,
-  { state: State }
+  { state: any }
 >(`${NAME}/disconnectSourceWallet`, async (_, { getState }) => {
-  const state = getState()
-  return { ...state, sourceWalletAddress: '' }
+  const state = getState().wormhole
+  return {
+    ...state,
+    sourceWalletAddress: '',
+    sourceTokens: {},
+    tokenAddress: '',
+  }
 })
 
 export const connectTargetWallet = createAsyncThunk<
-  State,
-  { wallet: WalletInterface },
-  { state: State }
->(`${NAME}/connectTargetWallet`, async ({ wallet }, { getState }) => {
-  const state = getState()
+  { targetWalletAddress: string },
+  { wallet: WalletInterface }
+>(`${NAME}/connectTargetWallet`, async ({ wallet }) => {
+  window.wormhole.targetWallet.sol = wallet
   const address = await wallet.getAddress()
-  netWorkWallet.solana = wallet
-  return { ...state, targetWalletAddress: address }
+  console.log('address', address)
+  return { targetWalletAddress: address }
 })
 
-export const transfer = createAsyncThunk<State, void, { state: State }>(
-  `${NAME}/transfer`,
-  async (_, { getState }) => {
-    const state = getState()
-    const { ether: etherWallet, solana: solWallet } = netWorkWallet
-    if (!etherWallet || !solWallet) return { ...state }
-    
-    const network = storage.get('network') || 'mainnet'
-    const wormholeEther = new WormholeEtherSol(
-      etherWallet,
-      solWallet,
-      state.tokenAddress,
-      network,
-    )
-    const { attested } = await wormholeEther.isAttested()
-    if (!attested) await wormholeEther.attest()
-    const vaaHex = await wormholeEther.transfer(state.amount)
-    const txId = await wormholeEther.redeem(vaaHex)
+export const setSourceToken = createAsyncThunk<
+  State,
+  { tokenAddress?: string; amount?: string },
+  { state: { wormhole: State } }
+>(`${NAME}/setSourceToken`, async ({ tokenAddress, amount }, { getState }) => {
+  const { wormhole } = getState()
+  const newTokenAddress = tokenAddress || wormhole.tokenAddress
+  const newAmount = amount || wormhole.amount
+  return { ...wormhole, tokenAddress: newTokenAddress, amount: newAmount }
+})
 
+export const setProcess = createAsyncThunk<
+  State,
+  { provider?: WormholeProvider },
+  { state: { wormhole: State } }
+>(`${NAME}/setWormholeProcess`, async ({ provider }, { getState }) => {
+  const { wormhole } = getState()
+  const processId = provider?.context.id || ''
+  return { ...wormhole, processId }
+})
+
+export const transfer = createAsyncThunk<
+  { processId: string },
+  { onUpdate: (provider: WormholeProvider) => void },
+  { state: { wormhole: State } }
+>(`${NAME}/transfer`, async ({ onUpdate }, { getState, dispatch }) => {
+  const {
+    wormhole: { sourceTokens, tokenAddress, amount, processId },
+  } = getState()
+
+  try {
+    const tokenTransfer = sourceTokens[tokenAddress]
+    const { sourceWallet, targetWallet } = window.wormhole
+    if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
+      throw new Error('Login fist')
+
+    let amountTransfer = amount
+    let wormholeEther = new WormholeProvider(
+      sourceWallet.ether,
+      targetWallet.sol,
+      tokenTransfer,
+      onUpdate,
+    )
+    // Restore with process ID
+    if (processId) {
+      wormholeEther = await WormholeProvider.restore(processId, onUpdate)
+      amountTransfer = wormholeEther.transferProvider.data?.amount || '0'
+      onUpdate(wormholeEther)
+    }
+    const txId = await wormholeEther.transfer(amountTransfer)
     window.notify({
       type: 'success',
       description: 'Transfer successfully',
       onClick: () => window.open(explorer(txId), '_blank'),
     })
-    return { ...state }
-  },
-)
+  } catch (error) {
+    window.notify({ type: 'error', description: (error as any).message })
+    await dispatch(setProcess({}))
+  } finally {
+    return { processId: '' }
+  }
+})
+
+export const restoreTransfer = createAsyncThunk<
+  State | void,
+  { historyData: HistoryWormhole },
+  { state: { wormhole: State } }
+>(`${NAME}/restoreTransfer`, async ({ historyData }, { getState }) => {
+  try {
+    const { sourceWallet } = window.wormhole
+    if (!sourceWallet.ether) throw new Error('Login fist')
+    const { wormhole } = getState()
+    const { context } = historyData
+    // restore data
+    const dataRestore = { ...wormhole }
+    dataRestore.tokenAddress = context.tokenInfo.address
+    dataRestore.processId = context.id
+    return { ...dataRestore }
+  } catch (error) {
+    window.notify({ type: 'error', description: (error as any).message })
+  }
+})
 
 /**
  * Usual procedure
@@ -130,6 +219,22 @@ const slice = createSlice({
       )
       .addCase(
         connectTargetWallet.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setSourceToken.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        transfer.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        restoreTransfer.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setProcess.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

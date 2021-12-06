@@ -1,14 +1,10 @@
-import { useState } from 'react'
-
 import { Card, Col, Row } from 'antd'
 import WormAction from './wormAction'
 import WormTitle from './wormTitle'
 import WormWallet from './wormWallet'
-import SelectMintInput from 'app/components/selectMintInput'
+import SelectMintInput from 'app/page/wormhole/mintTransfer'
 
 const WormHole = () => {
-  const [amount, setAmount] = useState<string>('')
-
   return (
     <Card className="card-page" bordered={false}>
       <Row gutter={[14, 14]}>
@@ -19,11 +15,7 @@ const WormHole = () => {
           <WormWallet />
         </Col>
         <Col span={24}>
-          <SelectMintInput
-            accountAddr={''}
-            value={amount}
-            onChange={setAmount}
-          />
+          <SelectMintInput />
         </Col>
         <Col span={24}>
           <WormAction />

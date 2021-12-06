@@ -1,11 +1,32 @@
-import { Card, Col, Row, Typography } from 'antd'
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+
+import { Card, Col, Row, Tabs } from 'antd'
+import Bridge from './wormhole'
+import Transaction from './tracsaction'
+
+import { fetchWormholeHistory } from 'app/model/history.controller'
+import './index.less'
 
 const History = () => {
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(fetchWormholeHistory())
+  }, [dispatch])
+
   return (
-    <Card style={{ height: '33vw', overflow: 'auto' }}>
+    <Card bodyStyle={{ paddingTop: 12 }}>
       <Row gutter={[24, 24]}>
         <Col span={24}>
-          <Typography.Title level={4}>History</Typography.Title>
+          <Tabs>
+            <Tabs.TabPane tab="Wormhole Bridge history" key="Wormhole">
+              <Bridge />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="Transaction history" key="Transaction">
+              <Transaction />
+            </Tabs.TabPane>
+          </Tabs>
         </Col>
       </Row>
     </Card>

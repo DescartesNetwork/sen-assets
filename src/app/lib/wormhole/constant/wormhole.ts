@@ -1,6 +1,33 @@
 import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { SolAddressConfig } from './solConfig'
 
+export enum WormholeStoreKey {
+  Transfer = 'Transfer',
+  Provider = 'Provider',
+  SourceWallet = 'SourceWallet',
+}
+
+export type WormholeStatus = 'pending' | 'error' | 'success'
+
+export const STEP_TRANSFER_AMOUNT = 3
+
+export type TransferData = {
+  step: number
+  amount: string
+  from: string
+  to: string
+  sourceNetWork: {
+    sequence: string
+    emitterAddress: string
+  }
+  wormholeNetWork: {
+    vaaHex: string
+  }
+  redeemSolana: {
+    txId: string
+  }
+}
+
 export const WORMHOLE_RPC_HOST: SolAddressConfig = {
   mainnet: 'https://wormhole-v2-mainnet-api.certus.one',
   testnet: '',
@@ -23,3 +50,20 @@ export const WORMHOLE_NETWORK: {
     logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk/logo.png',
   },
 ]
+
+export const DEFAULT_TRANSFER_DATA: TransferData = {
+  step: 0,
+  amount: '0',
+  from: '',
+  to: '',
+  sourceNetWork: {
+    emitterAddress: '',
+    sequence: '',
+  },
+  wormholeNetWork: {
+    vaaHex: '',
+  },
+  redeemSolana: {
+    txId: '',
+  },
+}

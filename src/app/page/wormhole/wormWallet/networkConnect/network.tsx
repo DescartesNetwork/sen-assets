@@ -1,41 +1,48 @@
-import { Avatar, Button, Col, Row, Select, Space, Typography } from 'antd'
+import {
+  Avatar,
+  Button,
+  Col,
+  Row,
+  Select,
+  Space,
+  Tooltip,
+  Typography,
+} from 'antd'
 import IonIcon from 'shared/ionicon'
 
-import { WORMHOLE_NETWORK } from 'app/lib/wormhole/config/wormhole'
+import { WORMHOLE_NETWORK } from 'app/lib/wormhole/constant/wormhole'
 import { shortenAddress } from 'shared/util'
-import { useWallet } from 'senhub/providers'
 import { ChainId } from '@certusone/wormhole-sdk'
 
-const NetworkConnect = ({
-  address,
-  onConnect,
-  onDisconnect,
+export const NetworkConnect = ({
+  connected,
+  installed,
+  onConnect = () => {},
+  onDisconnect = () => {},
 }: {
-  address: string
-  onConnect: () => void
-  onDisconnect: () => void
+  connected: boolean
+  installed: boolean
+  onConnect?: () => void
+  onDisconnect?: () => void
 }) => {
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
-  if (!address)
+  if (connected)
     return (
-      <Button size="small" onClick={onConnect}>
-        Connect
-      </Button>
-    )
-
-  if (address === walletAddress)
-    return (
-      <Button size="small" disabled>
-        Senhub wallet
+      <Button size="small" onClick={onDisconnect}>
+        Disconnect
       </Button>
     )
 
   return (
-    <Button size="small" onClick={onDisconnect}>
-      Disconnect
-    </Button>
+    <Tooltip title={installed ? '' : 'Install metamask fist'}>
+      <Button
+        size="small"
+        onClick={onConnect}
+        type="primary"
+        disabled={!installed}
+      >
+        Connect
+      </Button>
+    </Tooltip>
   )
 }
 
@@ -43,18 +50,14 @@ const Network = ({
   chainId,
   address,
   onChange = () => {},
-  onConnect = () => {},
-  onDisconnect = () => {},
 }: {
   chainId: ChainId
   address: string
   onChange?: (chainId: ChainId) => void
-  onConnect?: () => void
-  onDisconnect?: () => void
 }) => {
   return (
-    <Row gutter={[16, 16]}>
-      <Col flex="auto">
+    <Row>
+      <Col span={24}>
         <Select
           onChange={(value) => onChange(Number(value) as ChainId)}
           value={String(chainId)}
@@ -67,7 +70,10 @@ const Network = ({
           disabled
         >
           {WORMHOLE_NETWORK.map((network) => (
-            <Select.Option value={String(network.chainID)} key={network.chainID}>
+            <Select.Option
+              value={String(network.chainID)}
+              key={network.chainID}
+            >
               <Space>
                 <Avatar
                   src={network.logo}
@@ -88,13 +94,6 @@ const Network = ({
             </Select.Option>
           ))}
         </Select>
-      </Col>
-      <Col>
-        <NetworkConnect
-          address={address}
-          onConnect={onConnect}
-          onDisconnect={onDisconnect}
-        />
       </Col>
     </Row>
   )

@@ -4,8 +4,8 @@ import Settings from 'app/page/walletAccounts/settings/settings'
 
 const SenAssets = () => {
   return (
-    <Card className="card-page card-sen-assets" bordered={false}>
-      <Row gutter={[24, 24]}>
+  <Card className="card-page card-sen-assets" bordered={false}>
+      <Row gutter={[24, 24]} align="middle">
         {/* Header */}
         <Col flex="auto">
           <Typography.Title level={4}>Sen Assets</Typography.Title>

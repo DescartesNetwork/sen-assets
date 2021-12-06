@@ -21,13 +21,12 @@ const initialState: State = {
  * Actions
  */
 
-export const selectAccount = createAsyncThunk<
-  State,
-  { account: string },
-  { state: State }
->(`${NAME}/selectAccount`, async ({ account }) => {
-  return { accountSelected: account }
-})
+export const selectAccount = createAsyncThunk<State, { account: string }>(
+  `${NAME}/selectAccount`,
+  async ({ account }) => {
+    return { accountSelected: account }
+  },
+)
 
 /**
  * Usual procedure

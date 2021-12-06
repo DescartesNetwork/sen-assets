@@ -8,9 +8,10 @@
     "@metamask/detect-provider": "^1.2.0",
     "@project-serum/sol-wallet-adapter": "^0.2.6",
     "@reduxjs/toolkit": "^1.6.2",
-    "@senswap/sen-js": "^1.1.0",
+    "@senswap/sen-js": "^1.2.4",
     "@solana/spl-token-registry": "^0.2.459",
     "antd": "^4.17.0-alpha.7",
+    "axios": "^0.24.0",
     "bs58": "^4.0.1",
     "ethers": "^5.5.1",
     "flexsearch": "^0.7.21",
@@ -32,7 +33,6 @@
     "remarkable": "^2.0.1",
     "swiper": "^7.2.0",
     "tweetnacl": "^1.0.3",
-    "typescript": "^4.4.3",
     "web-vitals": "^2.1.1"
   },
   "scripts": {
@@ -88,8 +88,10 @@
     "less-loader": "^10.2.0",
     "postcss": "^8.3.11",
     "postcss-prefixwrap": "^1.25.0",
+    "prettier": "2.5.0",
     "serve": "^12.0.1",
     "stream-browserify": "^3.0.0",
+    "typescript": "^4.5.2",
     "util": "^0.12.4"
   }
 }

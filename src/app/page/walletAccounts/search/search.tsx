@@ -65,6 +65,7 @@ const Search = ({
           placeholder="Search"
           value={keyword}
           size="large"
+          style={{ background: 'transparent' }}
           prefix={
             <Button
               type="text"
