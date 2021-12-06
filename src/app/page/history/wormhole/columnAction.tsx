@@ -6,14 +6,11 @@ import IonIcon from 'shared/ionicon'
 
 import {
   STEP_TRANSFER_AMOUNT,
+  TransferState,
   WormholeStatus,
 } from 'app/lib/wormhole/constant/wormhole'
-import { WormholeProvider } from 'app/lib/wormhole/provider'
 import { AppDispatch, AppState } from 'app/model'
-import {
-  TransferState,
-  updateWormholeHistory,
-} from 'app/model/history.controller'
+import { updateWormholeHistory } from 'app/model/history.controller'
 import { restoreTransfer, transfer } from 'app/model/wormhole.controller'
 import { explorer } from 'shared/util'
 

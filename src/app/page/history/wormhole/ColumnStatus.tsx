@@ -4,9 +4,9 @@ import { useSelector } from 'react-redux'
 import StatusTag from '../statusTags'
 
 import { AppState } from 'app/model'
-import { TransferState } from 'app/model/history.controller'
 import {
   STEP_TRANSFER_AMOUNT,
+  TransferState,
   WormholeStatus,
 } from 'app/lib/wormhole/constant/wormhole'
 

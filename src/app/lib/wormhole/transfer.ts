@@ -20,11 +20,11 @@ import {
 } from './helper'
 import { WormholeProvider } from './provider'
 import {
-  DEFAULT_TRANSFER_DATA,
   TransferData,
+  TransferState,
   WormholeStoreKey,
 } from './constant/wormhole'
-import { TransferState } from 'app/model/history.controller'
+import { DEFAULT_TRANSFER_DATA } from './constant/default'
 
 export class WormholeTransfer extends WormholeProvider {
   data: TransferData | undefined
@@ -38,7 +38,6 @@ export class WormholeTransfer extends WormholeProvider {
     const data = await getWormholeDb<Record<string, TransferState>>(
       WormholeStoreKey.Transfer,
     )
-    console.log('data', data)
     return { ...data }
   }
 

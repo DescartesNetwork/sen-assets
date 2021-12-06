@@ -4,13 +4,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Button, Checkbox, Col, Row } from 'antd'
 
 import { AppState } from 'app/model'
-import { WormholeProvider } from 'app/lib/wormhole/provider'
-import {
-  TransferState,
-  updateWormholeHistory,
-} from 'app/model/history.controller'
+import { updateWormholeHistory } from 'app/model/history.controller'
 import { Progress } from 'app/components/progress'
 import { setProcess, transfer } from 'app/model/wormhole.controller'
+import { TransferState } from 'app/lib/wormhole/constant/wormhole'
 
 const ConfirmAction = ({
   onClose = () => {},

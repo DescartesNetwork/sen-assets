@@ -4,8 +4,8 @@ import ColumAction from './columnAction'
 import HistoryStatus from './ColumnStatus'
 
 import { WormholeContext } from 'app/lib/wormhole/context'
-import { TransferState } from 'app/model/history.controller'
 import { shortenAddress } from 'shared/util'
+import { TransferState } from 'app/lib/wormhole/constant/wormhole'
 
 export const WORMHOLE_COLUMNS = [
   {

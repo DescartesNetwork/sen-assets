@@ -5,8 +5,8 @@ import { WalletInterface } from '@senswap/sen-js'
 import { getEtherNetwork } from 'app/lib/wormhole/helper'
 import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
 import { fetchTokenEther } from 'app/lib/wormhole/helper'
-import { WormholeProvider } from 'app/lib/wormhole/provider'
-import { TransferState } from './history.controller'
+import { TransferState } from 'app/lib/wormhole/constant/wormhole'
+
 import { explorer } from 'shared/util'
 import { WormholeTransfer } from 'app/lib/wormhole/transfer'
 
@@ -113,7 +113,6 @@ export const connectTargetWallet = createAsyncThunk<
 >(`${NAME}/connectTargetWallet`, async ({ wallet }) => {
   window.wormhole.targetWallet.sol = wallet
   const address = await wallet.getAddress()
-  console.log('address', address)
   return { targetWalletAddress: address }
 })
 

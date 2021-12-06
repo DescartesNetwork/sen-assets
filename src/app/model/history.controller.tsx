@@ -1,10 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import {
-  DEFAULT_TRANSFER_DATA,
-  TransferData,
-} from 'app/lib/wormhole/constant/wormhole'
-import { WormholeContext } from 'app/lib/wormhole/context'
-import { WormholeProvider } from 'app/lib/wormhole/provider'
+
+import { TransferState } from 'app/lib/wormhole/constant/wormhole'
 import { WormholeTransfer } from 'app/lib/wormhole/transfer'
 
 /**
@@ -19,10 +15,6 @@ export type State = {
 /**
  * Store constructor
  */
-export type TransferState = {
-  context: WormholeContext
-  transferData: TransferData
-}
 
 const NAME = 'history'
 const initialState: State = {
@@ -39,9 +31,7 @@ export const fetchWormholeHistory = createAsyncThunk<{
   const listTransferState = await WormholeTransfer.fetchAll()
   const history: TransferState[] = Object.values(listTransferState)
   return {
-    wormhole: history.sort((a, b) =>
-      a.context.time < b.context.time ? 1 : -1,
-    ),
+    wormhole: history.reverse(),
   }
 })
 
