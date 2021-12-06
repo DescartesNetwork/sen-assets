@@ -40,7 +40,7 @@ export const fetchTokenEther = async (
   address: string,
   networkName: string,
 ): Promise<TokenEtherInfo[]> => {
-  if (networkName === 'mainnet') networkName = 'ether'
+  if (networkName === 'mainnet') networkName = 'eth'
   const tokens = []
   const { data } = await axios({
     method: 'get',

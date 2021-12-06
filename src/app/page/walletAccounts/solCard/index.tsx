@@ -20,7 +20,7 @@ import { PriceChange } from 'app/components/price'
 
 
 
-const Sol = ({ onClick = () => { } }: { onClick?: (address: string) => void }) => {
+const Sol = ({ onClick = () => { }, active = false }: { onClick?: (address: string) => void, active?: boolean }) => {
   const [cgkData, setCGKData] = useState<CgkData>()
 
   const { wallet: { lamports } } = useWallet()
@@ -35,6 +35,10 @@ const Sol = ({ onClick = () => { } }: { onClick?: (address: string) => void }) =
 
   return (
     <Card
+      style={{
+        border: `1px solid ${active ? '#F9575E' : 'transparent'}`,
+        borderRadius: 8
+      }}
       bodyStyle={{ padding: '8px 12px', cursor: 'pointer' }}
       onClick={() => onClick(DEFAULT_EMPTY_ADDRESS)}
       bordered={false}

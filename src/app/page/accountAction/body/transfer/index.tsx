@@ -6,7 +6,7 @@ import Destination from './destination'
 
 import { useAccount } from 'senhub/providers'
 import { explorer } from 'shared/util'
-import { account, DEFAULT_EMPTY_ADDRESS, utils } from '@senswap/sen-js'
+import { account, DEFAULT_EMPTY_ADDRESS, DEFAULT_WSOL, utils } from '@senswap/sen-js'
 import useMintDecimals from 'app/shared/hooks/useMintDecimals'
 
 const Transfer = ({ accountAddr }: { accountAddr: string }) => {
@@ -17,7 +17,7 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
 
   const { mint, amount: maxAmount } = accounts[accountAddr] || {}
   const decimals = useMintDecimals(mint)
-  const isSolAccount = useMemo(() => { return accountAddr === DEFAULT_EMPTY_ADDRESS }, [accountAddr])
+  const isSolAccount = useMemo(() => { return accountAddr === DEFAULT_EMPTY_ADDRESS || accountAddr === DEFAULT_WSOL }, [accountAddr])
   const tokenDecimal = useMemo(() => { return isSolAccount ? 9 : decimals }, [isSolAccount, decimals])
 
   const disabledTransfer = useMemo(() => {

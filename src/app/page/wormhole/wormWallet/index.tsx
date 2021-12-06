@@ -7,8 +7,12 @@ import TargetWallet from './networkConnect/targetWallet'
 
 const WormWallet = () => {
   return (
-    <Card bordered={false}>
-      <Row gutter={[12, 12]} justify="center">
+    <Card
+      bordered={false}
+      className="account-item"
+      bodyStyle={{ padding: 16 }}
+    >
+      <Row gutter={[16, 16]} justify="center">
         <Col span={24}>
           <WalletTitle title="Source Network" label="Source" />
           <SourceWallet />

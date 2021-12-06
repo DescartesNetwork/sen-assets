@@ -15,7 +15,7 @@ const Receive = ({ accountAddr }: { accountAddr: string }) => {
       <Col span={24}>
         <Row gutter={[8, 8]}>
           <Col span={24}>
-            <Typography.Text>SOL receive address</Typography.Text>
+            <Typography.Text>Wallet address</Typography.Text>
           </Col>
           <Col span={24}>
             <Input size="large" value={accountAddr} />
