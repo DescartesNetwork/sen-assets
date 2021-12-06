@@ -16,7 +16,7 @@ window.wormhole = {
 }
 
 export type TokenEtherInfo = {
-  balance: bigint
+  balance: string
   decimals: number
   logo: string
   name: string

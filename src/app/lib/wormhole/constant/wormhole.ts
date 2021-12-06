@@ -16,16 +16,10 @@ export type TransferData = {
   amount: string
   from: string
   to: string
-  sourceNetWork: {
-    sequence: string
-    emitterAddress: string
-  }
-  wormholeNetWork: {
-    vaaHex: string
-  }
-  redeemSolana: {
-    txId: string
-  }
+  sequence: string
+  emitterAddress: string
+  vaaHex: string
+  txId: string
 }
 export type TransferState = {
   context: WormholeContext

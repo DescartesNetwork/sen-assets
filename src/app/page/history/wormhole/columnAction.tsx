@@ -58,7 +58,7 @@ const ColumAction = ({ data }: { data: TransferState }) => {
         onClick: () => window.open(explorer(txId), '_blank'),
       })
     } catch (error) {
-      console.log("error",error)
+      console.log('error', error)
       await dispatch(setProcess({ id: '' })).unwrap()
       window.notify({ type: 'error', description: (error as any).message })
     }
@@ -70,9 +70,7 @@ const ColumAction = ({ data }: { data: TransferState }) => {
       <Button
         type="text"
         size="large"
-        onClick={() =>
-          window.open(explorer(data.transferData.redeemSolana.txId), '_blank')
-        }
+        onClick={() => window.open(explorer(data.transferData.txId), '_blank')}
         icon={<IonIcon name="open-outline" />}
       />
     )

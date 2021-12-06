@@ -55,6 +55,7 @@ const ConfirmAction = ({
     } catch (error) {
       await dispatch(setProcess({ id: '' })).unwrap()
       window.notify({ type: 'error', description: (error as any).message })
+      console.log('error-->', error)
     } finally {
       setLoading(false)
     }
