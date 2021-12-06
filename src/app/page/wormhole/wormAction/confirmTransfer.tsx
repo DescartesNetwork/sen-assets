@@ -3,25 +3,29 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Checkbox, Col, Row } from 'antd'
 
-import { AppState } from 'app/model'
-import { WormholeProvider } from 'app/lib/wormhole/provider'
+import { AppDispatch, AppState } from 'app/model'
 import { updateWormholeHistory } from 'app/model/history.controller'
 import { Progress } from 'app/components/progress'
-import { setProcess, transfer } from 'app/model/wormhole.controller'
+import { setProcess } from 'app/model/wormhole.controller'
+import { TransferState } from 'app/lib/wormhole/constant/wormhole'
+import { WormholeTransfer } from 'app/lib/wormhole/transfer'
+import { explorer } from 'shared/util'
 
 const ConfirmAction = ({
   onClose = () => {},
 }: {
   onClose?: (visible: boolean) => void
 }) => {
-  const dispatch = useDispatch()
-  const wormholeState = useSelector((state: AppState) => state.wormhole)
+  const dispatch = useDispatch<AppDispatch>()
+  const { sourceTokens, tokenAddress, amount } = useSelector(
+    (state: AppState) => state.wormhole,
+  )
   const [acceptable, setAcceptable] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const onUpdate = async (provider: WormholeProvider) => {
-    await dispatch(setProcess({ provider }))
-    await dispatch(updateWormholeHistory({ provider }))
+  const onUpdate = async (stateTransfer: TransferState) => {
+    await dispatch(setProcess({ id: stateTransfer.context.id }))
+    await dispatch(updateWormholeHistory({ stateTransfer }))
     window.notify({
       type: 'warning',
       description: 'Pending transfer from Ethereum',
@@ -29,14 +33,29 @@ const ConfirmAction = ({
   }
 
   const onTransfer = async () => {
-    setLoading(true)
+    await setLoading(true)
     try {
-      await dispatch(transfer({ onUpdate }))
-    } catch (error) {
+      //Transfer
+      const { sourceWallet, targetWallet } = window.wormhole
+      const tokenTransfer = sourceTokens[tokenAddress]
+      if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
+        throw new Error('Login fist')
+
+      let wormholeTransfer = new WormholeTransfer(
+        sourceWallet.ether,
+        targetWallet.sol,
+        tokenTransfer,
+      )
+      const txId = await wormholeTransfer.transfer(amount, onUpdate)
       window.notify({
-        type: 'error',
-        description: (error as any).message,
+        type: 'success',
+        description: 'Transfer successfully',
+        onClick: () => window.open(explorer(txId), '_blank'),
       })
+    } catch (error) {
+      await dispatch(setProcess({ id: '' })).unwrap()
+      window.notify({ type: 'error', description: (error as any).message })
+      console.log('error-->', error)
     } finally {
       setLoading(false)
     }
@@ -66,7 +85,7 @@ const ConfirmAction = ({
           disabled={!acceptable}
           loading={loading}
         >
-          Approve {wormholeState.amount} token
+          Approve {amount} token
         </Button>
       </Col>
       <Col>

@@ -20,81 +20,100 @@ import {
 } from './helper'
 import { WormholeProvider } from './provider'
 import {
-  DEFAULT_TRANSFER_DATA,
   TransferData,
+  TransferState,
   WormholeStoreKey,
 } from './constant/wormhole'
+import { DEFAULT_TRANSFER_DATA } from './constant/default'
 
-export class WormholeTransfer {
-  wormhole: WormholeProvider
+export class WormholeTransfer extends WormholeProvider {
   data: TransferData | undefined
-  constructor(wormhole: WormholeProvider) {
-    this.wormhole = wormhole
+
+  getState = (): TransferState => {
+    if (!this.data) throw new Error('Invalid data transfer')
+    return { transferData: this.data, context: this.context }
   }
 
-  static fetchAll = async (): Promise<Record<string, TransferData>> => {
-    const data = await getWormholeDb<Record<string, TransferData>>(
+  static fetchAll = async (): Promise<Record<string, TransferState>> => {
+    const data = await getWormholeDb<Record<string, TransferState>>(
       WormholeStoreKey.Transfer,
     )
-    return data || {}
+    return JSON.parse(JSON.stringify(data))
   }
 
-  restore = async () => {
-    const contextId = this.wormhole.context.id
+  restore = async (id: string) => {
     const database = await WormholeTransfer.fetchAll()
-    const data = database[contextId]
-    if (!data) throw new Error('Invalid context id')
-    this.data = data
-    return this.data
+    const state = database[id]
+    if (!state) throw new Error('Not find state transfer')
+    this.data = state.transferData
+    this.context = state.context
   }
 
   backup = async () => {
-    if (!this.data) throw new Error('Invalid data')
-    // next step
-    this.data.step++
-    // write to database
-    const transferData = await WormholeTransfer.fetchAll()
-    transferData[this.wormhole.context.id] = this.data
-    setWormholeDb(WormholeStoreKey.Transfer, transferData)
-    await this.wormhole.backup()
-    // update status
-    await this.wormhole.callbackUpdate(this.wormhole)
-    return this.wormhole
+    const database = await WormholeTransfer.fetchAll()
+    const state = this.getState()
+    state.transferData.step++
+    database[state.context.id] = state
+    setWormholeDb(WormholeStoreKey.Transfer, database)
+    return state
   }
 
-  transfer = async (amount: string) => {
+  /**
+   * Transfer: to brigde tokens from origin chain to destination chain
+   * The token must be attested beforehand
+   * @param amount
+   * @returns
+   */
+
+  transfer = async (
+    amount: string,
+    onUpdate: (state: TransferState) => void,
+  ) => {
     // init data transfer
     if (!this.data) {
       this.data = { ...DEFAULT_TRANSFER_DATA }
-      this.data.from = await this.wormhole.srcWallet.getAddress()
-      this.data.to = await this.wormhole.targetWallet.getAddress()
+      this.data.from = await this.srcWallet.getAddress()
+      this.data.to = await this.targetWallet.getAddress()
       this.data.amount = amount
     }
 
-    switch (this.data.step) {
-      case 0:
-        return this.transferSourceNetWork()
-      case 1:
-        return this.waitSignedWormhole()
-      case 2:
-        return this.redeemSolana()
+    let state = this.getState()
+    if (this.data.step === 0) {
+      const { emitterAddress, sequence } = await this.transferSourceNetWork()
+      state.transferData.emitterAddress = emitterAddress
+      state.transferData.sequence = sequence
+      const newState = await this.backup()
+      await onUpdate(newState)
     }
+
+    if (this.data.step === 1) {
+      const vaaHex = await this.waitSignedWormhole()
+      state.transferData.vaaHex = vaaHex
+      const newState = await this.backup()
+      await onUpdate(newState)
+    }
+
+    if (this.data.step === 2) {
+      const txId = await this.redeemSolana()
+      state.transferData.txId = txId
+      const newState = await this.backup()
+      await onUpdate(newState)
+      return txId
+    }
+
     throw new Error('Invalid step transfer')
   }
 
-  // step 0
   private transferSourceNetWork = async () => {
-    if (!this.wormhole) throw new Error('Invalid context')
-    if (!this.data) throw new Error('Invalid data')
-    const { context, srcWallet, targetWallet, isAttested } = this.wormhole
+    const { transferData, context } = this.getState()
     // get context
-    let { wrappedMintAddress } = await isAttested()
+    let { wrappedMintAddress } = await this.isAttested()
     if (!wrappedMintAddress) throw new Error('Attest the token first')
     // get provider
-    const provider = await srcWallet.getProvider()
+    const provider = await this.srcWallet.getProvider()
     const signer = provider.getSigner()
     const amountTransfer = utils.decimalize(
-      this.data.amount,
+      transferData.amount,
       context.tokenInfo.decimals,
     )
 
@@ -109,7 +128,7 @@ export class WormholeTransfer {
 
     const dstAddress = await getAssociatedAddress(
       wrappedMintAddress,
-      targetWallet,
+      this.targetWallet,
     )
     const transferReceipt = await transferFromEth(
       context.srcTokenBridgeAddress,
@@ -125,22 +144,17 @@ export class WormholeTransfer {
       context.srcBridgeAddress,
     )
     const emitterAddress = getEmitterAddressEth(context.srcTokenBridgeAddress)
-    this.data.sourceNetWork = {
+    // next step
+    return {
       sequence,
       emitterAddress,
     }
-    await this.backup()
-    // next step
-    return this.waitSignedWormhole()
   }
 
-  // step 1
   private async waitSignedWormhole() {
-    if (!this.wormhole) throw new Error('Invalid context')
-    if (!this.data) throw new Error('Invalid data')
-    const { context } = this.wormhole
+    const { transferData, context } = this.getState()
     // get data prevStep
-    const { emitterAddress, sequence } = this.data.sourceNetWork
+    const { emitterAddress, sequence } = transferData
     // Get signedVAA
     const { vaaBytes } = await getSignedVAAWithRetry(
       context.wormholeRpc,
@@ -149,43 +163,34 @@ export class WormholeTransfer {
       sequence,
     )
     const vaaHex = Buffer.from(vaaBytes).toString('hex')
-    // backup
-    this.data.wormholeNetWork.vaaHex = vaaHex
-    await this.backup()
-    // next step
-    return this.redeemSolana()
+    return vaaHex
   }
 
-  // step 2
   private async redeemSolana() {
-    if (!this.wormhole) throw new Error('Invalid context')
-    if (!this.data) throw new Error('Invalid data')
-    const { context, targetWallet, connection } = this.wormhole
+    const { transferData, context } = this.getState()
+
     // get data prevStep
-    const { vaaHex } = this.data.wormholeNetWork
+    const { vaaHex } = transferData
     const vaaBytes = hexToUint8Array(vaaHex)
 
-    const payerAddress = await targetWallet.getAddress()
+    const payerAddress = await this.targetWallet.getAddress()
     await postVaaSolana(
-      connection,
-      targetWallet.signTransaction,
+      this.connection,
+      this.targetWallet.signTransaction,
       context.targetBridgeAddress,
       payerAddress,
       Buffer.from(vaaBytes),
     )
 
     const tx = await redeemOnSolana(
-      connection,
+      this.connection,
       context.targetBridgeAddress,
       context.targetTokenBridgeAddress,
       payerAddress,
       vaaBytes,
     )
-    const signedTx = await targetWallet.signTransaction(tx)
-    const txId = await sendTransaction(signedTx, connection)
-    //
-    this.data.redeemSolana.txId = txId
-    await this.backup()
+    const signedTx = await this.targetWallet.signTransaction(tx)
+    const txId = await sendTransaction(signedTx, this.connection)
     return txId
   }
 }

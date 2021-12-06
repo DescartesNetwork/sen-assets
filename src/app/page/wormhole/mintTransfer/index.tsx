@@ -22,7 +22,7 @@ const SelectMintInput = () => {
         <Typography.Text>Amount</Typography.Text>
       </Col>
       <Col>
-        <Typography.Text>Availble: {maxAmount || 0}</Typography.Text>
+        <Typography.Text>Available: {maxAmount || 0}</Typography.Text>
       </Col>
       <Col span={24}>
         <NumericInput
