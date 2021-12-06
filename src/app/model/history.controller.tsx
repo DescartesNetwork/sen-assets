@@ -47,7 +47,7 @@ export const updateWormholeHistory = createAsyncThunk<
   } = getState()
   const id = stateTransfer.context.id
   const newHistory = wormhole.filter((val) => val.context.id !== id)
-  newHistory.unshift(stateTransfer)
+  newHistory.unshift(JSON.parse(JSON.stringify(stateTransfer)))
   return { wormhole: newHistory }
 })
 

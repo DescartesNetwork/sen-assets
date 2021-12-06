@@ -1,7 +1,8 @@
+import moment from 'moment'
 import { Space, Typography } from 'antd'
 import NetworkAvatar from 'app/components/network/networkAvatar'
 import ColumAction from './columnAction'
-import HistoryStatus from './ColumnStatus'
+import HistoryStatus from './columnStatus'
 
 import { WormholeContext } from 'app/lib/wormhole/context'
 import { shortenAddress } from 'shared/util'
@@ -14,7 +15,7 @@ export const WORMHOLE_COLUMNS = [
     render: (context: WormholeContext) => {
       return (
         <Typography.Text>
-          {new Date(context.time).toLocaleString()}
+          {moment(context.time).format('DD MMM, YYYY hh:mm')}
         </Typography.Text>
       )
     },

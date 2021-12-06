@@ -52,7 +52,6 @@ export const fetchTokenEther = async (
   })
   for (const token of data) {
     token.decimals = Number(token.decimals)
-    token.balance = BigInt(token.balance)
     token.amount = utils.undecimalize(token.balance, token.decimals)
     token.address = token.token_address
     tokens.push(token)
