@@ -1,4 +1,4 @@
-import { DEFAULT_EMPTY_ADDRESS, utils } from '@senswap/sen-js'
+import { DEFAULT_EMPTY_ADDRESS, DEFAULT_WSOL, utils } from '@senswap/sen-js'
 
 import { Row, Col, Typography, Button } from 'antd'
 import { MintSymbol } from 'app/shared/components/mint'
@@ -24,7 +24,7 @@ const Source = ({
   const balance = utils.undecimalize(maxAmount, decimals)
   const { wallet: { lamports } } = useWallet()
   const balanceSol = utils.undecimalize(lamports, 9)
-  const isSolAccount = accountAddr === DEFAULT_EMPTY_ADDRESS
+  const isSolAccount = accountAddr === DEFAULT_EMPTY_ADDRESS || accountAddr === DEFAULT_WSOL
 
   const sourceBalance = useMemo(() => {
     if (isSolAccount) return balanceSol

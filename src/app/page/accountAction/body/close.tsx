@@ -19,14 +19,13 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
       const { txId } = await splt.closeAccount(accountSelected, wallet)
       await window.notify({
         type: 'success',
-        description: `Close ${
-          accountSelected.substring(0, 6) +
+        description: `Close ${accountSelected.substring(0, 6) +
           '...' +
           accountSelected.substring(
             accountSelected.length - 6,
             accountSelected.length,
           )
-        } successfully. Click to view details.`,
+          } successfully. Click to view details.`,
         onClick: () => window.open(explorer(txId), '_blank'),
       })
     } catch (er) {
@@ -35,34 +34,26 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
   }
 
   return (
-    <Card bordered={false}>
+    <Card bordered={false} className="close-account">
       <Row gutter={[16, 16]}>
-        {Object.keys(account).length === 0 ? (
-          <Col span={24}>
-            <Typography.Text>No data</Typography.Text>
-          </Col>
-        ) : (
-          <>
-            <Col span={24}>
-              <Space>
-                <IonIcon name="alert-circle-outline" />
-                <Typography.Text>
-                  Please transfer out all tokens in this account before closing!
+        <Col span={24}>
+          <Space>
+            <IonIcon name="alert-circle-outline" />
+            <Typography.Text>
+              Please transfer out all tokens in this account before closing!
                 </Typography.Text>
-              </Space>
-            </Col>
-            <Col span={24}>
-              <Button
-                type="primary"
-                onClick={close}
-                disabled={Boolean(account.amount)}
-                block
-              >
-                Close Account
+          </Space>
+        </Col>
+        <Col span={24}>
+          <Button
+            type="primary"
+            onClick={close}
+            disabled={Boolean(account.amount)}
+            block
+          >
+            Close Account
               </Button>
-            </Col>
-          </>
-        )}
+        </Col>
       </Row>
     </Card>
   )

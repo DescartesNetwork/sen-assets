@@ -41,8 +41,8 @@ export const fetchTokenEther = async (
   address: string,
   networkName: string,
 ): Promise<TokenEtherInfo[]> => {
-  if (networkName === 'mainnet') networkName = 'ether'
-  const tokens: TokenEtherInfo[] = []
+  if (networkName === 'mainnet') networkName = 'eth'
+  const tokens = []
   const { data } = await axios({
     method: 'get',
     url: `https://deep-index.moralis.io/api/v2/${address}/erc20?chain=${networkName}`,

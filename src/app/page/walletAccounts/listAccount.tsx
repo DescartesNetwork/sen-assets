@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { AccountData } from '@senswap/sen-js'
+import { AccountData, DEFAULT_EMPTY_ADDRESS } from '@senswap/sen-js'
 
 import { Col, Row } from 'antd'
 import AccountItem from './accountItem'
@@ -17,6 +17,8 @@ const ListAccount = () => {
   const { accountSelected } = useSelector((state: AppState) => state.account)
   const [listAccount, setListAccount] = useState<string[]>([])
   const { tokenProvider } = useMint()
+
+  const isSolAccount = accountSelected === DEFAULT_EMPTY_ADDRESS
 
   const onSearch = useCallback(
     async (accounts: Record<string, AccountData>) => {
@@ -40,8 +42,8 @@ const ListAccount = () => {
   )
 
   useEffect(() => {
-    if (accountSelected || !listAccount[0]) return
-    dispatch(selectAccount({ account: listAccount[0] }))
+    if (accountSelected) return
+    dispatch(selectAccount({ account: DEFAULT_EMPTY_ADDRESS }))
   }, [accountSelected, dispatch, listAccount])
 
   return (
@@ -50,7 +52,7 @@ const ListAccount = () => {
         <Search onChange={onSearch} />
       </Col>
       <Col span={24}>
-        <Sol onClick={(account) => dispatch(selectAccount({ account }))} />
+        <Sol active={isSolAccount} onClick={(account) => dispatch(selectAccount({ account }))} />
       </Col>
       {listAccount.map((address) => (
         <Col span={24} key={address}>

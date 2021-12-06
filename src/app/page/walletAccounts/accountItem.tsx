@@ -8,7 +8,7 @@ import Balance from 'app/components/balance'
 const AccountItem = ({
   accountAddr,
   active = false,
-  onClick = () => {},
+  onClick = () => { },
 }: {
   accountAddr: string
   active?: boolean

@@ -17,7 +17,7 @@ import IonIcon from 'shared/ionicon'
 import { useAccount, useMint, useWallet } from 'senhub/providers'
 import { explorer } from 'shared/util'
 import { TokenInfo } from '@solana/spl-token-registry'
-import PowerBy from 'os/components/powerBy'
+import PoweredBy from 'os/components/poweredBy'
 
 const KEYSIZE = 3
 
@@ -134,7 +134,7 @@ const Search = ({ onChange }: { onChange: (data: TokenInfo[] | null) => void }) 
             icon={<IonIcon name={keyword ? 'close-outline' : 'search-outline'} />}
           />
         }
-        suffix={<PowerBy />}
+        suffix={<PoweredBy />}
         onChange={(e) => setKeyword(e.target.value)}
       />
     </Card>
