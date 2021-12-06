@@ -1,4 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import moment from 'moment'
+
+import { TransLogService } from 'app/lib/stat/logic/translog'
 import {
   DEFAULT_TRANSFER_DATA,
   TransferData,
@@ -6,6 +9,7 @@ import {
 import { WormholeContext } from 'app/lib/wormhole/context'
 import { WormholeProvider } from 'app/lib/wormhole/provider'
 import { WormholeTransfer } from 'app/lib/wormhole/transfer'
+import { utils } from '@senswap/sen-js'
 
 /**
  * Interface & Utility
@@ -13,7 +17,7 @@ import { WormholeTransfer } from 'app/lib/wormhole/transfer'
 
 export type State = {
   wormhole: HistoryWormhole[]
-  transaction: []
+  transaction: TransactionTransferHistoryData[]
 }
 
 /**
@@ -22,6 +26,17 @@ export type State = {
 export type HistoryWormhole = {
   context: WormholeContext
   transfer: TransferData
+}
+export type TransactionTransferHistoryData = {
+  time: string
+  transactionId: string
+  from?: string
+  to?: string
+  amount?: number
+  status: string
+  key: string
+  mint?: string
+  isReceive: boolean
 }
 
 const NAME = 'history'
@@ -77,6 +92,48 @@ export const updateWormholeHistory = createAsyncThunk<
   return { wormhole: newHistory }
 })
 
+export const fetchTransactionHistory = createAsyncThunk<
+  { transaction: TransactionTransferHistoryData[] },
+  { programId: string }
+>(`${NAME}/fetchTransactionHistory`, async ({ programId }) => {
+  const splt = window.sentre.splt
+  const useTranslogService = new TransLogService(programId)
+  const collectData = await useTranslogService.collect()
+  const history: TransactionTransferHistoryData[] = []
+  const address = (await window.sentre.wallet?.getAddress()) || ''
+
+  for (const transLogItem of collectData) {
+    const translog = {} as TransactionTransferHistoryData
+    if (transLogItem.programTransfer.length === 0) continue
+    const actionTransfer = transLogItem.programTransfer[0]
+    const myWalletAddress = await splt.deriveAssociatedAddress(
+      address,
+      actionTransfer.destination?.mint || '',
+    )
+    const time = new Date(transLogItem.blockTime * 1000)
+
+    translog.time = moment(time).format('DD MMM, YYYY hh:mm')
+    translog.key = transLogItem.signature
+    translog.transactionId = transLogItem.programId
+
+    translog.amount = Number(
+      utils.undecimalize(
+        BigInt(actionTransfer.amount),
+        actionTransfer.destination?.decimals || 9,
+      ),
+    )
+    translog.from = actionTransfer.source?.address
+    translog.to = actionTransfer.destination?.address
+    translog.status = 'success'
+    translog.mint = actionTransfer.destination?.mint
+    translog.isReceive =
+      myWalletAddress === actionTransfer.destination?.address ? true : false
+    history.push(translog)
+  }
+
+  return { transaction: history }
+})
+
 /**
  * Usual procedure
  */
@@ -93,6 +150,10 @@ const slice = createSlice({
       )
       .addCase(
         updateWormholeHistory.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        fetchTransactionHistory.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

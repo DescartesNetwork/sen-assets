@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux'
 
 import { Card, Col, Row, Tabs } from 'antd'
 import Bridge from './wormhole'
-import Transaction from './tracsaction'
+import Transaction from './transaction'
 
 import { fetchWormholeHistory } from 'app/model/history.controller'
 import './index.less'
