@@ -1,7 +1,7 @@
 import { Space, Typography } from 'antd'
 import NetworkAvatar from 'app/components/network/networkAvatar'
 import ColumAction from './columnAction'
-import HistoryStatus from './ColumnStatus'
+import HistoryStatus from './columnStatus'
 
 import { WormholeContext } from 'app/lib/wormhole/context'
 import { shortenAddress } from 'shared/util'

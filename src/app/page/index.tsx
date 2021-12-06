@@ -19,7 +19,7 @@ const Page = () => {
       <Col xl={8} md={12} sm={24}>
         <WormHole />
       </Col>
-      <Col xl={24} sm={12} xs={24}>
+      <Col span={24}>
         <History />
       </Col>
     </Row>

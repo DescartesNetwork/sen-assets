@@ -70,44 +70,31 @@ export class WormholeTransfer extends WormholeProvider {
       this.data.amount = amount
     }
 
-    let txId = ''
-    switch (this.data.step) {
-      case 0:
-        await this.transferSourceNetWork()
-        await this.backup()
-        await onUpdate(this.getState())
-
-        await this.waitSignedWormhole()
-        await this.backup()
-        await onUpdate(this.getState())
-
-        txId = await this.redeemSolana()
-        await this.backup()
-        await onUpdate(this.getState())
-
-        return txId
-      case 1:
-        await this.waitSignedWormhole()
-        await this.backup()
-        await onUpdate(this.getState())
-
-        txId = await this.redeemSolana()
-        await this.backup()
-        await onUpdate(this.getState())
-        return txId
-
-      case 2:
-        txId = await this.redeemSolana()
-        await this.backup()
-        await onUpdate(this.getState())
-        return txId
-
-      default:
-        throw new Error('Invalid step transfer')
+    let state = this.getState()
+    if (this.data.step === 0) {
+      const newData = await this.transferSourceNetWork()
+      state.transferData.sourceNetWork = newData
+      const newState = await this.backup()
+      await onUpdate(newState)
     }
+
+    if (this.data.step === 1) {
+      const newData = await this.waitSignedWormhole()
+      state.transferData.wormholeNetWork = newData
+      const newState = await this.backup()
+      await onUpdate(newState)
+    }
+
+    if (this.data.step === 2) {
+      const newData = await this.redeemSolana()
+      state.transferData.redeemSolana = newData
+      const newState = await this.backup()
+      await onUpdate(newState)
+      return newData.txId
+    }
+    throw new Error('Invalid step transfer')
   }
 
-  // step 0
   private transferSourceNetWork = async () => {
     const { transferData, context } = this.getState()
     // get context
@@ -148,16 +135,13 @@ export class WormholeTransfer extends WormholeProvider {
       context.srcBridgeAddress,
     )
     const emitterAddress = getEmitterAddressEth(context.srcTokenBridgeAddress)
-    transferData.sourceNetWork = {
+    // next step
+    return {
       sequence,
       emitterAddress,
     }
-    await this.backup()
-    // next step
-    return this.waitSignedWormhole()
   }
 
-  // step 1
   private async waitSignedWormhole() {
     const { transferData, context } = this.getState()
     // get data prevStep
@@ -170,14 +154,9 @@ export class WormholeTransfer extends WormholeProvider {
       sequence,
     )
     const vaaHex = Buffer.from(vaaBytes).toString('hex')
-    // backup
-    transferData.wormholeNetWork.vaaHex = vaaHex
-    await this.backup()
-    // next step
-    return this.redeemSolana()
+    return { vaaHex }
   }
 
-  // step 2
   private async redeemSolana() {
     const { transferData, context } = this.getState()
 
@@ -203,9 +182,6 @@ export class WormholeTransfer extends WormholeProvider {
     )
     const signedTx = await this.targetWallet.signTransaction(tx)
     const txId = await sendTransaction(signedTx, this.connection)
-    //
-    transferData.redeemSolana.txId = txId
-    await this.backup()
-    return txId
+    return { txId }
   }
 }
