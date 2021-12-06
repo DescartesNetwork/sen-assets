@@ -38,7 +38,7 @@
 
 .custom-selector {
   .sentre-select-selector {
-    height: 50px;
+    padding-left: 0 !important;
     .sentre-select-selection-item {
       line-height: normal !important;
     }
@@ -67,11 +67,13 @@
       left: 50%;
       bottom: 0;
       transform: translateX(-50%);
-      width: 93px;
-      height: 93px;
-      padding: 20px 0;
-      border-radius: 50%;
-      background: linear-gradient(90deg, #f9575e 0%, #5d6ccf 100%);
+      width: 140px;
+      height: 70px;
+      padding: 10px 0;
+      background-image: url('../images/wormhole-img.png');
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
       z-index: 9;
     }
   }
@@ -83,13 +85,30 @@
   background-repeat: no-repeat !important;
   background-position: center !important;
 }
+// card close account
+.close-account,.account-item {
+  box-shadow: unset !important;
+}
+// theme
 #light {
   .card-sen-assets {
     background-image: url('../images/sen-assets-bg.png') !important;
+  }
+  .close-account {
+    background: #ededeb;
+  }
+  .account-item{ 
+    background: #ffffff
   }
 }
 #dark {
   .card-sen-assets {
     background-image: url('../images/sen-assets-dark-bg.png') !important;
+  }
+  .close-account {
+    background: #1d1e2c
+  }
+  .account-item{ 
+    background: #2C2E3D
   }
 }
