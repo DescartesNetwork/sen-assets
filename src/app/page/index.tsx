@@ -10,20 +10,16 @@ import 'app/static/styles/index.less'
 const Page = () => {
   return (
     <Row gutter={[24, 24]} align="middle">
-      <Col span={24}>
-        <Row gutter={[24, 24]}>
-          <Col xl={8} sm={12} xs={24}>
-            <SenAssets />
-          </Col>
-          <Col xl={8} sm={12} xs={24}>
-            <Balance />
-          </Col>
-          <Col xl={8} sm={12} xs={24}>
-            <WormHole />
-          </Col>
-        </Row>
+      <Col xl={8} md={12} sm={24}>
+        <SenAssets />
       </Col>
-      <Col span={24}>
+      <Col xl={8} md={12} sm={24}>
+        <Balance />
+      </Col>
+      <Col xl={8} md={12} sm={24}>
+        <WormHole />
+      </Col>
+      <Col xl={24} sm={12} xs={24}>
         <History />
       </Col>
     </Row>

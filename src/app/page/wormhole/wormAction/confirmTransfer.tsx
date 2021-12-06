@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Button, Checkbox, Col, Row } from 'antd'
 
 import { AppState } from 'app/model'
-import { WormholeProvider } from 'app/lib/wormhole/provider'
 import { updateWormholeHistory } from 'app/model/history.controller'
 import { Progress } from 'app/components/progress'
 import { setProcess, transfer } from 'app/model/wormhole.controller'
+import { TransferState } from 'app/lib/wormhole/constant/wormhole'
 
 const ConfirmAction = ({
   onClose = () => {},
@@ -19,9 +19,9 @@ const ConfirmAction = ({
   const [acceptable, setAcceptable] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  const onUpdate = async (provider: WormholeProvider) => {
-    await dispatch(setProcess({ provider }))
-    await dispatch(updateWormholeHistory({ provider }))
+  const onUpdate = async (stateTransfer: TransferState) => {
+    await dispatch(setProcess({ id: stateTransfer.context.id }))
+    await dispatch(updateWormholeHistory({ stateTransfer }))
     window.notify({
       type: 'warning',
       description: 'Pending transfer from Ethereum',

@@ -5,9 +5,10 @@ import { WalletInterface } from '@senswap/sen-js'
 import { getEtherNetwork } from 'app/lib/wormhole/helper'
 import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
 import { fetchTokenEther } from 'app/lib/wormhole/helper'
-import { WormholeProvider } from 'app/lib/wormhole/provider'
-import { HistoryWormhole } from './history.controller'
+import { TransferState } from 'app/lib/wormhole/constant/wormhole'
+
 import { explorer } from 'shared/util'
+import { WormholeTransfer } from 'app/lib/wormhole/transfer'
 
 /**
  * Interface & Utility
@@ -112,7 +113,6 @@ export const connectTargetWallet = createAsyncThunk<
 >(`${NAME}/connectTargetWallet`, async ({ wallet }) => {
   window.wormhole.targetWallet.sol = wallet
   const address = await wallet.getAddress()
-  console.log('address', address)
   return { targetWalletAddress: address }
 })
 
@@ -129,17 +129,16 @@ export const setSourceToken = createAsyncThunk<
 
 export const setProcess = createAsyncThunk<
   State,
-  { provider?: WormholeProvider },
+  { id?: string },
   { state: { wormhole: State } }
->(`${NAME}/setWormholeProcess`, async ({ provider }, { getState }) => {
+>(`${NAME}/setWormholeProcess`, async ({ id }, { getState }) => {
   const { wormhole } = getState()
-  const processId = provider?.context.id || ''
-  return { ...wormhole, processId }
+  return { ...wormhole, processId: id || '' }
 })
 
 export const transfer = createAsyncThunk<
   { processId: string },
-  { onUpdate: (provider: WormholeProvider) => void },
+  { onUpdate: (state: TransferState) => void },
   { state: { wormhole: State } }
 >(`${NAME}/transfer`, async ({ onUpdate }, { getState, dispatch }) => {
   const {
@@ -153,19 +152,19 @@ export const transfer = createAsyncThunk<
       throw new Error('Login fist')
 
     let amountTransfer = amount
-    let wormholeEther = new WormholeProvider(
+    let wormholeEther = new WormholeTransfer(
       sourceWallet.ether,
       targetWallet.sol,
       tokenTransfer,
-      onUpdate,
     )
     // Restore with process ID
     if (processId) {
-      wormholeEther = await WormholeProvider.restore(processId, onUpdate)
-      amountTransfer = wormholeEther.transferProvider.data?.amount || '0'
-      onUpdate(wormholeEther)
+      await wormholeEther.restore(processId)
+      amountTransfer = wormholeEther.data?.amount || '0'
+      const stateTransfer = wormholeEther.getState()
+      onUpdate(stateTransfer)
     }
-    const txId = await wormholeEther.transfer(amountTransfer)
+    const txId = await wormholeEther.transfer(amountTransfer, onUpdate)
     window.notify({
       type: 'success',
       description: 'Transfer successfully',
@@ -181,7 +180,7 @@ export const transfer = createAsyncThunk<
 
 export const restoreTransfer = createAsyncThunk<
   State | void,
-  { historyData: HistoryWormhole },
+  { historyData: TransferState },
   { state: { wormhole: State } }
 >(`${NAME}/restoreTransfer`, async ({ historyData }, { getState }) => {
   try {

@@ -10,6 +10,7 @@ import LazyLoad from 'react-lazyload'
 import { useMint } from 'senhub/providers'
 import { selectAccount } from 'app/model/account.controller'
 import { AppState } from 'app/model'
+import Sol from './solCard'
 
 const ListAccount = () => {
   const dispatch = useDispatch()
@@ -49,20 +50,19 @@ const ListAccount = () => {
         <Search onChange={onSearch} />
       </Col>
       <Col span={24}>
-        <Row gutter={[12, 12]} className="card-scroll transparent-bg">
-          {listAccount.map((address) => (
-            <Col span={24} key={address}>
-              <LazyLoad height={64} overflow>
-                <AccountItem
-                  accountAddr={address}
-                  active={accountSelected === address}
-                  onClick={(account) => dispatch(selectAccount({ account }))}
-                />
-              </LazyLoad>
-            </Col>
-          ))}
-        </Row>
+        <Sol onClick={(account) => dispatch(selectAccount({ account }))} />
       </Col>
+      {listAccount.map((address) => (
+        <Col span={24} key={address}>
+          <LazyLoad height={64} overflow>
+            <AccountItem
+              accountAddr={address}
+              active={accountSelected === address}
+              onClick={(account) => dispatch(selectAccount({ account }))}
+            />
+          </LazyLoad>
+        </Col>
+      ))}
     </Row>
   )
 }

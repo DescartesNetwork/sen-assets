@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { Row, Col, Button, Space, Popover, Typography, Switch } from 'antd'
 import IonIcon from 'shared/ionicon'
+import ImportToken from './importToken'
 
 import { AppState } from 'app/model'
 import {
@@ -40,6 +41,9 @@ const Settings = () => {
               />
               <Typography.Text>Hide unknown tokens</Typography.Text>
             </Space>
+          </Col>
+          <Col span={24}>
+            <ImportToken />
           </Col>
         </Row>
       }

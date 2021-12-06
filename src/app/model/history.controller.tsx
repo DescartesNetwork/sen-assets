@@ -1,10 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import {
-  DEFAULT_TRANSFER_DATA,
-  TransferData,
-} from 'app/lib/wormhole/constant/wormhole'
-import { WormholeContext } from 'app/lib/wormhole/context'
-import { WormholeProvider } from 'app/lib/wormhole/provider'
+
+import { TransferState } from 'app/lib/wormhole/constant/wormhole'
 import { WormholeTransfer } from 'app/lib/wormhole/transfer'
 
 /**
@@ -12,17 +8,13 @@ import { WormholeTransfer } from 'app/lib/wormhole/transfer'
  */
 
 export type State = {
-  wormhole: HistoryWormhole[]
+  wormhole: TransferState[]
   transaction: []
 }
 
 /**
  * Store constructor
  */
-export type HistoryWormhole = {
-  context: WormholeContext
-  transfer: TransferData
-}
 
 const NAME = 'history'
 const initialState: State = {
@@ -34,46 +26,28 @@ const initialState: State = {
  * Actions
  */
 export const fetchWormholeHistory = createAsyncThunk<{
-  wormhole: HistoryWormhole[]
+  wormhole: TransferState[]
 }>(`${NAME}/fetchWormholeHistory`, async () => {
-  const wormHole = await WormholeProvider.fetchAll()
-  const transferData = await WormholeTransfer.fetchAll()
-  const history: HistoryWormhole[] = []
-
-  for (const id in transferData) {
-    const context = wormHole[id]
-    const transfer = transferData[id]
-    if (!context) continue
-    history.push({
-      context,
-      transfer,
-    })
-  }
-
+  const listTransferState = await WormholeTransfer.fetchAll()
+  const history: TransferState[] = Object.values(listTransferState)
   return {
-    wormhole: history.sort((a, b) =>
-      a.context.time < b.context.time ? 1 : -1,
-    ),
+    wormhole: history.reverse(),
   }
 })
 
 export const updateWormholeHistory = createAsyncThunk<
   {
-    wormhole: HistoryWormhole[]
+    wormhole: TransferState[]
   },
-  { provider: WormholeProvider },
+  { stateTransfer: TransferState },
   { state: { history: State } }
->(`${NAME}/updateWormholeHistory`, async ({ provider }, { getState }) => {
+>(`${NAME}/updateWormholeHistory`, async ({ stateTransfer }, { getState }) => {
   const {
     history: { wormhole },
   } = getState()
-  const id = provider.context.id
-
+  const id = stateTransfer.context.id
   const newHistory = wormhole.filter((val) => val.context.id !== id)
-  newHistory.unshift({
-    context: provider.context,
-    transfer: provider.transferProvider.data || { ...DEFAULT_TRANSFER_DATA },
-  })
+  newHistory.unshift(stateTransfer)
   return { wormhole: newHistory }
 })
 
