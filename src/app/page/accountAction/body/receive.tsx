@@ -1,4 +1,5 @@
-import { Col, Input, Row, Typography } from 'antd'
+import { Col, Row, Typography } from 'antd'
+import InputCopy from 'app/components/inputCopy'
 import QRcode from 'qrcode.react'
 
 const Receive = ({ accountAddr }: { accountAddr: string }) => {
@@ -18,7 +19,7 @@ const Receive = ({ accountAddr }: { accountAddr: string }) => {
             <Typography.Text>Wallet address</Typography.Text>
           </Col>
           <Col span={24}>
-            <Input size="large" value={accountAddr} />
+            <InputCopy size="large" value={accountAddr} />
           </Col>
         </Row>
       </Col>
