@@ -2,7 +2,7 @@ import { Row, Col, Typography, Button } from 'antd'
 import { MintSymbol } from 'app/shared/components/mint'
 import NumericInput from 'app/shared/components/numericInput'
 
-import { useMintAccount } from 'app/shared/hooks/useBalance'
+import { useMintAccount } from 'app/shared/hooks/useMintAccount'
 
 const Source = ({
   accountAddr,

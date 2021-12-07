@@ -11,9 +11,14 @@ import {
 } from 'app/lib/wormhole/constant/wormhole'
 import { AppDispatch, AppState } from 'app/model'
 import { updateWormholeHistory } from 'app/model/history.controller'
-import { restoreTransfer, setProcess } from 'app/model/wormhole.controller'
+import {
+  restoreTransfer,
+  setProcess,
+  setVisibleProcess,
+} from 'app/model/wormhole.controller'
 import { explorer } from 'shared/util'
 import { WohEthSol } from 'app/lib/wormhole'
+import { notifyError, notifySuccess } from 'app/helper'
 
 const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   const dispatch = useDispatch<AppDispatch>()
@@ -53,13 +58,10 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
         transferData.amount,
         onUpdate,
       )
-      window.notify({
-        type: 'success',
-        description: 'Transfer successfully',
-        onClick: () => window.open(explorer(txId), '_blank'),
-      })
-    } catch (error) {
-      window.notify({ type: 'error', description: (error as any).message })
+      notifySuccess('Transfer', txId)
+      dispatch(setVisibleProcess({ visible: true }))
+    } catch (er) {
+      notifyError(er)
     } finally {
       await dispatch(setProcess({ id: '' })).unwrap()
     }
@@ -70,7 +72,6 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
     return (
       <Button
         type="text"
-        size="large"
         onClick={() =>
           window.open(explorer(transferState.transferData.txId), '_blank')
         }
@@ -87,7 +88,13 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
     )
 
   // status pending
-  return null
+  return (
+    <Button
+      type="text"
+      icon={<IonIcon name="eye-outline" />}
+      onClick={() => dispatch(setVisibleProcess({ visible: true }))}
+    />
+  )
 }
 
 export default ColumAction

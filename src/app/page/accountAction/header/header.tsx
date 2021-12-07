@@ -6,7 +6,7 @@ import Balance from 'app/components/balance'
 import { TokenPrice } from './tokenPrice'
 
 import { AppState } from 'app/model'
-import { useMintAccount } from 'app/shared/hooks/useBalance'
+import { useMintAccount } from 'app/shared/hooks/useMintAccount'
 
 const Header = () => {
   const { accountSelected } = useSelector((state: AppState) => state.account)

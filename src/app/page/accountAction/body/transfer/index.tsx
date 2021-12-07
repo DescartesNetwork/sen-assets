@@ -5,7 +5,7 @@ import { Row, Col, Button } from 'antd'
 import Source from './source'
 import Destination from './destination'
 
-import { useMintAccount } from 'app/shared/hooks/useBalance'
+import { useMintAccount } from 'app/shared/hooks/useMintAccount'
 import { SOL_ADDRESS } from 'app/constant/sol'
 import { notifyError, notifySuccess } from 'app/helper'
 

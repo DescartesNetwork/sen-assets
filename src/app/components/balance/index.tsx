@@ -3,7 +3,7 @@ import { utils } from '@senswap/sen-js'
 
 import { numeric } from 'shared/util'
 import useMintCgk from 'app/shared/hooks/useMintCgk'
-import { useMintAccount } from 'app/shared/hooks/useBalance'
+import { useMintAccount } from 'app/shared/hooks/useMintAccount'
 
 const Balance = ({
   accountAddr,

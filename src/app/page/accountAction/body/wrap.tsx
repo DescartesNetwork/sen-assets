@@ -8,7 +8,7 @@ import { MintSymbol } from 'app/shared/components/mint'
 import { useWallet } from 'senhub/providers'
 import NumericInput from 'app/shared/components/numericInput'
 import { notifyError, notifySuccess } from 'app/helper'
-import { useMintAccount } from 'app/shared/hooks/useBalance'
+import { useMintAccount } from 'app/shared/hooks/useMintAccount'
 import { selectAccount } from 'app/model/account.controller'
 
 const TRANSACTION_FEE = 0.00001

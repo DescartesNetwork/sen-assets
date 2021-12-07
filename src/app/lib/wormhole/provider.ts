@@ -41,9 +41,8 @@ export class WormholeProvider {
     onUpdate: (state: TransferState) => void,
   ) => {
     // init data transfer
-    if (!this.transferData) {
+    if (!this.transferData) 
       this.transferData = await this.initTransferData(amount)
-    }
     const { transferData } = this.getState()
 
     const { attested } = await this.isAttested()

@@ -38,6 +38,7 @@ export type State = {
   tokenAddress: string
   amount: string
   processId: string
+  visible: boolean
 }
 
 /**
@@ -57,6 +58,7 @@ const initialState: State = {
   tokenAddress: '',
   amount: '',
   processId: '',
+  visible: false,
 }
 
 /**
@@ -82,7 +84,6 @@ export const connectSourceWallet = createAsyncThunk<
   }
   // select fist token
   const tokenAddress = tokenList[0]?.address || ''
-
   return {
     sourceWalletAddress: address,
     sourceTokens: tokens,
@@ -93,7 +94,7 @@ export const connectSourceWallet = createAsyncThunk<
 export const disconnectSourceWallet = createAsyncThunk<
   State,
   void,
-  { state: any }
+  { state: { wormhole: State } }
 >(`${NAME}/disconnectSourceWallet`, async (_, { getState }) => {
   const state = getState().wormhole
   return {
@@ -153,6 +154,13 @@ export const restoreTransfer = createAsyncThunk<
   return { ...dataRestore }
 })
 
+export const setVisibleProcess = createAsyncThunk<
+  { visible: boolean },
+  { visible: boolean }
+>(`${NAME}/setVisibleProcess`, async ({ visible }) => {
+  return { visible }
+})
+
 /**
  * Usual procedure
  */
@@ -185,6 +193,10 @@ const slice = createSlice({
       )
       .addCase(
         setProcess.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setVisibleProcess.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })
