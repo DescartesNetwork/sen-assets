@@ -18,6 +18,7 @@ export type TransferData = {
   to: string
   sequence: string
   emitterAddress: string
+  blockHash: string
   vaaHex: string
   txId: string
 }

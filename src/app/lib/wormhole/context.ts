@@ -40,7 +40,7 @@ export const createWohContext = (
   const etherNetwork: EtherNetwork = getEtherNetwork()
   const solNetWork: SolNetWork = getSolNetwork()
   return {
-    id: new Date().getTime() + '',
+    id: new Date().getTime() + '' + Math.random(),
     time: new Date().getTime(),
     // Source network
     srcChainId: CHAIN_ID_ETH,

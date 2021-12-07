@@ -23,11 +23,11 @@ export const WORMHOLE_COLUMNS = [
   },
   {
     title: 'TRANSACTION ID',
-    dataIndex: 'context',
-    render: (context: WormholeContext) => {
+    render: (data: TransferState) => {
+      const blockHash = data.transferData.blockHash
       return (
         <Typography.Text style={{ fontWeight: 700 }}>
-          {shortenAddress(context.id, 8, '...')}
+          {blockHash ? shortenAddress(blockHash, 8, '...') : '--'}
         </Typography.Text>
       )
     },
