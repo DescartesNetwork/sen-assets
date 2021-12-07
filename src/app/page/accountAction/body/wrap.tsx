@@ -1,82 +1,62 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
-import { account, DEFAULT_WSOL, utils } from '@senswap/sen-js'
+import { useDispatch } from 'react-redux'
+import { DEFAULT_WSOL, utils } from '@senswap/sen-js'
 
 import { Button, Col, Row, Space, Typography } from 'antd'
 import { MintSymbol } from 'app/shared/components/mint'
 
-import useMintDecimals from 'app/shared/hooks/useMintDecimals'
-import { useAccount, useWallet } from 'senhub/providers'
-import { explorer } from 'shared/util'
+import { useWallet } from 'senhub/providers'
 import NumericInput from 'app/shared/components/numericInput'
+import { notifyError, notifySuccess } from 'app/helper'
+import { useMintAccount } from 'app/shared/hooks/useBalance'
+import { selectAccount } from 'app/model/account.controller'
 
 const TRANSACTION_FEE = 0.00001
 const COMPENSATION = BigInt(2039280)
 const DEFAULT_DECIMAL = 9
 
-const Wrap = ({ accountAddr }: { accountAddr: string }) => {
+const Wrap = () => {
+  const dispatch = useDispatch()
   const [value, setValue] = useState('')
   const [loading, setLoading] = useState(false)
   const [wsolAddress, setWSolAddress] = useState('')
-  const { accounts } = useAccount()
-  const { splt, wallet } = window.sentre
+  const {
+    wallet: { address: walletAddress },
+  } = useWallet()
 
-  const { amount: maxAmount, mint } = accounts[accountAddr] || {}
-  const decimals = useMintDecimals(mint)
-  const balance = utils.undecimalize(maxAmount, decimals)
-  const { wallet: { lamports, address: ownerAddress } } = useWallet()
-  const balanceSol = utils.undecimalize(lamports, DEFAULT_DECIMAL)
-  const isSolAccount = accountAddr === DEFAULT_WSOL
+  const wSolData = useMintAccount(wsolAddress)
+  const solData = useMintAccount(walletAddress)
+  const isWrap = !wSolData.amount
 
-  const wsolData = useMemo(() => {
-    return accounts[wsolAddress]
-  }, [accounts, wsolAddress])
-  const sourceBalance = useMemo(() => {
-    if (isSolAccount) return balanceSol
-    return balance
-  }, [isSolAccount, balance, balanceSol])
-  const unWrapAmount = utils.undecimalize(wsolData?.amount, 9)
+  const unWrapAmount = utils.undecimalize(wSolData.amount, wSolData.decimals)
 
-  const maxBalance = useMemo(() => {
-    const balance = Number(sourceBalance)
-    const compensation = Number(utils.undecimalize(BigInt(100000000) + COMPENSATION, DEFAULT_DECIMAL))
+  const maxWrapAmount = useMemo(() => {
+    const solAmount = Number(solData.balance)
+    const compensation = Number(
+      utils.undecimalize(BigInt(100000000) + COMPENSATION, DEFAULT_DECIMAL),
+    )
     const fee = compensation + TRANSACTION_FEE
-    if (balance <= fee) return sourceBalance
-    return balance - fee
-  }, [sourceBalance])
-
-  const { state } = wsolData || {}
-  const isUnWrap = state === 1
+    if (solAmount <= fee) return 0
+    return solAmount - fee
+  }, [solData.balance])
 
   // Wrapper sol to wsol
   const wrap = async () => {
+    setLoading(true)
     try {
       const { splt, wallet } = window.sentre
-      if (!account.isAddress(ownerAddress))
-        return window.notify({ type: 'error', description: 'Please connect your wallet' })
-      let amount = BigInt(0)
-      try {
-        amount = utils.decimalize(value, 9)
-      } catch (er) {
-        /* Skip errors */
-      }
-      if (!amount) return window.notify({ type: 'error', description: 'Invalid amount' })
-      if (!wallet) return window.notify({ type: 'error', description: 'Wallet is not connected' })
-      setLoading(true)
+      if (!wallet) throw new Error('Wallet is not connected')
+
+      const wrapAmount = utils.decimalize(Number(value), 9)
+      console.log('wrapAmount + COMPENSATION', wrapAmount + COMPENSATION)
       const { txId } = await splt.wrap(
-        amount + COMPENSATION,
-        ownerAddress,
+        wrapAmount + COMPENSATION,
+        walletAddress,
         wallet,
       )
-      window.notify({
-        type: 'success',
-        description: `Wrap ${value} SOL successfully. Click to view details.`,
-        onClick: () => window.open(explorer(txId), '_blank'),
-      })
-    } catch (er: any) {
-      return window.notify({
-        type: 'error',
-        description: er?.message
-      })
+      notifySuccess(`Wrap ${value} SOL`, txId)
+    } catch (er) {
+      return notifyError(er)
     } finally {
       setLoading(false)
     }
@@ -84,73 +64,77 @@ const Wrap = ({ accountAddr }: { accountAddr: string }) => {
 
   const unwrap = async () => {
     setLoading(true)
-    const wsol = utils.undecimalize(wsolData?.amount, 9) || 0
     try {
-      if (!wallet) return window.notify({ type: 'error', description: 'Wallet is not connected' })
+      const { splt, wallet } = window.sentre
+      if (!wallet) throw new Error('Wallet is not connected')
+
       const { txId } = await splt.unwrap(wallet)
-      window.notify({
-        type: 'success',
-        description: `Unwrap ${wsol} SOL successfully. Click to view details.`,
-        onClick: () => window.open(explorer(txId), '_blank'),
-      })
-    } catch (er: any) {
-      return window.notify({ type: 'error', description: er?.message })
+      await dispatch(selectAccount({ account: walletAddress }))
+      return notifySuccess(`Unwrap ${wSolData.balance} SOL`, txId)
+    } catch (er) {
+      return notifyError(er)
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
-    (async () => {
+    ;(async () => {
+      const { splt } = window.sentre
       const wsolAddress = await splt.deriveAssociatedAddress(
-        ownerAddress,
+        walletAddress,
         DEFAULT_WSOL,
       )
       setWSolAddress(wsolAddress)
     })()
-  }, [ownerAddress, accounts, splt])
+  }, [walletAddress])
 
   useEffect(() => {
-    if (isUnWrap) return setValue(unWrapAmount)
+    if (!isWrap) return setValue(unWrapAmount)
     return setValue('')
-  }, [unWrapAmount, state, isUnWrap])
+  }, [isWrap, unWrapAmount])
 
   const WrapDescriptions = () => {
-    return <Fragment>
-      <ul style={{ paddingLeft: 16 }}>
-        <li>
-          <Typography.Text type="secondary">
-            To wrap SOL you have to deposit an extra fee equal to 0.00203928
-            SOL.
+    return (
+      <Fragment>
+        <ul style={{ paddingLeft: 16 }}>
+          <li>
+            <Typography.Text type="secondary">
+              To wrap SOL you have to deposit an extra fee equal to 0.00203928
+              SOL.
             </Typography.Text>
-        </li>
-        <li>
-          <Typography.Text type="secondary">
-            The fee mentioned above will return when you unwrap.
+          </li>
+          <li>
+            <Typography.Text type="secondary">
+              The fee mentioned above will return when you unwrap.
             </Typography.Text>
-        </li>
-      </ul>
-    </Fragment>
+          </li>
+        </ul>
+      </Fragment>
+    )
   }
+
   const UnWrapDescriptions = () => {
-    return <Fragment>
-      <Typography.Text type="secondary">
-        Due to technical limitations, it only allows:
+    return (
+      <Fragment>
+        <Typography.Text type="secondary">
+          Due to technical limitations, it only allows:
         </Typography.Text>
-      <ul style={{ paddingLeft: 16 }}>
-        <li>
-          <Typography.Text type="secondary">
-            Unwrap all at once.
+        <ul style={{ paddingLeft: 16 }}>
+          <li>
+            <Typography.Text type="secondary">
+              Unwrap all at once.
             </Typography.Text>
-        </li>
-        <li>
-          <Typography.Text type="secondary">
-            To increase/decrease the WSOL balance, unwrap all first then
-            re-wrap your desired number.
+          </li>
+          <li>
+            <Typography.Text type="secondary">
+              To increase/decrease the WSOL balance, unwrap all first then
+              re-wrap your desired number.
             </Typography.Text>
-        </li>
-      </ul>
-    </Fragment>
+          </li>
+        </ul>
+      </Fragment>
+    )
   }
 
   return (
@@ -158,47 +142,61 @@ const Wrap = ({ accountAddr }: { accountAddr: string }) => {
       <Col span={24}>
         <Row gutter={[8, 8]}>
           <Col flex="auto">
-            <Typography.Text>{isUnWrap ? 'Unwrap amount' : 'Wrap Amount'}</Typography.Text>
+            <Typography.Text>
+              {isWrap ? 'Wrap Amount' : 'Unwrap amount'}
+            </Typography.Text>
           </Col>
           <Col>
             <Space size={4}>
-              <Typography.Text type="secondary" style={{ fontSize: 12 }}>Available:</Typography.Text>
-              <Typography.Text style={{ fontSize: 12 }}>{isUnWrap ? unWrapAmount : sourceBalance} SOL</Typography.Text>
+              <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                Available:
+              </Typography.Text>
+              <Typography.Text style={{ fontSize: 12 }}>
+                {isWrap ? solData.balance : unWrapAmount} SOL
+              </Typography.Text>
             </Space>
           </Col>
           <Col span={24}>
             <NumericInput
               placeholder={'0'}
               size="large"
-              prefix={isSolAccount ? <Typography.Text type="secondary">SOL</Typography.Text> : <MintSymbol mintAddress={mint} />}
-              suffix={state !== 1 &&
-                <Button
-                  type="text"
-                  style={{ padding: 0, height: 'auto' }}
-                  onClick={() => setValue(`${maxBalance}`)}
-                >
-                  MAX
-                </Button>
+              prefix={
+                <MintSymbol
+                  mintAddress={isWrap ? solData.mint : wSolData.mint}
+                />
+              }
+              suffix={
+                isWrap && (
+                  <Button
+                    type="text"
+                    style={{ padding: 0, height: 'auto' }}
+                    onClick={() => setValue(`${maxWrapAmount}`)}
+                  >
+                    MAX
+                  </Button>
+                )
               }
               value={value}
               onChange={setValue}
-              max={maxBalance}
-              disabled={state === 1}
+              max={maxWrapAmount}
+              disabled={!isWrap}
             />
           </Col>
         </Row>
       </Col>
       <Col span={24}>
-        {isUnWrap ?
-          <Button type="primary" onClick={unwrap} block loading={loading}>
-            Unwrap
-      </Button> :
+        {isWrap ? (
           <Button type="primary" onClick={wrap} block loading={loading}>
             Wrap
-        </Button>}
+          </Button>
+        ) : (
+          <Button type="primary" onClick={unwrap} block loading={loading}>
+            Unwrap
+          </Button>
+        )}
       </Col>
       <Col span={24} style={{ fontSize: 12 }}>
-        {isUnWrap ? <UnWrapDescriptions /> : <WrapDescriptions />}
+        {isWrap ? <WrapDescriptions /> : <UnWrapDescriptions />}
       </Col>
     </Row>
   )

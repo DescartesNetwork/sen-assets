@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { DEFAULT_EMPTY_ADDRESS, DEFAULT_WSOL } from '@senswap/sen-js'
 
 import { Card, Tabs } from 'antd'
 import Transfer from 'app/page/accountAction/body/transfer'
@@ -9,30 +8,16 @@ import Wrap from 'app/page/accountAction/body/wrap'
 import Close from './close'
 
 import { AppState } from 'app/model'
-import { useAccount, useWallet } from 'senhub/providers'
+import { useMintAccount } from 'app/shared/hooks/useBalance'
+import { SOL_ADDRESS, WSOL_ADDRESS } from 'app/constant/sol'
 
 const Body = () => {
   const [activeKey, setActiveKey] = useState('')
   const { accountSelected } = useSelector((state: AppState) => state.account)
-  const { wallet: { address: walletAddress } } = useWallet();
-  const { accounts } = useAccount()
-  const { mint } = accounts[accountSelected] || {}
+  const { mint } = useMintAccount(accountSelected)
 
-  const isSolAccount = accountSelected === DEFAULT_EMPTY_ADDRESS
-  const isWSolAccount = mint === DEFAULT_WSOL
+  const canWrap = [SOL_ADDRESS, WSOL_ADDRESS].includes(mint)
 
-  const wrapAddress = useMemo(() => {
-    if (isSolAccount) return DEFAULT_WSOL
-    return accountSelected
-  }, [accountSelected, isSolAccount])
-
-  const receiveAddress = useMemo(() => {
-    return walletAddress
-    // if (isSolAccount) 
-    // return accountSelected
-  }, [walletAddress])
-
-  // Select send tab when choose new account
   useEffect(() => {
     return setActiveKey('Send')
   }, [accountSelected])
@@ -51,12 +36,12 @@ const Body = () => {
           <Transfer accountAddr={accountSelected} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="Receive" key="Receive">
-          <Receive accountAddr={receiveAddress} />
+          <Receive accountAddr={accountSelected} />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Wrap" key="Wrap" disabled={!isSolAccount && !isWSolAccount}>
-          <Wrap accountAddr={wrapAddress} />
+        <Tabs.TabPane tab="Wrap" key="Wrap" disabled={!canWrap}>
+          <Wrap />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Close" key="Close" disabled={isSolAccount}>
+        <Tabs.TabPane tab="Close" key="Close" disabled={mint === SOL_ADDRESS}>
           <Close accountAddr={accountSelected} />
         </Tabs.TabPane>
       </Tabs>

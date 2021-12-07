@@ -14,11 +14,8 @@ const AccountCard = ({
   active?: boolean
   onClick?: (address: string) => void
 }) => {
-  const {
-    accounts: {
-      [accountAddr]: { mint },
-    },
-  } = useAccount()
+  const { accounts } = useAccount()
+  const mint = accounts[accountAddr]?.mint
 
   return (
     <Card
