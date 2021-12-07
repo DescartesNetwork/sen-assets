@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import LazyLoad from 'react-lazyload'
 import { account } from '@senswap/sen-js'
+import { TokenInfo } from '@solana/spl-token-registry'
 
 import {
   Row,
@@ -14,12 +15,12 @@ import {
   Avatar,
 } from 'antd'
 import IonIcon from 'shared/ionicon'
-import { useAccount, useMint, useWallet } from 'senhub/providers'
-import { explorer } from 'shared/util'
-import { TokenInfo } from '@solana/spl-token-registry'
 import PoweredBy from 'os/components/poweredBy'
 
-const KEYSIZE = 3
+import { useAccount, useMint, useWallet } from 'senhub/providers'
+import { notifyError, notifySuccess } from 'app/helper'
+
+const KEY_SIZE = 3
 
 /**
  * Mint Card
@@ -35,7 +36,6 @@ const MintCard = ({ mint }: { mint: TokenInfo }) => {
 
   const initializeAccount = async () => {
     const { splt, wallet } = window.sentre
-
     if (
       isInitialized ||
       !account.isAddress(walletAddress) ||
@@ -49,16 +49,9 @@ const MintCard = ({ mint }: { mint: TokenInfo }) => {
         walletAddress,
         wallet,
       )
-      return window.notify({
-        type: 'success',
-        description: `Import ${symbol} successfully. Click to view details.`,
-        onClick: () => window.open(explorer(txId), '_blank'),
-      })
-    } catch (er: any) {
-      return window.notify({
-        type: 'error',
-        description: er.message,
-      })
+      return notifySuccess(`Import ${symbol}`, txId)
+    } catch (err) {
+      return notifyError(err)
     }
   }
 
@@ -114,7 +107,7 @@ const Search = ({
 
   useEffect(() => {
     ;(async () => {
-      if (!keyword || keyword.length < KEYSIZE) return onChange(null)
+      if (!keyword || keyword.length < KEY_SIZE) return onChange(null)
       const data = await tokenProvider.find(keyword)
       return onChange(data)
     })()

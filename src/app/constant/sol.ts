@@ -1,0 +1,5 @@
+export const SOL_ADDRESS = '11111111111111111111111111111111'
+
+export const LPT_DECIMALS = 9
+
+export const SOL_DECIMALS = 9

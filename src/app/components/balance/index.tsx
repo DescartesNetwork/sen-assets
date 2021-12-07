@@ -1,10 +1,11 @@
 import { useMemo } from 'react'
 import { utils } from '@senswap/sen-js'
 
-import { useAccount } from 'senhub/providers'
+import { useAccount, useWallet } from 'senhub/providers'
 import useMintDecimals from 'app/shared/hooks/useMintDecimals'
 import useMintCgk from 'app/shared/hooks/useMintCgk'
 import { numeric } from 'shared/util'
+import { SOL_ADDRESS } from 'app/constant/sol'
 
 const Balance = ({
   accountAddr,
@@ -18,7 +19,16 @@ const Balance = ({
   format?: string
 }) => {
   const { accounts } = useAccount()
-  const { amount, mint } = accounts[accountAddr]
+  const { wallet } = useWallet()
+
+  const { amount, mint } = useMemo(() => {
+    // sol account
+    if (accountAddr === wallet.address)
+      return { amount: wallet.lamports, mint: SOL_ADDRESS }
+    // spl token account
+    return accounts[accountAddr]
+  }, [accountAddr, accounts, wallet.address, wallet.lamports])
+
   const decimals = useMintDecimals(mint)
   const cgkData = useMintCgk(mint)
 

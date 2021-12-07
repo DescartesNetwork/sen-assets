@@ -1,13 +1,12 @@
+import { useState } from 'react'
+import CopyToClipboard from 'react-copy-to-clipboard'
 
-import { useState } from "react"
-import CopyToClipboard from "react-copy-to-clipboard"
+import { Button, Input, InputProps, Tooltip } from 'antd'
+import IonIcon from 'shared/ionicon'
 
-import { Button, Input, InputProps, Tooltip } from "antd"
-import IonIcon from "shared/ionicon"
+import { asyncWait } from 'shared/util'
 
-import { asyncWait } from "shared/util"
-
-const InputCopy = ({ value = '',...rest}: { value?: string}&InputProps) => {
+const InputCopy = (props: InputProps) => {
   const [copied, setCopied] = useState(false)
 
   const onCopy = async () => {
@@ -16,15 +15,22 @@ const InputCopy = ({ value = '',...rest}: { value?: string}&InputProps) => {
     setCopied(false)
   }
 
-  return <Input
-    value={value}
-    suffix={
-      <Tooltip title="Copied" visible={copied}>
-        <CopyToClipboard text={value} onCopy={onCopy}>
-          <Button type="text" size="small" icon={<IonIcon name="copy-outline" />} />
-        </CopyToClipboard>
-      </Tooltip>}
-    {...rest} />
+  return (
+    <Input
+      {...props}
+      suffix={
+        <Tooltip title="Copied" visible={copied}>
+          <CopyToClipboard text={String(props.value)} onCopy={onCopy}>
+            <Button
+              type="text"
+              size="small"
+              icon={<IonIcon name="copy-outline" />}
+            />
+          </CopyToClipboard>
+        </Tooltip>
+      }
+    />
+  )
 }
 
 export default InputCopy

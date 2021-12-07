@@ -4,7 +4,6 @@ import { useHistory } from 'react-router-dom'
 
 import { Col, Row } from 'antd'
 import AccountItem from './accountItem'
-import Settings from 'app/page/walletAccounts/settings/settings'
 import Search from 'app/page/walletAccounts/search/search'
 import LazyLoad from 'react-lazyload'
 import Sol from 'app/page/walletAccounts/solCard'
