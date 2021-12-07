@@ -6,7 +6,6 @@ import IonIcon from 'shared/ionicon'
 
 import { AppDispatch, AppState } from 'app/model'
 import { fetchTransactionHistory } from 'app/model/history.controller'
-import { useWallet } from 'senhub/providers'
 import { TRANSACTION_COLUMNS } from './column'
 
 const ROW_PER_PAGE = 4
@@ -14,29 +13,35 @@ const ROW_PER_PAGE = 4
 const Transaction = () => {
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoadMore, setIsLoadMore] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
   const { transaction } = useSelector((state: AppState) => state.history)
-  const {
-    wallet: { address },
-  } = useWallet()
+  const { accountSelected } = useSelector((state: AppState) => state.account)
 
   const fetchHistory = useCallback(async () => {
-    if (!address) return
-    await dispatch(fetchTransactionHistory({ addressWallet: address }))
+    if (!accountSelected) return
+    await dispatch(
+      fetchTransactionHistory({ addressWallet: accountSelected, isLoadMore }),
+    )
     setIsLoading(false)
-  }, [dispatch, address])
+  }, [dispatch, accountSelected, isLoadMore])
 
   useEffect(() => {
     fetchHistory()
+    return () => setIsLoading(true)
   }, [fetchHistory])
 
   const onHandleViewMore = () => {
     const currentTransactionDataLength = transaction.slice(0, amountRow).length
-
+    setIsLoadMore(true)
     if (transaction.length - currentTransactionDataLength <= 4) {
       const lastSignature = transaction[transaction.length - 1].transactionId
       dispatch(
-        fetchTransactionHistory({ addressWallet: address, lastSignature }),
+        fetchTransactionHistory({
+          addressWallet: accountSelected,
+          lastSignature,
+          isLoadMore,
+        }),
       )
     }
     setAmountRow(amountRow + ROW_PER_PAGE)

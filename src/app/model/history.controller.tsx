@@ -73,11 +73,11 @@ export const updateWormholeHistory = createAsyncThunk<
 
 export const fetchTransactionHistory = createAsyncThunk<
   { transaction: TransactionTransferHistoryData[] },
-  { addressWallet: string; lastSignature?: string },
+  { addressWallet: string; lastSignature?: string; isLoadMore: boolean },
   { state: { history: State } }
 >(
   `${NAME}/fetchTransactionHistory`,
-  async ({ addressWallet, lastSignature }, { getState }) => {
+  async ({ addressWallet, lastSignature, isLoadMore }, { getState }) => {
     const splt = window.sentre.splt
     const limit = 15
     const {
@@ -91,7 +91,7 @@ export const fetchTransactionHistory = createAsyncThunk<
     const translogData = await transLogService.collect()
 
     let history: TransactionTransferHistoryData[] = []
-    history = [...transaction]
+    if (isLoadMore) history = [...transaction]
 
     for (const transLogItem of translogData) {
       const historyItem = {} as TransactionTransferHistoryData
