@@ -20,10 +20,6 @@ const Body = () => {
 
   const isSolAccount = accountSelected === DEFAULT_EMPTY_ADDRESS
   const isWSolAccount = mint === DEFAULT_WSOL
-  const transferAddress = useMemo(() => {
-    if (isSolAccount) return DEFAULT_EMPTY_ADDRESS
-    return accountSelected
-  }, [accountSelected, isSolAccount])
 
   const wrapAddress = useMemo(() => {
     if (isSolAccount) return DEFAULT_WSOL
@@ -52,7 +48,7 @@ const Body = () => {
     >
       <Tabs activeKey={activeKey} onChange={setActiveKey}>
         <Tabs.TabPane tab="Send" key="Send">
-          <Transfer accountAddr={transferAddress} />
+          <Transfer accountAddr={accountSelected} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="Receive" key="Receive">
           <Receive accountAddr={receiveAddress} />

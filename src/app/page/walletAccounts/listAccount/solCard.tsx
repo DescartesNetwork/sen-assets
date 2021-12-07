@@ -23,7 +23,7 @@ const SolCard = ({
     <Card
       className={`account-item ${active ? 'active' : ''}`}
       bodyStyle={{ padding: '8px 12px', cursor: 'pointer' }}
-      onClick={() => onClick(SOL_ADDRESS)}
+      onClick={() => onClick(walletAddr)}
       hoverable
     >
       <Row gutter={[12, 8]} align="middle" wrap={false}>
