@@ -95,7 +95,6 @@ export const fetchEtherTokens = createAsyncThunk<{
   sourceTokens: Record<string, TokenEtherInfo>
 }>(`${NAME}/fetchSourceTokens`, async () => {
   const wallet = window.wormhole.sourceWallet.ether
-  console.log('fetchEtherTokens')
   if (!wallet) throw new Error('Login fist')
   const address = await wallet.getAddress()
   const etherNetwork = getEtherNetwork()

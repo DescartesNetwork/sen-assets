@@ -10,6 +10,7 @@ import NumericInput from 'app/shared/components/numericInput'
 import { notifyError, notifySuccess } from 'app/helper'
 import { useMintAccount } from 'app/shared/hooks/useMintAccount'
 import { selectAccount } from 'app/model/account.controller'
+import { SOL_DECIMALS } from 'app/constant/sol'
 
 const TRANSACTION_FEE = 0.00001
 const COMPENSATION = BigInt(2039280)
@@ -47,8 +48,7 @@ const Wrap = () => {
       const { splt, wallet } = window.sentre
       if (!wallet) throw new Error('Wallet is not connected')
 
-      const wrapAmount = utils.decimalize(Number(value), 9)
-      console.log('wrapAmount + COMPENSATION', wrapAmount + COMPENSATION)
+      const wrapAmount = utils.decimalize(Number(value), SOL_DECIMALS)
       const { txId } = await splt.wrap(
         wrapAmount + COMPENSATION,
         walletAddress,
