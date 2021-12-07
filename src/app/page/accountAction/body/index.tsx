@@ -31,9 +31,10 @@ const Body = () => {
   }, [accountSelected, isSolAccount])
 
   const receiveAddress = useMemo(() => {
-    if (isSolAccount) return walletAddress
-    return accountSelected
-  }, [accountSelected, isSolAccount, walletAddress])
+    return walletAddress
+    // if (isSolAccount) 
+    // return accountSelected
+  }, [walletAddress])
 
   // Select send tab when choose new account
   useEffect(() => {
