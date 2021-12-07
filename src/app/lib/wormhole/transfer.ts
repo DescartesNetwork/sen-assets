@@ -77,6 +77,7 @@ export class WormholeTransfer extends WormholeProvider {
       sequence: '',
       vaaHex: '',
       txId: '',
+      blockHash: '',
     }
   }
 
@@ -105,7 +106,7 @@ export class WormholeTransfer extends WormholeProvider {
     // init data transfer
     if (!this.transferData)
       this.transferData = await this.initTransferData(amount)
-    const { transferData, context } = this.getState()
+    const { transferData } = this.getState()
 
     const { attested } = await this.isAttested()
     if (!attested) await this.attest(onUpdate)
@@ -113,7 +114,7 @@ export class WormholeTransfer extends WormholeProvider {
     if (transferData.step === 0) {
       const { emitterAddress, sequence, transferReceipt } =
         await this.transferSourceNetWork()
-      context.id = transferReceipt.blockHash
+      transferData.blockHash = transferReceipt.blockHash
       transferData.emitterAddress = emitterAddress
       transferData.sequence = sequence
       transferData.step++
