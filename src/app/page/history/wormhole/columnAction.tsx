@@ -13,7 +13,7 @@ import { AppDispatch, AppState } from 'app/model'
 import { updateWormholeHistory } from 'app/model/history.controller'
 import { restoreTransfer, setProcess } from 'app/model/wormhole.controller'
 import { explorer } from 'shared/util'
-import { WormholeTransfer } from 'app/lib/wormhole/transfer'
+import { WohEthSol } from 'app/lib/wormhole'
 
 const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   const dispatch = useDispatch<AppDispatch>()
@@ -42,7 +42,7 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
       if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
         throw new Error('Login fist')
 
-      const wormholeTransfer = new WormholeTransfer(
+      const wormholeTransfer = new WohEthSol(
         sourceWallet.ether,
         targetWallet.sol,
         tokenTransfer,

@@ -8,7 +8,7 @@ import { updateWormholeHistory } from 'app/model/history.controller'
 import { Progress } from 'app/components/progress'
 import { setProcess } from 'app/model/wormhole.controller'
 import { TransferState } from 'app/lib/wormhole/constant/wormhole'
-import { WormholeTransfer } from 'app/lib/wormhole/transfer'
+import { WohEthSol } from 'app/lib/wormhole'
 import { explorer } from 'shared/util'
 import IonIcon from 'shared/ionicon'
 
@@ -38,7 +38,7 @@ const ConfirmAction = ({
       if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
         throw new Error('Login fist')
 
-      let wormholeTransfer = new WormholeTransfer(
+      let wormholeTransfer = new WohEthSol(
         sourceWallet.ether,
         targetWallet.sol,
         tokenTransfer,
