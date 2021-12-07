@@ -95,7 +95,7 @@ export const fetchEtherTokens = createAsyncThunk<{
   sourceTokens: Record<string, TokenEtherInfo>
 }>(`${NAME}/fetchSourceTokens`, async () => {
   const wallet = window.wormhole.sourceWallet.ether
-  console.log("fetchEtherTokens")
+  console.log('fetchEtherTokens')
   if (!wallet) throw new Error('Login fist')
   const address = await wallet.getAddress()
   const etherNetwork = getEtherNetwork()
@@ -140,7 +140,7 @@ export const setSourceToken = createAsyncThunk<
 >(`${NAME}/setSourceToken`, async ({ tokenAddress, amount }, { getState }) => {
   const { wormhole } = getState()
   const newTokenAddress = tokenAddress || wormhole.tokenAddress
-  const newAmount = amount || wormhole.amount
+  const newAmount = amount === undefined ? wormhole.amount : amount
   return { ...wormhole, tokenAddress: newTokenAddress, amount: newAmount }
 })
 
