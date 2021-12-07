@@ -6,7 +6,7 @@ import { Col, Row } from 'antd'
 import AccountItem from './accountItem'
 import Search from 'app/page/walletAccounts/search/search'
 import LazyLoad from 'react-lazyload'
-import Sol from 'app/page/walletAccounts/solCard'
+import Sol from 'app/page/walletAccounts/listAccount/solCard'
 
 import { useMint } from 'senhub/providers'
 import { AccountData } from '@senswap/sen-js'

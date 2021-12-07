@@ -5,10 +5,10 @@ import Price, { PriceChange, PriceIndicator } from 'app/components/price'
 import { useAccount } from 'senhub/providers'
 import Balance from 'app/components/balance'
 
-const AccountItem = ({
+const AccountCard = ({
   accountAddr,
   active = false,
-  onClick = () => { },
+  onClick = () => {},
 }: {
   accountAddr: string
   active?: boolean
@@ -22,13 +22,8 @@ const AccountItem = ({
 
   return (
     <Card
-      className="account-item"
+      className={`account-item ${active ? 'active' : ''}`}
       bodyStyle={{ padding: 12 }}
-      style={{
-        border: `1px solid ${active ? '#F9575E' : 'transparent'}`,
-        borderRadius: 8,
-      }}
-      bordered={false}
       hoverable
       onClick={() => onClick(accountAddr)}
     >
@@ -77,4 +72,4 @@ const AccountItem = ({
   )
 }
 
-export default AccountItem
+export default AccountCard

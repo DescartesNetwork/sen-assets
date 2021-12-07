@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AccountData, DEFAULT_EMPTY_ADDRESS } from '@senswap/sen-js'
 
 import { Col, Row } from 'antd'
-import AccountItem from './accountItem'
+import AccountCard from './accountCard'
 import Search from 'app/page/walletAccounts/search/search'
 import LazyLoad from 'react-lazyload'
 
@@ -57,7 +57,7 @@ const ListAccount = () => {
       {listAccount.map((address) => (
         <Col span={24} key={address}>
           <LazyLoad height={64} overflow>
-            <AccountItem
+            <AccountCard
               accountAddr={address}
               active={accountSelected === address}
               onClick={(account) => dispatch(selectAccount({ account }))}

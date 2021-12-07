@@ -86,29 +86,17 @@
   background-position: center !important;
 }
 // card close account
-.close-account,.account-item {
+.close-account,
+.account-item {
   box-shadow: unset !important;
 }
-// theme
-#light {
-  .card-sen-assets {
-    background-image: url('../images/sen-assets-bg.png') !important;
-  }
-  .close-account {
-    background: #ededeb;
-  }
-  .account-item{ 
-    background: #ffffff
-  }
-}
-#dark {
-  .card-sen-assets {
-    background-image: url('../images/sen-assets-dark-bg.png') !important;
-  }
-  .close-account {
-    background: #1d1e2c
-  }
-  .account-item{ 
-    background: #2C2E3D
+
+.account-item {
+  box-shadow: 'none';
+  border-radius: 8px !important;
+  border: 1px solid;
+  border-color: transparent;
+  &.active {
+    border-color: #f9575e !important;
   }
 }
