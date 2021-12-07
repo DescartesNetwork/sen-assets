@@ -6,8 +6,6 @@ import {
   PublicKey,
 } from '@solana/web3.js'
 
-
-
 const DEFAULT_LIMIT = 700
 const TRANSACTION_LIMIT = 150
 
@@ -52,6 +50,8 @@ export class Solana {
 
   async fetchTransactions(
     programId: string,
+    limit: number,
+    lastSignature: string | undefined,
     secondFrom: number,
     secondTo: number,
   ): Promise<ParsedConfirmedTransaction[]> {
@@ -59,17 +59,13 @@ export class Solana {
     secondTo = Math.floor(secondTo)
 
     const programPublicKey = new PublicKey(programId)
-    let lastSignature
+    //let lastSignature
     let signatures: string[] = []
-
     let isStop = false
+    const confirmedSignatureInfos: ConfirmedSignatureInfo[] =
+      await this.fetchSignatures(programPublicKey, lastSignature, limit)
+
     while (!isStop) {
-      const confirmedSignatureInfos: ConfirmedSignatureInfo[] =
-        await this.fetchSignatures(
-          programPublicKey,
-          lastSignature,
-          DEFAULT_LIMIT,
-        )
       if (!confirmedSignatureInfos?.length || isStop) break
       for (const info of confirmedSignatureInfos) {
         const blockTime = info.blockTime
@@ -78,12 +74,11 @@ export class Solana {
           isStop = true
           break
         }
-        lastSignature = info.signature
-        signatures.push(lastSignature)
+        //lastSignature = info.signature
+        signatures.push(info.signature)
       }
-      if (confirmedSignatureInfos?.length < DEFAULT_LIMIT) break
+      if (confirmedSignatureInfos?.length <= limit) break
     }
-
     const confirmedTransactions = await this.fetchConfirmTransaction(signatures)
     return confirmedTransactions
   }

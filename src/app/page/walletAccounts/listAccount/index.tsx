@@ -52,7 +52,10 @@ const ListAccount = () => {
         <Search onChange={onSearch} />
       </Col>
       <Col span={24}>
-        <Sol active={isSolAccount} onClick={(account) => dispatch(selectAccount({ account }))} />
+        <Sol
+          active={isSolAccount}
+          onClick={(account) => dispatch(selectAccount({ account }))}
+        />
       </Col>
       {listAccount.map((address) => (
         <Col span={24} key={address}>

@@ -28,11 +28,20 @@ type TransLogServiceConfig = {
 export class TransLogService {
   solana: Solana
   programId: string
+  limit: number
+  lastSignature: string | undefined
   configs?: TransLogServiceConfig
-  constructor(programId: string, configs?: TransLogServiceConfig) {
+  constructor(
+    programId: string,
+    limit: number,
+    lastSignature: string | undefined,
+    configs?: TransLogServiceConfig,
+  ) {
     this.solana = new Solana()
     this.programId = programId
     this.configs = configs
+    this.limit = limit
+    this.lastSignature = lastSignature
   }
 
   async collect(): Promise<TransLog[]> {
@@ -40,6 +49,8 @@ export class TransLogService {
     const secondTo = this.configs?.secondTo || new Date().getTime() / 1000
     const confirmedTrans = await this.solana.fetchTransactions(
       this.programId,
+      this.limit,
+      this.lastSignature,
       secondFrom,
       secondTo,
     )

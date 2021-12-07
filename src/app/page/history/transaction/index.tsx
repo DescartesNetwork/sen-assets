@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Col, Row, Table } from 'antd'
@@ -15,18 +15,32 @@ const Transaction = () => {
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
   const [isLoading, setIsLoading] = useState(true)
   const dispatch = useDispatch<AppDispatch>()
+  const { transaction } = useSelector((state: AppState) => state.history)
   const {
     wallet: { address },
   } = useWallet()
-  const { transaction } = useSelector((state: AppState) => state.history)
 
-  useEffect(() => {
-    dispatch(fetchTransactionHistory({ addressWallet: address })).finally(() =>
-      setIsLoading(false),
-    )
+  const fetchHistory = useCallback(async () => {
+    if (!address) return
+    await dispatch(fetchTransactionHistory({ addressWallet: address }))
+    setIsLoading(false)
   }, [dispatch, address])
 
-  const onHandleViewMore = () => setAmountRow(amountRow + ROW_PER_PAGE)
+  useEffect(() => {
+    fetchHistory()
+  }, [fetchHistory])
+
+  const onHandleViewMore = () => {
+    const currentTransactionDataLength = transaction.slice(0, amountRow).length
+
+    if (transaction.length - currentTransactionDataLength <= 4) {
+      const lastSignature = transaction[transaction.length - 1].transactionId
+      dispatch(
+        fetchTransactionHistory({ addressWallet: address, lastSignature }),
+      )
+    }
+    setAmountRow(amountRow + ROW_PER_PAGE)
+  }
 
   return (
     <Row gutter={[16, 16]} justify="center">
