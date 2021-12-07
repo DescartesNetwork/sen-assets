@@ -6,27 +6,6 @@ import NetworkName from 'app/components/network/networkName'
 import { AppState } from 'app/model'
 import { shortenAddress } from 'shared/util'
 
-const TransferInfo = ({
-  title,
-  transferAmount,
-}: {
-  title: string
-  transferAmount: string | number
-}) => {
-  return (
-    <Row>
-      <Col flex="auto">
-        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          {title}
-        </Typography.Text>
-      </Col>
-      <Col>
-        <Typography.Text>{transferAmount}</Typography.Text>
-      </Col>
-    </Row>
-  )
-}
-
 const ConfirmInfo = () => {
   const { sourceChain, sourceWalletAddress, targetChain, targetWalletAddress } =
     useSelector((state: AppState) => state.wormhole)
@@ -53,17 +32,6 @@ const ConfirmInfo = () => {
             {shortenAddress(targetWalletAddress)}
           </Typography.Text>
         </Space>
-      </Col>
-      {/* Fee info */}
-      <Col span={24}>
-        <TransferInfo
-          title="Token charge gas fee"
-          transferAmount="0.000005 SOL ~ $0.000542"
-        />
-        <TransferInfo
-          title="Token withdrawal gas fee"
-          transferAmount="0.000005 SOL ~ $0.000542"
-        />
       </Col>
     </Row>
   )

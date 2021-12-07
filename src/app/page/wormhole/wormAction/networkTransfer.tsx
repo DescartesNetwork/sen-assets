@@ -9,7 +9,7 @@ import { AppState } from 'app/model'
 
 const ConfirmBridge = ({
   visible = false,
-  onCancel = () => { },
+  onCancel = () => {},
 }: {
   visible?: boolean
   onCancel?: (visible: boolean) => void
@@ -20,7 +20,7 @@ const ConfirmBridge = ({
 
   if (!sourceToken) return null
   return (
-    <Modal visible={visible} footer={false} closable={false} centered destroyOnClose>
+    <Modal visible={visible} footer={false} closable={false} centered>
       <Row gutter={[16, 16]} justify="center">
         <Col style={{ marginBottom: 50 }}>
           <Typography.Title level={4}>Confirm transfer</Typography.Title>
@@ -40,8 +40,12 @@ const ConfirmBridge = ({
                 <NetworkAvatar chainId={targetChain} size={32} />
               </Col>
               <Col className="amount">
-                <Typography.Text style={{ color: '#ffffff' }}>{sourceToken.symbol}</Typography.Text>
-                <Typography.Title level={3} style={{ color: '#ffffff' }}>{amount}</Typography.Title>
+                <Typography.Text style={{ color: '#ffffff' }}>
+                  {sourceToken.symbol}
+                </Typography.Text>
+                <Typography.Title level={3} style={{ color: '#ffffff' }}>
+                  {amount}
+                </Typography.Title>
               </Col>
             </Row>
             {/* transfer information */}

@@ -36,7 +36,7 @@ export class WormholeTransfer extends WormholeProvider {
     const data = await getWormholeDb<Record<string, TransferState>>(
       WormholeStoreKey.Transfer,
     )
-    return JSON.parse(JSON.stringify(data))
+    return JSON.parse(JSON.stringify(data)) || {}
   }
 
   restore = async (id: string) => {
@@ -105,13 +105,15 @@ export class WormholeTransfer extends WormholeProvider {
     // init data transfer
     if (!this.transferData)
       this.transferData = await this.initTransferData(amount)
-    const { transferData } = this.getState()
+    const { transferData, context } = this.getState()
 
     const { attested } = await this.isAttested()
     if (!attested) await this.attest(onUpdate)
 
     if (transferData.step === 0) {
-      const { emitterAddress, sequence } = await this.transferSourceNetWork()
+      const { emitterAddress, sequence, transferReceipt } =
+        await this.transferSourceNetWork()
+      context.id = transferReceipt.blockHash
       transferData.emitterAddress = emitterAddress
       transferData.sequence = sequence
       transferData.step++
@@ -209,6 +211,7 @@ export class WormholeTransfer extends WormholeProvider {
     return {
       sequence,
       emitterAddress,
+      transferReceipt,
     }
   }
 

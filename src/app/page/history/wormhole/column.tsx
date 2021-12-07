@@ -2,7 +2,7 @@ import moment from 'moment'
 import { Space, Typography } from 'antd'
 import NetworkAvatar from 'app/components/network/networkAvatar'
 import ColumAction from './columnAction'
-import HistoryStatus from './columnStatus'
+import HistoryStatus from './status'
 
 import { WormholeContext } from 'app/lib/wormhole/context'
 import { shortenAddress } from 'shared/util'
@@ -67,8 +67,8 @@ export const WORMHOLE_COLUMNS = [
   },
   {
     title: 'ACTION',
-    render: (data: TransferState) => {
-      return <ColumAction data={data} />
+    render: (state: TransferState) => {
+      return <ColumAction transferState={state} />
     },
   },
 ]
