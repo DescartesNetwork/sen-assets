@@ -31,28 +31,29 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
   }
 
   return (
-    <Card bordered={false} className="close-account">
-      <Row gutter={[16, 16]}>
-        <Col span={24}>
+    <Row gutter={[16, 16]}>
+      <Col span={24}>
+        <Card bordered={false} className="close-account">
           <Space>
             <IonIcon name="alert-circle-outline" />
             <Typography.Text>
               Please transfer out all tokens in this account before closing!
             </Typography.Text>
           </Space>
-        </Col>
-        <Col span={24}>
-          <Button
-            type="primary"
-            onClick={close}
-            disabled={Boolean(account.amount)}
-            block
-          >
-            Close Account
-          </Button>
-        </Col>
-      </Row>
-    </Card>
+        </Card>
+      </Col>
+
+      <Col span={24}>
+        <Button
+          type="primary"
+          onClick={close}
+          disabled={Boolean(account.amount)}
+          block
+        >
+          Close Account
+        </Button>
+      </Col>
+    </Row>
   )
 }
 

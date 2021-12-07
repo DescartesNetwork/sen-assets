@@ -37,6 +37,7 @@ const WormholeHistory = () => {
         <Button
           disabled={amountRow >= wormhole.length}
           onClick={onHandleViewMore}
+          type="text"
           icon={<IonIcon name="chevron-down-outline" />}
         >
           View more
