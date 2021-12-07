@@ -7,7 +7,7 @@ import { Progress } from 'app/components/progress'
 
 import { AppDispatch, AppState } from 'app/model'
 import { updateWormholeHistory } from 'app/model/history.controller'
-import { setProcess } from 'app/model/wormhole.controller'
+import { fetchEtherTokens, setProcess } from 'app/model/wormhole.controller'
 import { TransferState } from 'app/lib/wormhole/constant/wormhole'
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
@@ -25,6 +25,8 @@ const ConfirmAction = ({
   const [loading, setLoading] = useState(false)
 
   const onUpdate = async (stateTransfer: TransferState) => {
+    if (stateTransfer.transferData.step === 1)
+      await dispatch(fetchEtherTokens())
     await dispatch(setProcess({ id: stateTransfer.context.id }))
     await dispatch(updateWormholeHistory({ stateTransfer }))
   }

@@ -12,6 +12,7 @@ import {
 import { AppDispatch, AppState } from 'app/model'
 import { updateWormholeHistory } from 'app/model/history.controller'
 import {
+  fetchEtherTokens,
   restoreTransfer,
   setProcess,
   setVisibleProcess,
@@ -34,12 +35,14 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   }, [context.id, processId, transferData.step])
 
   const onUpdate = async (stateTransfer: TransferState) => {
+    if (stateTransfer.transferData.step === 1)
+      await dispatch(fetchEtherTokens())
     return dispatch(updateWormholeHistory({ stateTransfer }))
   }
 
   const onRetry = async () => {
     try {
-      await dispatch(restoreTransfer({ historyData: transferState })).unwrap()
+      await dispatch(restoreTransfer({ transferState: transferState })).unwrap()
       await dispatch(setProcess({ id: context.id })).unwrap()
       //Transfer
       const { sourceWallet, targetWallet } = window.wormhole
