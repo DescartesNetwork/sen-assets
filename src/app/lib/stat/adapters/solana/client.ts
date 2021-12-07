@@ -59,7 +59,6 @@ export class Solana {
     secondTo = Math.floor(secondTo)
 
     const programPublicKey = new PublicKey(programId)
-    //let lastSignature
     let signatures: string[] = []
     let isStop = false
     const confirmedSignatureInfos: ConfirmedSignatureInfo[] =
@@ -74,7 +73,6 @@ export class Solana {
           isStop = true
           break
         }
-        //lastSignature = info.signature
         signatures.push(info.signature)
       }
       if (confirmedSignatureInfos?.length <= limit) break

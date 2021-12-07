@@ -83,14 +83,13 @@ export const fetchTransactionHistory = createAsyncThunk<
     const {
       history: { transaction },
     } = getState()
-
-    console.log('lastSignature: ', lastSignature)
     const transLogService = new TransLogService(
       addressWallet,
       limit,
       lastSignature,
     )
     const translogData = await transLogService.collect()
+
     let history: TransactionTransferHistoryData[] = []
     history = [...transaction]
 
