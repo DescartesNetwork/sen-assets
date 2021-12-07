@@ -4,6 +4,7 @@ import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry'
 import { net } from 'shared/runtime'
 import configs from 'os/configs'
 import supplementary from './supplementary'
+import { DataLoader } from 'shared/dataloader'
 
 const {
   sol: { chainId },
@@ -41,9 +42,12 @@ class TokenProvider {
 
   private _init = async (): Promise<TokenInfo[]> => {
     if (this.tokenList.length) return this.tokenList
-    const tokenList = await (await new TokenListProvider().resolve())
-      .filterByChainId(this.chainId)
-      .getList()
+    const fetchTokenList = async () =>
+      await (await new TokenListProvider().resolve())
+        .filterByChainId(this.chainId)
+        .getList()
+    const tokenList = await DataLoader.load('fetchTokenList', fetchTokenList)
+
     if (this.cluster === 'devnet')
       this.tokenList = tokenList.concat(supplementary)
     return this.tokenList
