@@ -14,6 +14,7 @@ const Transaction = () => {
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
   const [isLoading, setIsLoading] = useState(true)
   const [isLoadMore, setIsLoadMore] = useState(false)
+
   const dispatch = useDispatch<AppDispatch>()
   const { transaction } = useSelector((state: AppState) => state.history)
   const { accountSelected } = useSelector((state: AppState) => state.account)
@@ -28,7 +29,10 @@ const Transaction = () => {
 
   useEffect(() => {
     fetchHistory()
-    return () => setIsLoading(true)
+    return () => {
+      setIsLoading(true)
+      setIsLoadMore(false)
+    }
   }, [fetchHistory])
 
   const onHandleViewMore = () => {
