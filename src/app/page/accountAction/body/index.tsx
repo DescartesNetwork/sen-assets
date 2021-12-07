@@ -56,7 +56,7 @@ const Body = () => {
         <Tabs.TabPane tab="Receive" key="Receive">
           <Receive accountAddr={receiveAddress} />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Wrapper" key="Wrapper" disabled={!isSolAccount && !isWSolAccount}>
+        <Tabs.TabPane tab="Wrap" key="Wrap" disabled={!isSolAccount && !isWSolAccount}>
           <Wrap accountAddr={wrapAddress} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="Close" key="Close" disabled={isSolAccount}>

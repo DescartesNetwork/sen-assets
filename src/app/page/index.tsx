@@ -22,6 +22,7 @@ const Page = () => {
       <Col span={24}>
         <History />
       </Col>
+      <Col span={24} />
     </Row>
   )
 }

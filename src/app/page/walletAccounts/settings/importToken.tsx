@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import LazyLoad from 'react-lazyload'
-import { account, } from '@senswap/sen-js'
+import { account } from '@senswap/sen-js'
 
 import {
   Row,
@@ -31,9 +31,7 @@ const MintCard = ({ mint }: { mint: TokenInfo }) => {
   const {
     wallet: { address: walletAddress },
   } = useWallet()
-  const {
-    accounts
-  } = useAccount()
+  const { accounts } = useAccount()
 
   const initializeAccount = async () => {
     const { splt, wallet } = window.sentre
@@ -65,7 +63,7 @@ const MintCard = ({ mint }: { mint: TokenInfo }) => {
   }
 
   useEffect(() => {
-    ; (async () => {
+    ;(async () => {
       const { splt } = window.sentre
       const accountAddress = await splt.deriveAssociatedAddress(
         walletAddress,
@@ -76,7 +74,7 @@ const MintCard = ({ mint }: { mint: TokenInfo }) => {
   }, [accounts, mintAddress, walletAddress])
 
   return (
-    <Card bodyStyle={{ padding: 16 }} bordered={false}>
+    <Card className="account-item" bodyStyle={{ padding: 16 }} bordered={false}>
       <Row gutter={[16, 16]} wrap={false}>
         <Col flex="auto">
           <Space>
@@ -106,12 +104,16 @@ const MintCard = ({ mint }: { mint: TokenInfo }) => {
  * Search bar
  */
 
-const Search = ({ onChange }: { onChange: (data: TokenInfo[] | null) => void }) => {
+const Search = ({
+  onChange,
+}: {
+  onChange: (data: TokenInfo[] | null) => void
+}) => {
   const [keyword, setKeyword] = useState('')
   const { tokenProvider } = useMint()
 
   useEffect(() => {
-    ; (async () => {
+    ;(async () => {
       if (!keyword || keyword.length < KEYSIZE) return onChange(null)
       const data = await tokenProvider.find(keyword)
       return onChange(data)
@@ -130,8 +132,10 @@ const Search = ({ onChange }: { onChange: (data: TokenInfo[] | null) => void }) 
             type="text"
             style={{ marginLeft: -7 }}
             size="small"
-            onClick={keyword ? () => setKeyword('') : () => { }}
-            icon={<IonIcon name={keyword ? 'close-outline' : 'search-outline'} />}
+            onClick={keyword ? () => setKeyword('') : () => {}}
+            icon={
+              <IonIcon name={keyword ? 'close-outline' : 'search-outline'} />
+            }
           />
         }
         suffix={<PoweredBy />}
@@ -148,7 +152,7 @@ const ImportToken = () => {
   const { tokenProvider } = useMint()
 
   useEffect(() => {
-    ; (async () => {
+    ;(async () => {
       const mints = await tokenProvider.all()
       return setMints(mints)
     })()
