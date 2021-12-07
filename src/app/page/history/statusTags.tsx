@@ -4,6 +4,7 @@ const STATUS_COLOR: Record<string, number[]> = {
   success: [20, 224, 65],
   pending: [212, 177, 6],
   error: [215, 35, 17],
+  failed: [215, 35, 17],
 }
 
 const StatusTag = ({ tag }: { tag: string }) => {

@@ -9,10 +9,10 @@ import { setSourceToken } from 'app/model/wormhole.controller'
 
 const SelectMintInput = () => {
   const dispatch = useDispatch()
-  const { sourceTokens, tokenAddress, amount } = useSelector(
+  const { sourceTokens, tokenAddress, amount, processId } = useSelector(
     (state: AppState) => state.wormhole,
   )
-  const { amount: maxAmount } = sourceTokens[tokenAddress] || {}
+  const { amount: maxAmount, symbol } = sourceTokens[tokenAddress] || {}
 
   const onChange = (amount: string) => dispatch(setSourceToken({ amount }))
 
@@ -22,19 +22,23 @@ const SelectMintInput = () => {
         <Typography.Text>Amount</Typography.Text>
       </Col>
       <Col>
-        <Typography.Text>Available: {maxAmount || 0}</Typography.Text>
+        <Typography.Text>
+          Available: {maxAmount || 0} {symbol}
+        </Typography.Text>
       </Col>
       <Col span={24}>
         <NumericInput
-          disabled={!tokenAddress}
+          disabled={!tokenAddress || !!processId}
           placeholder={'0'}
           prefix={<SourceMintSelect />}
           suffix={
             <Button
               type="text"
               style={{ marginRight: -7 }}
-              disabled={!tokenAddress}
-              onClick={() => dispatch(setSourceToken({ amount: `${maxAmount}` }))}
+              disabled={!tokenAddress || !!processId}
+              onClick={() =>
+                dispatch(setSourceToken({ amount: `${maxAmount}` }))
+              }
             >
               MAX
             </Button>

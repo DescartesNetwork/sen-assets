@@ -5,7 +5,7 @@ import {
   getOriginalAssetEth,
 } from '@certusone/wormhole-sdk'
 
-import { account, WalletInterface } from '@senswap/sen-js'
+import { WalletInterface } from '@senswap/sen-js'
 import { TokenEtherInfo } from 'app/model/wormhole.controller'
 import { IEtherWallet } from '../etherWallet/walletInterface'
 import { createWohContext, WormholeContext } from './context'
@@ -15,8 +15,6 @@ export class WormholeProvider {
   // wallet provider
   srcWallet: IEtherWallet
   targetWallet: WalletInterface
-  // connection
-  connection: Connection
   constructor(
     sourceWallet: IEtherWallet,
     targetWallet: WalletInterface,
@@ -25,17 +23,17 @@ export class WormholeProvider {
     this.srcWallet = sourceWallet
     this.targetWallet = targetWallet
     this.context = createWohContext(tokenInfo)
+  }
+
+  getConnection() {
     const nodeUrl = window.sentre.splt.nodeUrl
-    this.connection = new Connection(nodeUrl)
+    return new Connection(nodeUrl, 'confirmed')
   }
 
   isAttested = async (): Promise<{
     attested: boolean
-    wrappedMintAddress: string | undefined
+    wrappedMintAddress: string | null
   }> => {
-    if (!this.context) throw new Error('Invalid context wormhole')
-    if (!this.srcWallet) throw new Error('Login Metamask fist')
-
     const provider = await this.srcWallet.getProvider()
     const originAsset = await getOriginalAssetEth(
       this.context.srcTokenBridgeAddress,
@@ -43,19 +41,16 @@ export class WormholeProvider {
       this.context.tokenInfo.address,
       CHAIN_ID_ETH,
     )
-    const wrappedMintAddress =
-      (await getForeignAssetSolana(
-        this.connection,
-        this.context.targetTokenBridgeAddress,
-        originAsset.chainId,
-        originAsset.assetAddress,
-      )) || undefined
+    const wrappedMintAddress = await getForeignAssetSolana(
+      this.getConnection(),
+      this.context.targetTokenBridgeAddress,
+      originAsset.chainId,
+      originAsset.assetAddress,
+    )
 
     return {
-      attested: account.isAddress(wrappedMintAddress),
+      attested: !!wrappedMintAddress,
       wrappedMintAddress,
     }
   }
-
-  
 }

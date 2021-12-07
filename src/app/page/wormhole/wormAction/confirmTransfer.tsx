@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { Button, Checkbox, Col, Row } from 'antd'
+import { Button, Checkbox, Col, Row, Space, Typography } from 'antd'
 
 import { AppDispatch, AppState } from 'app/model'
 import { updateWormholeHistory } from 'app/model/history.controller'
@@ -10,6 +10,7 @@ import { setProcess } from 'app/model/wormhole.controller'
 import { TransferState } from 'app/lib/wormhole/constant/wormhole'
 import { WormholeTransfer } from 'app/lib/wormhole/transfer'
 import { explorer } from 'shared/util'
+import IonIcon from 'shared/ionicon'
 
 const ConfirmAction = ({
   onClose = () => {},
@@ -42,8 +43,6 @@ const ConfirmAction = ({
         targetWallet.sol,
         tokenTransfer,
       )
-      const { attested } = await wormholeTransfer.isAttested()
-      if (!attested) await wormholeTransfer.attest()
 
       const txId = await wormholeTransfer.transfer(amount, onUpdate)
       window.notify({
@@ -53,16 +52,27 @@ const ConfirmAction = ({
       })
       return onClose(false)
     } catch (error) {
-      await dispatch(setProcess({ id: '' }))
       window.notify({ type: 'error', description: (error as any).message })
     } finally {
       setLoading(false)
+      await dispatch(setProcess({ id: '' }))
     }
   }
 
-  // confirm button
   return (
     <Row gutter={[8, 8]} justify="center">
+      <Col span={24} style={{ textAlign: 'justify' }}>
+        <Space align="start">
+          <Typography.Text style={{ color: '#D72311' }}>
+            <IonIcon name="alert-circle-outline" />
+          </Typography.Text>
+          <Typography.Text style={{ color: '#D72311', fontSize: 12 }}>
+            You should wait until the process is complete or you can minimize
+            this dialog. However, the process will fail if you exit the Sen
+            Assets.
+          </Typography.Text>
+        </Space>
+      </Col>
       <Col span={24}>
         {loading ? (
           <Progress />

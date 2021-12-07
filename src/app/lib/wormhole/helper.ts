@@ -17,12 +17,12 @@ export const getSignedVAAWithRetry = async (
   let attempts = 0
   while (true) {
     try {
-      await asyncWait(10000)
       console.log('Retry to get signed vaa:', ++attempts)
       const re = await getSignedVAA(...args)
       return re
     } catch (er) {
       // Nothing
+      await asyncWait(10000)
     }
   }
 }

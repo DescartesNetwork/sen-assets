@@ -22,85 +22,50 @@ import {
 } from './helper'
 import { WormholeProvider } from './provider'
 import {
+  AttestData,
   TransferData,
   TransferState,
   WormholeStoreKey,
 } from './constant/wormhole'
 
 export class WormholeTransfer extends WormholeProvider {
-  data: TransferData | undefined
-
-  getState = (): TransferState => {
-    if (!this.data) throw new Error('Invalid data transfer')
-    return { transferData: this.data, context: this.context }
-  }
+  transferData: TransferData | undefined
+  attestData: AttestData | undefined
 
   static fetchAll = async (): Promise<Record<string, TransferState>> => {
     const data = await getWormholeDb<Record<string, TransferState>>(
       WormholeStoreKey.Transfer,
     )
-    return JSON.parse(JSON.stringify(data))
+    return JSON.parse(JSON.stringify(data)) || {}
   }
 
   restore = async (id: string) => {
     const database = await WormholeTransfer.fetchAll()
-    const state = database[id]
-    if (!state) throw new Error('Not find state transfer')
-    this.data = state.transferData
-    this.context = state.context
+    const stateBackup = database[id]
+    if (!stateBackup) throw new Error('Not find state transfer')
+    this.transferData = stateBackup.transferData
+    this.attestData = stateBackup.attestData
+    this.context = stateBackup.context
   }
 
   backup = async () => {
     const database = await WormholeTransfer.fetchAll()
     const state = this.getState()
-    state.transferData.step++
     database[state.context.id] = state
     setWormholeDb(WormholeStoreKey.Transfer, database)
     return state
   }
 
-  /**
-   * Transfer: to brigde tokens from origin chain to destination chain
-   * The token must be attested beforehand
-   * @param amount
-   * @returns
-   */
-
-  transfer = async (
-    amount: string,
-    onUpdate: (state: TransferState) => void,
-  ) => {
-    // init data transfer
-    if (!this.data) this.data = await this.initializeDataTransfer(amount)
-
-    let state = this.getState()
-    if (this.data.step === 0) {
-      const { emitterAddress, sequence } = await this.transferSourceNetWork()
-      state.transferData.emitterAddress = emitterAddress
-      state.transferData.sequence = sequence
-      const newState = await this.backup()
-      await onUpdate(newState)
+  getState = (): TransferState => {
+    if (!this.transferData) throw new Error('Invalid data transfer')
+    return {
+      transferData: this.transferData,
+      context: this.context,
+      attestData: this.attestData,
     }
-
-    if (this.data.step === 1) {
-      const vaaHex = await this.waitSignedWormhole()
-      state.transferData.vaaHex = vaaHex
-      const newState = await this.backup()
-      await onUpdate(newState)
-    }
-
-    if (this.data.step === 2) {
-      const txId = await this.redeemSolana()
-      state.transferData.txId = txId
-      const newState = await this.backup()
-      await onUpdate(newState)
-      return txId
-    }
-
-    throw new Error('Invalid step transfer')
   }
 
-  private initializeDataTransfer = async (amount: string) => {
+  private initTransferData = async (amount: string) => {
     const from = await this.srcWallet.getAddress()
     const to = await this.targetWallet.getAddress()
     return {
@@ -115,9 +80,100 @@ export class WormholeTransfer extends WormholeProvider {
     }
   }
 
+  private initAttestData = (): AttestData => {
+    if (!this.attestData)
+      this.attestData = {
+        step: 0,
+        sequence: '',
+        emitterAddress: '',
+        vaaHex: '',
+        txId: '',
+      }
+    return this.attestData
+  }
+
+  /**
+   * Transfer: to bridge tokens from origin chain to destination chain
+   * The token must be attested beforehand
+   * @param amount
+   * @returns
+   */
+  transfer = async (
+    amount: string,
+    onUpdate: (state: TransferState) => void,
+  ) => {
+    // init data transfer
+    if (!this.transferData)
+      this.transferData = await this.initTransferData(amount)
+    const { transferData, context } = this.getState()
+
+    const { attested } = await this.isAttested()
+    if (!attested) await this.attest(onUpdate)
+
+    if (transferData.step === 0) {
+      const { emitterAddress, sequence, transferReceipt } =
+        await this.transferSourceNetWork()
+      context.id = transferReceipt.blockHash
+      transferData.emitterAddress = emitterAddress
+      transferData.sequence = sequence
+      transferData.step++
+      const newState = await this.backup()
+      await onUpdate(newState)
+    }
+    if (transferData.step === 1) {
+      const vaaHex = await this.getSignedVAA(
+        transferData.emitterAddress,
+        transferData.sequence,
+      )
+      transferData.vaaHex = vaaHex
+      transferData.step++
+      const newState = await this.backup()
+      await onUpdate(newState)
+    }
+    if (transferData.step === 2) {
+      const newTxId = await this.redeemSolana(transferData.vaaHex)
+      transferData.txId = newTxId
+      transferData.step++
+      const newState = await this.backup()
+      await onUpdate(newState)
+      return newTxId
+    }
+    throw new Error('Invalid step transfer')
+  }
+
+  private attest = async (onUpdate: (state: TransferState) => void) => {
+    const attestData = this.initAttestData()
+    if (attestData.step === 0) {
+      const { emitterAddress, sequence } = await this.attestSourceNetwork()
+      attestData.emitterAddress = emitterAddress
+      attestData.sequence = sequence
+      attestData.step++
+      const newState = await this.backup()
+      await onUpdate(newState)
+    }
+    if (attestData.step === 1) {
+      const vaaHex = await this.getSignedVAA(
+        attestData.emitterAddress,
+        attestData.sequence,
+      )
+      attestData.vaaHex = vaaHex
+      attestData.step++
+      const newState = await this.backup()
+      await onUpdate(newState)
+    }
+    if (attestData.step === 2) {
+      const txId = await this.wrapSolana(attestData.vaaHex)
+      attestData.txId = txId
+      attestData.step++
+      const newState = await this.backup()
+      await onUpdate(newState)
+      return txId
+    }
+    throw new Error('Invalid step attest')
+  }
+
   private transferSourceNetWork = async () => {
     const { transferData, context } = this.getState()
-    // get context
     let { wrappedMintAddress } = await this.isAttested()
     if (!wrappedMintAddress) throw new Error('Attest the token first')
 
@@ -129,15 +185,12 @@ export class WormholeTransfer extends WormholeProvider {
       context.tokenInfo.decimals,
     )
 
-    // callback update
     await approveEth(
       context.srcTokenBridgeAddress,
       context.tokenInfo.address,
       signer,
       amountTransfer,
     )
-    // callback update
-
     const dstAddress = await getAssociatedAddress(
       wrappedMintAddress,
       this.targetWallet,
@@ -150,23 +203,20 @@ export class WormholeTransfer extends WormholeProvider {
       CHAIN_ID_SOLANA,
       account.fromAddress(dstAddress).toBuffer(),
     )
-    // backup
     const sequence = parseSequenceFromLogEth(
       transferReceipt,
       context.srcBridgeAddress,
     )
     const emitterAddress = getEmitterAddressEth(context.srcTokenBridgeAddress)
-    // next step
     return {
       sequence,
       emitterAddress,
+      transferReceipt,
     }
   }
 
-  private async waitSignedWormhole() {
-    const { transferData, context } = this.getState()
-    // get data prevStep
-    const { emitterAddress, sequence } = transferData
+  private async getSignedVAA(emitterAddress: string, sequence: string) {
+    const { context } = this.getState()
     // Get signedVAA
     const { vaaBytes } = await getSignedVAAWithRetry(
       context.wormholeRpc,
@@ -178,73 +228,67 @@ export class WormholeTransfer extends WormholeProvider {
     return vaaHex
   }
 
-  private async redeemSolana() {
-    const { transferData, context } = this.getState()
-
-    // get data prevStep
-    const { vaaHex } = transferData
+  private async redeemSolana(vaaHex: string) {
+    const { context } = this.getState()
+    const payerAddress = await this.targetWallet.getAddress()
     const vaaBytes = hexToUint8Array(vaaHex)
 
-    const payerAddress = await this.targetWallet.getAddress()
     await postVaaSolana(
-      this.connection,
+      this.getConnection(),
       this.targetWallet.signTransaction,
       context.targetBridgeAddress,
       payerAddress,
       Buffer.from(vaaBytes),
     )
-
     const tx = await redeemOnSolana(
-      this.connection,
+      this.getConnection(),
       context.targetBridgeAddress,
       context.targetTokenBridgeAddress,
       payerAddress,
       vaaBytes,
     )
     const signedTx = await this.targetWallet.signTransaction(tx)
-    const txId = await sendTransaction(signedTx, this.connection)
+    const txId = await sendTransaction(signedTx, this.getConnection())
     return txId
   }
 
-  attest = async (): Promise<string> => {
+  private async wrapSolana(vaaHex: string) {
+    const { context } = this.getState()
     const payerAddress = await this.targetWallet.getAddress()
-    const provider = await this.srcWallet.getProvider()
-    const signer = provider.getSigner()
-    const context = this.context
+    const vaaBytes = hexToUint8Array(vaaHex)
 
-    // Send attest
-    const receipt = await attestFromEth(
-      this.context.srcTokenBridgeAddress,
-      signer,
-      context.tokenInfo.address,
-    )
-    // Fetch attestion info
-    const sequence = parseSequenceFromLogEth(receipt, context.srcBridgeAddress)
-    const emitterAddress = getEmitterAddressEth(context.srcTokenBridgeAddress)
-    // Get signedVAA
-    const { vaaBytes } = await getSignedVAAWithRetry(
-      context.wormholeRpc,
-      CHAIN_ID_ETH,
-      emitterAddress,
-      sequence,
-    )
-    // Post signedVAA
     await postVaaSolana(
-      this.connection,
+      this.getConnection(),
       this.targetWallet.signTransaction,
       context.targetBridgeAddress,
       payerAddress,
       Buffer.from(vaaBytes),
     )
     const tx = await createWrappedOnSolana(
-      this.connection,
+      this.getConnection(),
       context.targetBridgeAddress,
       context.targetTokenBridgeAddress,
       payerAddress,
       vaaBytes,
     )
     const signedTx = await this.targetWallet.signTransaction(tx)
-    const txId = await sendTransaction(signedTx, this.connection)
+    const txId = await sendTransaction(signedTx, this.getConnection())
     return txId
+  }
+
+  attestSourceNetwork = async () => {
+    const provider = await this.srcWallet.getProvider()
+    const signer = provider.getSigner()
+    const context = this.context
+    // Send attest
+    const receipt = await attestFromEth(
+      this.context.srcTokenBridgeAddress,
+      signer,
+      context.tokenInfo.address,
+    )
+    // Fetch attention info
+    const sequence = parseSequenceFromLogEth(receipt, context.srcBridgeAddress)
+    const emitterAddress = getEmitterAddressEth(context.srcTokenBridgeAddress)
+    return { sequence, emitterAddress }
   }
 }

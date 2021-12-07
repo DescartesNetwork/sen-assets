@@ -15,17 +15,18 @@ import { restoreTransfer, setProcess } from 'app/model/wormhole.controller'
 import { explorer } from 'shared/util'
 import { WormholeTransfer } from 'app/lib/wormhole/transfer'
 
-const ColumAction = ({ data }: { data: TransferState }) => {
+const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { processId, sourceTokens, tokenAddress } = useSelector(
     (state: AppState) => state.wormhole,
   )
+  const { context, transferData } = transferState
 
   const status = useMemo((): WormholeStatus => {
-    if (data.transferData.step === STEP_TRANSFER_AMOUNT) return 'success'
-    if (processId === data.context.id) return 'pending'
-    return 'error'
-  }, [data.context.id, data.transferData.step, processId])
+    if (transferData.step === STEP_TRANSFER_AMOUNT) return 'success'
+    if (processId === context.id) return 'pending'
+    return 'failed'
+  }, [context.id, processId, transferData.step])
 
   const onUpdate = async (stateTransfer: TransferState) => {
     return dispatch(updateWormholeHistory({ stateTransfer }))
@@ -33,8 +34,8 @@ const ColumAction = ({ data }: { data: TransferState }) => {
 
   const onRetry = async () => {
     try {
-      await dispatch(restoreTransfer({ historyData: data })).unwrap()
-      await dispatch(setProcess({ id: data.context.id })).unwrap()
+      await dispatch(restoreTransfer({ historyData: transferState })).unwrap()
+      await dispatch(setProcess({ id: context.id })).unwrap()
       //Transfer
       const { sourceWallet, targetWallet } = window.wormhole
       const tokenTransfer = sourceTokens[tokenAddress]
@@ -46,10 +47,10 @@ const ColumAction = ({ data }: { data: TransferState }) => {
         targetWallet.sol,
         tokenTransfer,
       )
-      await wormholeTransfer.restore(data.context.id)
-      await onUpdate(data)
+      await wormholeTransfer.restore(context.id)
+      await onUpdate(transferState)
       const txId = await wormholeTransfer.transfer(
-        data.transferData.amount,
+        transferData.amount,
         onUpdate,
       )
       window.notify({
@@ -58,8 +59,9 @@ const ColumAction = ({ data }: { data: TransferState }) => {
         onClick: () => window.open(explorer(txId), '_blank'),
       })
     } catch (error) {
-      await dispatch(setProcess({ id: '' })).unwrap()
       window.notify({ type: 'error', description: (error as any).message })
+    } finally {
+      await dispatch(setProcess({ id: '' })).unwrap()
     }
   }
 
@@ -69,13 +71,15 @@ const ColumAction = ({ data }: { data: TransferState }) => {
       <Button
         type="text"
         size="large"
-        onClick={() => window.open(explorer(data.transferData.txId), '_blank')}
+        onClick={() =>
+          window.open(explorer(transferState.transferData.txId), '_blank')
+        }
         icon={<IonIcon name="open-outline" />}
       />
     )
 
   // action button retry
-  if (status === 'error')
+  if (status === 'failed')
     return (
       <Button type="primary" size="small" onClick={onRetry}>
         Retry

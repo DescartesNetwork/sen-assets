@@ -145,11 +145,15 @@ export const restoreTransfer = createAsyncThunk<
   const { sourceWallet } = window.wormhole
   if (!sourceWallet.ether) throw new Error('Login fist')
   const { wormhole } = getState()
-  const { context } = historyData
+  const { context, transferData } = historyData
   // restore data
   const dataRestore = { ...wormhole }
   dataRestore.tokenAddress = context.tokenInfo.address
   dataRestore.processId = context.id
+  dataRestore.amount = transferData.amount
+  dataRestore.sourceWalletAddress = transferData.from
+  dataRestore.targetWalletAddress = transferData.to
+  dataRestore.sourceWalletAddress = transferData.from
   return { ...dataRestore }
 })
 

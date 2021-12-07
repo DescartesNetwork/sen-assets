@@ -7,7 +7,7 @@ export enum WormholeStoreKey {
   Provider = 'Provider',
   SourceWallet = 'SourceWallet',
 }
-export type WormholeStatus = 'pending' | 'error' | 'success'
+export type WormholeStatus = 'pending' | 'failed' | 'success'
 
 // Transfer
 export const STEP_TRANSFER_AMOUNT = 3
@@ -21,9 +21,19 @@ export type TransferData = {
   vaaHex: string
   txId: string
 }
+
+export type AttestData = {
+  step: number
+  sequence: string
+  emitterAddress: string
+  vaaHex: string
+  txId: string
+}
+
 export type TransferState = {
   context: WormholeContext
   transferData: TransferData
+  attestData?: AttestData
 }
 
 // wormhole network

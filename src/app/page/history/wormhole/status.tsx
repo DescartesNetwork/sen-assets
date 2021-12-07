@@ -16,7 +16,7 @@ const ColumnStatus = ({ data }: { data: TransferState }) => {
   const status = useMemo((): WormholeStatus => {
     if (data.transferData.step === STEP_TRANSFER_AMOUNT) return 'success'
     if (processId === data.context.id) return 'pending'
-    return 'error'
+    return 'failed'
   }, [data.context.id, data.transferData.step, processId])
 
   return <StatusTag tag={status} />
