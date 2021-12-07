@@ -21,6 +21,7 @@ const AccountItem = ({
   return (
     <Card
       className="account-item"
+      style={{ borderRadius: 8 }}
       bodyStyle={{ padding: 12 }}
       bordered={false}
       hoverable

@@ -43,6 +43,7 @@ const Transaction = () => {
       <Col>
         <Button
           onClick={onHandleViewMore}
+          type="text"
           icon={<IonIcon name="chevron-down-outline" />}
           disabled={amountRow >= transaction.length}
         >
