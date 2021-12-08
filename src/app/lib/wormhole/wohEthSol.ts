@@ -107,11 +107,13 @@ class WohEthSol extends WormholeProvider {
       CHAIN_ID_SOLANA,
       account.fromAddress(dstAddress).toBuffer(),
     )
+    console.log(transferReceipt)
     const sequence = parseSequenceFromLogEth(
       transferReceipt,
       context.srcBridgeAddress,
     )
     const emitterAddress = getEmitterAddressEth(context.srcTokenBridgeAddress)
+    console.log(sequence, emitterAddress)
     return {
       sequence,
       emitterAddress,

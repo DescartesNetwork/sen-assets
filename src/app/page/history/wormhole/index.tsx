@@ -7,7 +7,7 @@ import IonIcon from 'shared/ionicon'
 import { WORMHOLE_COLUMNS } from './column'
 import { AppState } from 'app/model'
 import { fetchWormholeHistory } from 'app/model/history.controller'
-import { fetchTransactionsAAddress } from '../../../lib/wormhole/helper'
+import { fetchLogsAAddress, fetchTransactionsAAddress } from '../../../lib/wormhole/helper'
 
 const ROW_PER_PAGE = 4
 
@@ -19,6 +19,10 @@ const WormholeHistory = () => {
   useEffect(() => {
     dispatch(fetchWormholeHistory())
   }, [dispatch])
+
+  // useEffect(()=>{
+  //   dispatch(fetchTransactionsAAddress('0xf27F3863177A72957D409054c3f48a5fe35dF84B', 'goerli'))
+  // })
 
   const onHandleViewMore = () => setAmountRow(amountRow + ROW_PER_PAGE)
   console.log(wormhole, 'slslskdkdkdk')

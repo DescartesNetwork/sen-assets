@@ -49,6 +49,7 @@ export const fetchWormholeHistory = createAsyncThunk<{
   wormhole: TransferState[]
 }>(`${NAME}/fetchWormholeHistory`, async () => {
   const listTransferState = await WohEthSol.fetchAll()
+  console.log(listTransferState)
   const history: TransferState[] = Object.values(listTransferState)
   return {
     wormhole: history.reverse(),

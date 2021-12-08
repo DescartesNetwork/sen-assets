@@ -87,7 +87,9 @@ export class WormholeProvider {
   protected backup = async () => {
     const database = await WormholeProvider.fetchAll()
     const state = this.getState()
+    
     database[state.context.id] = state
+    console.log(database)
     setWormholeDb(WormholeStoreKey.Transfer, database)
     return state
   }
