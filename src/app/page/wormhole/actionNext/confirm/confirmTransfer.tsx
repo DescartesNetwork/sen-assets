@@ -18,11 +18,12 @@ const ConfirmAction = ({
   onClose?: (visible: boolean) => void
 }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const { sourceTokens, tokenAddress, amount } = useSelector(
+  const { sourceTokens, tokenAddress, amount, processId } = useSelector(
     (state: AppState) => state.wormhole,
   )
   const [acceptable, setAcceptable] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [waiting, setWaiting] = useState(false)
+  const loading = waiting || !!processId
 
   const onUpdate = async (stateTransfer: TransferState) => {
     if (stateTransfer.transferData.step === 1)
@@ -32,7 +33,7 @@ const ConfirmAction = ({
   }
 
   const onTransfer = async () => {
-    await setLoading(true)
+    await setWaiting(true)
     try {
       //Transfer
       const { sourceWallet, targetWallet } = window.wormhole
@@ -52,11 +53,12 @@ const ConfirmAction = ({
     } catch (er) {
       notifyError(er)
     } finally {
-      setLoading(false)
+      setWaiting(false)
       await dispatch(setProcess({ id: '' }))
     }
   }
 
+  
   return (
     <Row gutter={[8, 8]} justify="center">
       <Col span={24} style={{ textAlign: 'justify' }}>

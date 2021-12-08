@@ -37,7 +37,7 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   const onUpdate = async (stateTransfer: TransferState) => {
     if (stateTransfer.transferData.step === 1)
       await dispatch(fetchEtherTokens())
-    return dispatch(updateWormholeHistory({ stateTransfer }))
+    return dispatch(updateWormholeHistory({ stateTransfer })).unwrap()
   }
 
   const onRetry = async () => {
@@ -94,9 +94,11 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   return (
     <Button
       type="text"
-      icon={<IonIcon name="eye-outline" />}
+      size="small"
       onClick={() => dispatch(setVisibleProcess({ visible: true }))}
-    />
+    >
+      Reopen
+    </Button>
   )
 }
 

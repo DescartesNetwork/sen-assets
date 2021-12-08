@@ -42,7 +42,9 @@ const Receive = ({ accountAddr }: { accountAddr: string }) => {
       <Col span={24}>
         <Row gutter={[8, 8]}>
           <Col flex="auto">
-            <Typography.Text>Wallet address</Typography.Text>
+            <Typography.Text>
+              {devMode ? 'Derive associated address' : 'Wallet address'}
+            </Typography.Text>
           </Col>
           <Col>
             {accountAddr !== wallet.address && (
