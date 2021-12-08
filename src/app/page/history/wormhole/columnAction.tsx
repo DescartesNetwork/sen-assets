@@ -17,7 +17,7 @@ import {
   setProcess,
   setVisibleProcess,
 } from 'app/model/wormhole.controller'
-import { explorer } from 'shared/util'
+import { asyncWait, explorer } from 'shared/util'
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
 
@@ -35,8 +35,10 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   }, [context.id, processId, transferData.nextStep])
 
   const onUpdate = async (stateTransfer: TransferState) => {
-    if (stateTransfer.transferData.nextStep === StepTransfer.WaitSigned)
+    if (stateTransfer.transferData.nextStep === StepTransfer.WaitSigned) {
+      await asyncWait(5000)
       await dispatch(fetchEtherTokens())
+    }
     return dispatch(updateWormholeHistory({ stateTransfer })).unwrap()
   }
 
