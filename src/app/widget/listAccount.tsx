@@ -4,9 +4,9 @@ import { useHistory } from 'react-router-dom'
 
 import { Col, Row } from 'antd'
 import AccountItem from './accountItem'
-import Settings from 'app/page/walletAccounts/settings/settings'
 import Search from 'app/page/walletAccounts/search/search'
 import LazyLoad from 'react-lazyload'
+import Sol from 'app/page/walletAccounts/listAccount/solCard'
 
 import { useMint } from 'senhub/providers'
 import { AccountData } from '@senswap/sen-js'
@@ -22,7 +22,7 @@ const ListAccount = () => {
   const history = useHistory()
   const { tokenProvider } = useMint()
   const [listAccount, setListAccount] = useState<string[]>([])
-  
+
   const onSearch = useCallback(
     async (accounts: Record<string, AccountData>) => {
       const listAccount: string[] = []
@@ -51,11 +51,11 @@ const ListAccount = () => {
 
   return (
     <Row gutter={[12, 12]} align="middle">
-      <Col flex="auto">
+      <Col span={24}>
         <Search onChange={onSearch} />
       </Col>
-      <Col>
-        <Settings />
+      <Col span={24}>
+        <Sol onClick={(account) => handleOnClick(account)} />
       </Col>
       {listAccount.map((address) => (
         <Col span={24} key={address}>

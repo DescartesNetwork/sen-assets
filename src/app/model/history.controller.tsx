@@ -6,7 +6,7 @@ import { TransferData } from 'app/lib/wormhole/constant/wormhole'
 import { WormholeContext } from 'app/lib/wormhole/context'
 
 import { TransferState } from 'app/lib/wormhole/constant/wormhole'
-import { WormholeTransfer } from 'app/lib/wormhole/transfer'
+import { WohEthSol } from 'app/lib/wormhole'
 import { utils } from '@senswap/sen-js'
 
 /**
@@ -48,7 +48,7 @@ const initialState: State = {
 export const fetchWormholeHistory = createAsyncThunk<{
   wormhole: TransferState[]
 }>(`${NAME}/fetchWormholeHistory`, async () => {
-  const listTransferState = await WormholeTransfer.fetchAll()
+  const listTransferState = await WohEthSol.fetchAll()
   const history: TransferState[] = Object.values(listTransferState)
   return {
     wormhole: history.reverse(),

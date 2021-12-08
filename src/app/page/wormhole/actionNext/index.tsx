@@ -1,13 +1,19 @@
-import { useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Col, Row, Tooltip } from 'antd'
-import ConfirmBridge from './networkTransfer'
-import { useSelector } from 'react-redux'
+import ConfirmBridge from './confirm'
+
 import { AppState } from 'app/model'
+import { setVisibleProcess } from 'app/model/wormhole.controller'
 
 const WormAction = () => {
-  const { amount, processId } = useSelector((state: AppState) => state.wormhole)
-  const [visible, setVisible] = useState(false)
+  const dispatch = useDispatch()
+  const { amount, processId, visible } = useSelector(
+    (state: AppState) => state.wormhole,
+  )
+
+  const setVisible = (visible: boolean) =>
+    dispatch(setVisibleProcess({ visible }))
 
   return (
     <Row>

@@ -1,40 +1,23 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
+import { account, utils } from '@senswap/sen-js'
 
 import { Row, Col, Button } from 'antd'
 import Source from './source'
 import Destination from './destination'
 
-import { useAccount } from 'senhub/providers'
-import { explorer } from 'shared/util'
-import { account, DEFAULT_EMPTY_ADDRESS, DEFAULT_WSOL, utils } from '@senswap/sen-js'
-import useMintDecimals from 'app/shared/hooks/useMintDecimals'
+import { useMintAccount } from 'app/shared/hooks/useMintAccount'
+import { SOL_ADDRESS } from 'app/constant/sol'
+import { notifyError, notifySuccess } from 'app/helper'
 
 const Transfer = ({ accountAddr }: { accountAddr: string }) => {
-  const { accounts } = useAccount()
-  const [amount, setAmount] = useState<string>('')
   const [dstAddress, setDstAddress] = useState('')
+  const { mint, decimals } = useMintAccount(accountAddr)
   const [loading, setLoading] = useState(false)
-
-  const { mint, amount: maxAmount } = accounts[accountAddr] || {}
-  const decimals = useMintDecimals(mint)
-  const isSolAccount = useMemo(() => { return accountAddr === DEFAULT_EMPTY_ADDRESS || accountAddr === DEFAULT_WSOL }, [accountAddr])
-  const tokenDecimal = useMemo(() => { return isSolAccount ? 9 : decimals }, [isSolAccount, decimals])
-
-  const disabledTransfer = useMemo(() => {
-    if (tokenDecimal === 0) return false
-    if (!account.isAddress(dstAddress)) return true
-    const amountTransfer = utils.decimalize(amount, tokenDecimal)
-
-    if (!amountTransfer || amountTransfer > maxAmount) return true
-    return false
-  }, [maxAmount, amount, tokenDecimal, dstAddress])
+  const [amount, setAmount] = useState('0')
 
   const getDstAssociatedAddr = async (): Promise<string | undefined> => {
     const { splt, wallet } = window.sentre
-    if (isSolAccount) return dstAddress
-    if (!account.isAddress(dstAddress) || !account.isAddress(mint) || !wallet)
-      return
-
+    if (!wallet) throw new Error('Login first')
     let associatedAddr = dstAddress
     if (!account.isAssociatedAddress(associatedAddr))
       associatedAddr = await splt.deriveAssociatedAddress(dstAddress, mint)
@@ -52,41 +35,24 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
     try {
       const { splt, wallet, lamports } = window.sentre
       if (!wallet) return
-
+      // transfer lamports
+      const amountTransfer = utils.decimalize(amount, decimals)
+      if (mint === SOL_ADDRESS) {
+        const txId = await lamports.transfer(amountTransfer, dstAddress, wallet)
+        return notifySuccess('Transfer', txId)
+      }
+      // transfer splt
       const dstAssociatedAddr = await getDstAssociatedAddr()
       if (!dstAssociatedAddr) throw new Error('Invalid destination address')
-      const amountTransfer = utils.decimalize(Number(amount), tokenDecimal)
-      // asset accounts(not solana) transfer
-      if (!isSolAccount) {
-        const { txId } = await splt.transfer(
-          amountTransfer,
-          accountAddr,
-          dstAssociatedAddr,
-          wallet,
-        )
-        return window.notify({
-          type: 'success',
-          description: `Transfer successfully`,
-          onClick: () => window.open(explorer(txId), '_blank'),
-        })
-      }
-      // solana account transfer
-      const txId = await lamports.transfer(
+      const { txId } = await splt.transfer(
         amountTransfer,
+        accountAddr,
         dstAssociatedAddr,
         wallet,
       )
-      return window.notify({
-        type: 'success',
-        description: `Transfer successfully`,
-        onClick: () => window.open(explorer(txId), '_blank'),
-      })
-
-    } catch (er: any) {
-      window.notify({
-        type: 'error',
-        description: er.message,
-      })
+      return notifySuccess('Transfer', txId)
+    } catch (er) {
+      notifyError(er)
     } finally {
       setLoading(false)
     }
@@ -106,7 +72,7 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
           onClick={transfer}
           block
           loading={loading}
-          disabled={disabledTransfer}
+          disabled={!Number(amount)}
         >
           Transfer
         </Button>

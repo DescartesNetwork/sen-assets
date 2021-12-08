@@ -1,10 +1,9 @@
 import { useMemo } from 'react'
 import { utils } from '@senswap/sen-js'
 
-import { useAccount } from 'senhub/providers'
-import useMintDecimals from 'app/shared/hooks/useMintDecimals'
-import useMintCgk from 'app/shared/hooks/useMintCgk'
 import { numeric } from 'shared/util'
+import useMintCgk from 'app/shared/hooks/useMintCgk'
+import { useMintAccount } from 'app/shared/hooks/useMintAccount'
 
 const Balance = ({
   accountAddr,
@@ -17,15 +16,13 @@ const Balance = ({
   autoHidden?: boolean
   format?: string
 }) => {
-  const { accounts } = useAccount()
-  const { amount, mint } = accounts[accountAddr]
-  const decimals = useMintDecimals(mint)
+  const { amount, mint, decimals } = useMintAccount(accountAddr)
   const cgkData = useMintCgk(mint)
 
   const balanceDisplay = useMemo(() => {
     let balance = Number(utils.undecimalize(amount, decimals))
     if (inUSD) balance = Number(balance) * cgkData.price
-    const prefix = inUSD ? '~ $' : ''
+    const prefix = inUSD ? '$' : ''
     return prefix + numeric(balance).format(format)
   }, [amount, cgkData.price, decimals, format, inUSD])
 

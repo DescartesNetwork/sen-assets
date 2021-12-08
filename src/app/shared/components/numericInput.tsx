@@ -44,6 +44,10 @@ const NumericInput = forwardRef(
       >
         <Input
           {...props}
+          onBlur={(e) => {
+            const value = Number(e.target.value)
+            if (e.target.value) onAmount(value ? value.toString() : '')
+          }}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
             setCursor(e.target.selectionStart)
             onAmount(e.target.value || '')

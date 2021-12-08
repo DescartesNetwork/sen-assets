@@ -1,7 +1,8 @@
-import { Space, Typography } from 'antd'
+import { Button, Space, Typography } from 'antd'
 import StatusTag from '../statusTags'
+import IonIcon from 'shared/ionicon'
 
-import { shortenAddress } from 'shared/util'
+import { explorer, shortenAddress } from 'shared/util'
 import { MintSymbol } from 'app/shared/components/mint'
 
 export const TRANSACTION_COLUMNS = [
@@ -15,9 +16,17 @@ export const TRANSACTION_COLUMNS = [
     dataIndex: 'transactionId',
     key: 'transactionId',
     render: (text: string) => (
-      <Typography.Text style={{ fontWeight: 700 }}>
-        {shortenAddress(text, 8, '...')}
-      </Typography.Text>
+      <Space align="baseline">
+        <Typography.Text style={{ fontWeight: 700 }}>
+          {shortenAddress(text, 8, '...')}
+        </Typography.Text>
+        <Button
+          type="text"
+          size="small"
+          onClick={() => window.open(explorer(text), '_blank')}
+          icon={<IonIcon name="open-outline" />}
+        />
+      </Space>
     ),
   },
   {

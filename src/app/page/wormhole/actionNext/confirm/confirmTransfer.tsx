@@ -2,15 +2,15 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Checkbox, Col, Row, Space, Typography } from 'antd'
+import IonIcon from 'shared/ionicon'
+import { Progress } from 'app/components/progress'
 
 import { AppDispatch, AppState } from 'app/model'
 import { updateWormholeHistory } from 'app/model/history.controller'
-import { Progress } from 'app/components/progress'
-import { setProcess } from 'app/model/wormhole.controller'
+import { fetchEtherTokens, setProcess } from 'app/model/wormhole.controller'
 import { TransferState } from 'app/lib/wormhole/constant/wormhole'
-import { WormholeTransfer } from 'app/lib/wormhole/transfer'
-import { explorer } from 'shared/util'
-import IonIcon from 'shared/ionicon'
+import { WohEthSol } from 'app/lib/wormhole'
+import { notifyError, notifySuccess } from 'app/helper'
 
 const ConfirmAction = ({
   onClose = () => {},
@@ -25,6 +25,8 @@ const ConfirmAction = ({
   const [loading, setLoading] = useState(false)
 
   const onUpdate = async (stateTransfer: TransferState) => {
+    if (stateTransfer.transferData.step === 1)
+      await dispatch(fetchEtherTokens())
     await dispatch(setProcess({ id: stateTransfer.context.id }))
     await dispatch(updateWormholeHistory({ stateTransfer }))
   }
@@ -38,21 +40,17 @@ const ConfirmAction = ({
       if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
         throw new Error('Login fist')
 
-      let wormholeTransfer = new WormholeTransfer(
+      let wormholeTransfer = new WohEthSol(
         sourceWallet.ether,
         targetWallet.sol,
         tokenTransfer,
       )
 
       const txId = await wormholeTransfer.transfer(amount, onUpdate)
-      window.notify({
-        type: 'success',
-        description: 'Transfer successfully',
-        onClick: () => window.open(explorer(txId), '_blank'),
-      })
+      notifySuccess('Transfer', txId)
       return onClose(false)
-    } catch (error) {
-      window.notify({ type: 'error', description: (error as any).message })
+    } catch (er) {
+      notifyError(er)
     } finally {
       setLoading(false)
       await dispatch(setProcess({ id: '' }))
