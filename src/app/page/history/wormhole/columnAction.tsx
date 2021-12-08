@@ -5,7 +5,7 @@ import { Button } from 'antd'
 import IonIcon from 'shared/ionicon'
 
 import {
-  STEP_TRANSFER_AMOUNT,
+  StepTransfer,
   TransferState,
   WormholeStatus,
 } from 'app/lib/wormhole/constant/wormhole'
@@ -29,13 +29,13 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   const { context, transferData } = transferState
 
   const status = useMemo((): WormholeStatus => {
-    if (transferData.step === STEP_TRANSFER_AMOUNT) return 'success'
+    if (transferData.nextStep === StepTransfer.Finish) return 'success'
     if (processId === context.id) return 'pending'
     return 'failed'
-  }, [context.id, processId, transferData.step])
+  }, [context.id, processId, transferData.nextStep])
 
   const onUpdate = async (stateTransfer: TransferState) => {
-    if (stateTransfer.transferData.step === 1)
+    if (stateTransfer.transferData.nextStep === StepTransfer.WaitSigned)
       await dispatch(fetchEtherTokens())
     return dispatch(updateWormholeHistory({ stateTransfer })).unwrap()
   }

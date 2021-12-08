@@ -11,6 +11,7 @@ import { fetchEtherTokens, setProcess } from 'app/model/wormhole.controller'
 import { TransferState } from 'app/lib/wormhole/constant/wormhole'
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
+import { asyncWait } from 'shared/util'
 
 const ConfirmAction = ({
   onClose = () => {},
@@ -26,8 +27,10 @@ const ConfirmAction = ({
   const loading = waiting || !!processId
 
   const onUpdate = async (stateTransfer: TransferState) => {
-    if (stateTransfer.transferData.step === 1)
-      await dispatch(fetchEtherTokens())
+    await asyncWait(5000)
+
+    // if (stateTransfer.transferData.nextStep === StepTransfer.WaitSigned)
+    await dispatch(fetchEtherTokens())
     await dispatch(setProcess({ id: stateTransfer.context.id }))
     await dispatch(updateWormholeHistory({ stateTransfer }))
   }
@@ -58,7 +61,6 @@ const ConfirmAction = ({
     }
   }
 
-  
   return (
     <Row gutter={[8, 8]} justify="center">
       <Col span={24} style={{ textAlign: 'justify' }}>
