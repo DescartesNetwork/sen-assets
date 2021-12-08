@@ -7,7 +7,11 @@ import { Progress } from 'app/components/progress'
 
 import { AppDispatch, AppState } from 'app/model'
 import { updateWormholeHistory } from 'app/model/history.controller'
-import { fetchEtherTokens, setProcess } from 'app/model/wormhole.controller'
+import {
+  clearProcess,
+  fetchEtherTokens,
+  setProcess,
+} from 'app/model/wormhole.controller'
 import { StepTransfer, TransferState } from 'app/lib/wormhole/constant/wormhole'
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
@@ -52,12 +56,13 @@ const ConfirmAction = ({
 
       const txId = await wormholeTransfer.transfer(amount, onUpdate)
       notifySuccess('Transfer', txId)
+      dispatch(clearProcess())
       return onClose(false)
     } catch (er) {
       notifyError(er)
+      await dispatch(setProcess({ id: '' }))
     } finally {
       setWaiting(false)
-      await dispatch(setProcess({ id: '' }))
     }
   }
 

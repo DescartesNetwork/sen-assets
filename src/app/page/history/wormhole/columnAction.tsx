@@ -12,6 +12,7 @@ import {
 import { AppDispatch, AppState } from 'app/model'
 import { updateWormholeHistory } from 'app/model/history.controller'
 import {
+  clearProcess,
   fetchEtherTokens,
   restoreTransfer,
   setProcess,
@@ -64,10 +65,10 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
         onUpdate,
       )
       notifySuccess('Transfer', txId)
+      dispatch(clearProcess())
     } catch (er) {
       notifyError(er)
-    } finally {
-      await dispatch(setProcess({ id: '' })).unwrap()
+      await dispatch(setProcess({ id: '' }))
     }
   }
 
@@ -87,7 +88,12 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   // action button retry
   if (status === 'failed')
     return (
-      <Button type="primary" size="small" onClick={onRetry}>
+      <Button
+        type="primary"
+        size="small"
+        onClick={onRetry}
+        disabled={!!processId}
+      >
         Retry
       </Button>
     )
