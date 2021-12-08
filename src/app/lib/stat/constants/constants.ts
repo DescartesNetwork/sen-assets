@@ -67,9 +67,8 @@ export type TotalFarmSummary = {
 }
 
 export type OptionsFetchSignature = {
-  programId: string
-  limit: number
+  limit?: number
   lastSignature?: string
-  secondFrom: number
-  secondTo: number
+  secondFrom?: number
+  secondTo?: number
 }

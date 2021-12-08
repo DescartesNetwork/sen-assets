@@ -8,7 +8,7 @@ import {
 
 import { OptionsFetchSignature } from '../../constants/constants'
 
-const DEFAULT_LIMIT = 700
+const DEFAULT_LIMIT = 750
 const TRANSACTION_LIMIT = 150
 
 export class Solana {
@@ -51,11 +51,14 @@ export class Solana {
   }
 
   async fetchTransactions(
+    programId: string,
     options: OptionsFetchSignature,
   ): Promise<ParsedConfirmedTransaction[]> {
-    let { secondFrom, secondTo, programId, lastSignature, limit } = options
-    secondFrom = Math.floor(secondFrom)
-    secondTo = Math.floor(secondTo)
+    let { secondFrom, secondTo, lastSignature, limit } = options
+    secondFrom = Math.floor(secondFrom || 0)
+    secondTo = Math.floor(secondTo || 0)
+
+    if (!limit) limit = DEFAULT_LIMIT
 
     const programPublicKey = new PublicKey(programId)
     let signatures: string[] = []
@@ -72,9 +75,13 @@ export class Solana {
           isStop = true
           break
         }
+        lastSignature = info.signature
         signatures.push(info.signature)
       }
-      if (confirmedSignatureInfos?.length <= limit) break
+
+      if (limit < DEFAULT_LIMIT) {
+        if (confirmedSignatureInfos?.length <= limit) break
+      } else if (confirmedSignatureInfos?.length < limit) break
     }
     const confirmedTransactions = await this.fetchConfirmTransaction(signatures)
     return confirmedTransactions

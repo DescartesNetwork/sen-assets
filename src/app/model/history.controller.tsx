@@ -88,14 +88,11 @@ export const fetchTransactionHistory = createAsyncThunk<
     } = getState()
 
     const option: OptionsFetchSignature = {
-      programId: accountAddress,
-      lastSignature: lastSignature,
-      limit: limit,
-      secondFrom: 0,
-      secondTo: new Date().getTime() / 1000,
+      lastSignature,
+      limit,
     }
 
-    const transLogService = new TransLogService(option)
+    const transLogService = new TransLogService(option, accountAddress)
     const walletAddress = await window.sentre.wallet?.getAddress()
 
     const translogData = await transLogService.collect()

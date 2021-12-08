@@ -21,15 +21,24 @@ import { DateHelper } from '../helpers/date'
 type InstructionData = ParsedInstruction | PartiallyDecodedInstruction
 
 export class TransLogService {
+  programId: string
   solana: Solana
   configs: OptionsFetchSignature
-  constructor(configs: OptionsFetchSignature) {
+  constructor(configs: OptionsFetchSignature, programId: string) {
+    this.programId = programId
     this.solana = new Solana()
     this.configs = configs
   }
 
   async collect(): Promise<TransLog[]> {
-    const confirmedTrans = await this.solana.fetchTransactions(this.configs)
+    if (!this.configs.secondFrom) this.configs.secondFrom = 0
+    if (!this.configs.secondTo)
+      this.configs.secondTo = new Date().getTime() / 1000
+
+    const confirmedTrans = await this.solana.fetchTransactions(
+      this.programId,
+      this.configs,
+    )
     const transLogs: Array<TransLog> = []
     for (const trans of confirmedTrans) {
       const log = this.parseTransLog(trans)
