@@ -64,7 +64,6 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
         onUpdate,
       )
       notifySuccess('Transfer', txId)
-      dispatch(setVisibleProcess({ visible: true }))
     } catch (er) {
       notifyError(er)
     } finally {
@@ -76,6 +75,7 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   if (status === 'success')
     return (
       <Button
+        size="small"
         type="text"
         onClick={() =>
           window.open(explorer(transferState.transferData.txId), '_blank')
