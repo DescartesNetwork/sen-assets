@@ -3,6 +3,7 @@ import { Connection } from '@solana/web3.js'
 import { WormholeContext } from './context'
 import {
   AttestData,
+  StepTransfer,
   TransferData,
   TransferState,
   WormholeStoreKey,
@@ -41,37 +42,37 @@ export class WormholeProvider {
     onUpdate: (state: TransferState) => void,
   ) => {
     // init data transfer
-    if (!this.transferData) 
+    if (!this.transferData)
       this.transferData = await this.initTransferData(amount)
     const { transferData } = this.getState()
 
     const { attested } = await this.isAttested()
     if (!attested) await this.attest(onUpdate)
 
-    if (transferData.step === 0) {
+    if (transferData.nextStep === StepTransfer.Transfer) {
       const { emitterAddress, sequence, blockHash } =
         await this.submitTransfer()
       transferData.blockHash = blockHash
       transferData.emitterAddress = emitterAddress
       transferData.sequence = sequence
-      transferData.step++
+      transferData.nextStep = StepTransfer.WaitSigned
       const newState = await this.backup()
       await onUpdate(newState)
     }
-    if (transferData.step === 1) {
+    if (transferData.nextStep === StepTransfer.WaitSigned) {
       const vaaHex = await this.getSignedVAA(
         transferData.emitterAddress,
         transferData.sequence,
       )
       transferData.vaaHex = vaaHex
-      transferData.step++
+      transferData.nextStep = StepTransfer.Redeem
       const newState = await this.backup()
       await onUpdate(newState)
     }
-    if (transferData.step === 2) {
+    if (transferData.nextStep === StepTransfer.Redeem) {
       const newTxId = await this.redeem(transferData.vaaHex)
       transferData.txId = newTxId
-      transferData.step++
+      transferData.nextStep = StepTransfer.Finish
       const newState = await this.backup()
       await onUpdate(newState)
       return newTxId

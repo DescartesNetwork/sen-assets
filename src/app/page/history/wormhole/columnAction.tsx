@@ -5,19 +5,20 @@ import { Button } from 'antd'
 import IonIcon from 'shared/ionicon'
 
 import {
-  STEP_TRANSFER_AMOUNT,
+  StepTransfer,
   TransferState,
   WormholeStatus,
 } from 'app/lib/wormhole/constant/wormhole'
 import { AppDispatch, AppState } from 'app/model'
 import { updateWormholeHistory } from 'app/model/history.controller'
 import {
+  clearProcess,
   fetchEtherTokens,
   restoreTransfer,
   setProcess,
   setVisibleProcess,
 } from 'app/model/wormhole.controller'
-import { explorer } from 'shared/util'
+import { asyncWait, explorer } from 'shared/util'
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
 
@@ -29,15 +30,17 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   const { context, transferData } = transferState
 
   const status = useMemo((): WormholeStatus => {
-    if (transferData.step === STEP_TRANSFER_AMOUNT) return 'success'
+    if (transferData.nextStep === StepTransfer.Finish) return 'success'
     if (processId === context.id) return 'pending'
     return 'failed'
-  }, [context.id, processId, transferData.step])
+  }, [context.id, processId, transferData.nextStep])
 
   const onUpdate = async (stateTransfer: TransferState) => {
-    if (stateTransfer.transferData.step === 1)
+    if (stateTransfer.transferData.nextStep === StepTransfer.WaitSigned) {
+      await asyncWait(5000)
       await dispatch(fetchEtherTokens())
-    return dispatch(updateWormholeHistory({ stateTransfer }))
+    }
+    return dispatch(updateWormholeHistory({ stateTransfer })).unwrap()
   }
 
   const onRetry = async () => {
@@ -62,11 +65,10 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
         onUpdate,
       )
       notifySuccess('Transfer', txId)
-      dispatch(setVisibleProcess({ visible: true }))
+      dispatch(clearProcess())
     } catch (er) {
       notifyError(er)
-    } finally {
-      await dispatch(setProcess({ id: '' })).unwrap()
+      await dispatch(setProcess({ id: '' }))
     }
   }
 
@@ -74,6 +76,7 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   if (status === 'success')
     return (
       <Button
+        size="small"
         type="text"
         onClick={() =>
           window.open(explorer(transferState.transferData.txId), '_blank')
@@ -85,7 +88,12 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   // action button retry
   if (status === 'failed')
     return (
-      <Button type="primary" size="small" onClick={onRetry}>
+      <Button
+        type="primary"
+        size="small"
+        onClick={onRetry}
+        disabled={!!processId}
+      >
         Retry
       </Button>
     )
@@ -94,9 +102,11 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   return (
     <Button
       type="text"
-      icon={<IonIcon name="eye-outline" />}
+      size="small"
       onClick={() => dispatch(setVisibleProcess({ visible: true }))}
-    />
+    >
+      Reopen
+    </Button>
   )
 }
 

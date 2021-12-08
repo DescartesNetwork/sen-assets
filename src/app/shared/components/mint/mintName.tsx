@@ -3,7 +3,13 @@ import { useMemo } from 'react'
 import useTokenProvider from 'app/shared/hooks/useTokenProvider'
 import { shortenAddress } from 'shared/util'
 
-const MintName = ({ mintAddress }: { mintAddress: string }) => {
+const MintName = ({
+  mintAddress = '',
+  separator = ' • ',
+}: {
+  mintAddress: string
+  separator?: string
+}) => {
   const tokens = useTokenProvider(mintAddress)
 
   const names = useMemo(() => {
@@ -15,12 +21,12 @@ const MintName = ({ mintAddress }: { mintAddress: string }) => {
         if (symbol) return symbol
         return shortenAddress(address)
       })
-      .join(' / ')
+      .join(separator)
     //Normal token
     if (tokens.length === 1) return names
     //LPT token
-    return `${names} LPT`
-  }, [mintAddress, tokens])
+    return `${names} LP`
+  }, [mintAddress, separator, tokens])
   return <span>{names}</span>
 }
 

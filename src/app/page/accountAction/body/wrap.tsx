@@ -27,7 +27,10 @@ const Wrap = () => {
 
   const wSolData = useMintAccount(wsolAddress)
   const solData = useMintAccount(walletAddress)
-  const isWrap = !wSolData.amount
+
+  // close wrapSol account before wrap
+  // amount = 0 => unwrap
+  const isWrap = wSolData.amount === undefined
 
   const unWrapAmount = utils.undecimalize(wSolData.amount, wSolData.decimals)
 

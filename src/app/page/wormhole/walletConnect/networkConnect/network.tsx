@@ -33,7 +33,7 @@ export const NetworkConnect = ({
     )
 
   return (
-    <Tooltip title={installed ? '' : 'Install metamask fist'}>
+    <Tooltip title={installed ? '' : 'Install Metamask please'}>
       <Button
         size="small"
         onClick={onConnect}

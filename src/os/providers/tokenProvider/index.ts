@@ -3,8 +3,7 @@ import { TokenListProvider, TokenInfo } from '@solana/spl-token-registry'
 
 import { net } from 'shared/runtime'
 import configs from 'os/configs'
-import supplementary from './supplementary'
-import { DataLoader } from 'shared/dataloader'
+import supplementary, { sen, sol } from './supplementary'
 
 const {
   sol: { chainId },
@@ -26,13 +25,13 @@ const DOCUMENT = {
 }
 
 class TokenProvider {
-  private tokenList: TokenInfo[]
+  private tokenMap: Map<string, TokenInfo>
   private engine: typeof Document | undefined
   readonly chainId: typeof chainId
   readonly cluster: typeof net
 
   constructor() {
-    this.tokenList = []
+    this.tokenMap = new Map<string, TokenInfo>()
     this.engine = undefined
     this.chainId = chainId
     this.cluster = net
@@ -40,38 +39,43 @@ class TokenProvider {
     this._init()
   }
 
-  private _init = async (): Promise<TokenInfo[]> => {
-    if (this.tokenList.length) return this.tokenList
-    const fetchTokenList = async () =>
-      await (await new TokenListProvider().resolve())
-        .filterByChainId(this.chainId)
-        .getList()
-    const tokenList = await DataLoader.load('fetchTokenList', fetchTokenList)
-
-    if (this.cluster === 'devnet')
-      this.tokenList = tokenList.concat(supplementary)
-    return this.tokenList
+  private _init = async (): Promise<Map<string, TokenInfo>> => {
+    if (Object.keys(this.tokenMap).length) return this.tokenMap
+    // Build token list
+    let tokenList = await (await new TokenListProvider().resolve())
+      .filterByChainId(this.chainId)
+      .getList()
+    if (this.cluster === 'devnet') tokenList = tokenList.concat(supplementary)
+    if (this.cluster === 'testnet')
+      tokenList = tokenList.concat([sen(102), sol(102)])
+    else tokenList = tokenList.concat([sol(101)])
+    // Build token map
+    tokenList.forEach((token) => this.tokenMap.set(token.address, token))
+    return this.tokenMap
   }
 
   private _engine = async () => {
     if (this.engine) return this.engine
-    const tl = await this._init()
+    const tm = await this._init()
     this.engine = new Document(DOCUMENT)
-    tl.forEach(({ address, ...doc }) => this.engine.add(address, doc))
+    Object.values(tm).forEach(({ address, ...doc }) =>
+      this.engine.add(address, doc),
+    )
     return this.engine
   }
 
   all = async (): Promise<TokenInfo[]> => {
-    return await this._init()
+    const tm = await this._init()
+    return Object.values(tm)
   }
 
   findByAddress = async (addr: string): Promise<TokenInfo | undefined> => {
-    const tl = await this._init()
-    return tl.find(({ address }) => address === addr)
+    const tm = await this._init()
+    return tm.get(addr)
   }
 
   find = async (keyword: string, limit?: 10): Promise<TokenInfo[]> => {
-    const tl = await this._init()
+    const tm = await this._init()
     const engine = await this._engine()
     let tokens: TokenInfo[] = []
     keyword.split(DELIMITER).forEach((key) => {
@@ -79,7 +83,7 @@ class TokenProvider {
       return raw.forEach(({ result }) => {
         return result.forEach((id: string) => {
           if (tokens.findIndex(({ address }) => address === id) < 0) {
-            const token = tl.find(({ address }) => address === id)
+            const token = tm.get(id)
             if (token) tokens.push(token)
           }
         })

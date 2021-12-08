@@ -67,9 +67,16 @@ export const updateWormholeHistory = createAsyncThunk<
     history: { wormhole },
   } = getState()
   const id = stateTransfer.context.id
-  const newHistory = wormhole.filter((val) => val.context.id !== id)
-  newHistory.unshift(JSON.parse(JSON.stringify(stateTransfer)))
-  return { wormhole: newHistory }
+  const stateClone = JSON.parse(JSON.stringify(stateTransfer))
+
+  const newHistory: TransferState[] = [...wormhole]
+  for (const idx in newHistory) {
+    if (newHistory[idx].context.id === id) {
+      newHistory[idx] = stateClone
+      return { wormhole: newHistory }
+    }
+  }
+  return { wormhole: [stateClone, ...newHistory] }
 })
 
 export const fetchTransactionHistory = createAsyncThunk<
