@@ -7,6 +7,7 @@ import { WormholeContext } from 'app/lib/wormhole/context'
 
 import { TransferState } from 'app/lib/wormhole/constant/wormhole'
 import { WormholeTransfer } from 'app/lib/wormhole/transfer'
+import { OptionsFetchSignature } from 'app/lib/stat/constants/constants'
 import { utils } from '@senswap/sen-js'
 
 /**
@@ -35,6 +36,8 @@ export type TransactionTransferHistoryData = {
   mint: string
   isReceive: boolean
 }
+
+const LIMIT_TRANSACTION = 15
 
 const NAME = 'history'
 const initialState: State = {
@@ -73,21 +76,28 @@ export const updateWormholeHistory = createAsyncThunk<
 
 export const fetchTransactionHistory = createAsyncThunk<
   { transaction: TransactionTransferHistoryData[] },
-  { addressWallet: string; lastSignature?: string; isLoadMore: boolean },
+  { accountAddress: string; lastSignature?: string; isLoadMore: boolean },
   { state: { history: State } }
 >(
   `${NAME}/fetchTransactionHistory`,
-  async ({ addressWallet, lastSignature, isLoadMore }, { getState }) => {
+  async ({ accountAddress, lastSignature, isLoadMore }, { getState }) => {
     const splt = window.sentre.splt
-    const limit = 15
+    const limit = LIMIT_TRANSACTION
     const {
       history: { transaction },
     } = getState()
-    const transLogService = new TransLogService(
-      addressWallet,
-      limit,
-      lastSignature,
-    )
+
+    const option: OptionsFetchSignature = {
+      programId: accountAddress,
+      lastSignature: lastSignature,
+      limit: limit,
+      secondFrom: 0,
+      secondTo: new Date().getTime() / 1000,
+    }
+
+    const transLogService = new TransLogService(option)
+    const walletAddress = await window.sentre.wallet?.getAddress()
+
     const translogData = await transLogService.collect()
 
     let history: TransactionTransferHistoryData[] = []
@@ -99,10 +109,11 @@ export const fetchTransactionHistory = createAsyncThunk<
 
       if (!actionTransfer) continue
       if (!actionTransfer.destination || !actionTransfer.source) continue
+      if (!walletAddress) continue
 
       const des = actionTransfer.destination
       const myWalletAddress = await splt.deriveAssociatedAddress(
-        addressWallet,
+        walletAddress,
         des.mint,
       )
       const time = new Date(transLogItem.blockTime * 1000)

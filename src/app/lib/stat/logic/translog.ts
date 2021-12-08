@@ -10,6 +10,7 @@ import {
 import { ActionInfo, ActionTransfer, TransLog } from '../entities/trans-log'
 import { Solana } from '../adapters/solana/client'
 import {
+  OptionsFetchSignature,
   ParsedAction,
   ParsedInfoTransfer,
   ParsedType,
@@ -19,41 +20,16 @@ import { DateHelper } from '../helpers/date'
 
 type InstructionData = ParsedInstruction | PartiallyDecodedInstruction
 
-type TransLogServiceConfig = {
-  secondFrom?: number
-  secondTo?: number
-  lastSignature?: string
-}
-
 export class TransLogService {
   solana: Solana
-  programId: string
-  limit: number
-  lastSignature: string | undefined
-  configs?: TransLogServiceConfig
-  constructor(
-    programId: string,
-    limit: number,
-    lastSignature: string | undefined,
-    configs?: TransLogServiceConfig,
-  ) {
+  configs: OptionsFetchSignature
+  constructor(configs: OptionsFetchSignature) {
     this.solana = new Solana()
-    this.programId = programId
     this.configs = configs
-    this.limit = limit
-    this.lastSignature = lastSignature
   }
 
   async collect(): Promise<TransLog[]> {
-    const secondFrom = this.configs?.secondFrom || 0
-    const secondTo = this.configs?.secondTo || new Date().getTime() / 1000
-    const confirmedTrans = await this.solana.fetchTransactions(
-      this.programId,
-      this.limit,
-      this.lastSignature,
-      secondFrom,
-      secondTo,
-    )
+    const confirmedTrans = await this.solana.fetchTransactions(this.configs)
     const transLogs: Array<TransLog> = []
     for (const trans of confirmedTrans) {
       const log = this.parseTransLog(trans)
