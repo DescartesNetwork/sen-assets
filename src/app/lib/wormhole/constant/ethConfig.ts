@@ -16,7 +16,7 @@ export const ETH_BRIDGE_ADDRESS: EthAddressConfig = {
 
 export const ETH_TOKEN_BRIDGE_ADDRESS: EthAddressConfig = {
   mainnet: '0x3ee18B2214AFF97000D974cf647E7C347E8fa585',
-  goerli: '0xF890982f9310df57d00f659cf4fd87e65adEd8d7',
+  goerli: '0xf890982f9310df57d00f659cf4fd87e65aded8d7',
   ropsten: '0x0290FB167208Af455bB137780163b7B7a9a10C16',
 }
 

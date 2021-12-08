@@ -26,9 +26,11 @@ export type TokenEtherInfo = {
   amount: number
 }
 
-export type TransactionEtherInfo = {
-  
-}
+// export type TransactionEtherInfo = {
+//   time: string,
+//   transactionId: string,
+//   amount
+// }
 
 export type State = {
   // source wallet

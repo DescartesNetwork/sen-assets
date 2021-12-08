@@ -17,6 +17,7 @@ const overrideWebpackConfig = ({ context, webpackConfig, pluginOptions }) => {
   webpackConfig.resolve.fallback = {
     util: require.resolve('util/'),
     stream: require.resolve('stream-browserify'),
+    assert: require.resolve('assert/'),
   }
   // Fix unrecognized change / caching problem
   webpackConfig.cache.buildDependencies.config.push(
