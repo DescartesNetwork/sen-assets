@@ -13,6 +13,10 @@ import WidgetView from 'app/widget'
 import model from 'app/model'
 import configs from 'app/configs'
 
+import 'app/static/styles/index.less'
+import './static/styles/dark.less'
+import './static/styles/light.less'
+
 const {
   manifest: { appId },
 } = configs

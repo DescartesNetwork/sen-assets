@@ -5,7 +5,7 @@ import StatusTag from '../statusTags'
 
 import { AppState } from 'app/model'
 import {
-  STEP_TRANSFER_AMOUNT,
+  StepTransfer,
   TransferState,
   WormholeStatus,
 } from 'app/lib/wormhole/constant/wormhole'
@@ -14,10 +14,10 @@ const ColumnStatus = ({ data }: { data: TransferState }) => {
   const { processId } = useSelector((state: AppState) => state.wormhole)
 
   const status = useMemo((): WormholeStatus => {
-    if (data.transferData.step === STEP_TRANSFER_AMOUNT) return 'success'
+    if (data.transferData.nextStep === StepTransfer.Finish) return 'success'
     if (processId === data.context.id) return 'pending'
     return 'failed'
-  }, [data.context.id, data.transferData.step, processId])
+  }, [data.context.id, data.transferData.nextStep, processId])
 
   return <StatusTag tag={status} />
 }

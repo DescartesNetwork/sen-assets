@@ -1,8 +1,8 @@
 import { Card, Col, Row } from 'antd'
-import WormAction from './wormAction'
+import WormAction from './actionNext'
 import WormTitle from './wormTitle'
-import WormWallet from './wormWallet'
-import SelectMintInput from 'app/page/wormhole/mintTransfer'
+import WormWallet from './walletConnect'
+import SelectMintInput from 'app/page/wormhole/sourceInput'
 
 const WormHole = () => {
   return (

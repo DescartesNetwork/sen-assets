@@ -52,6 +52,7 @@ const ConfirmBridge = ({
             <ConfirmInfo />
           </Card>
         </Col>
+        {/* button confirm */}
         <Col span={24}>
           <ConfirmAction onClose={onCancel} />
         </Col>

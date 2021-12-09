@@ -6,9 +6,10 @@ import { TransferData } from 'app/lib/wormhole/constant/wormhole'
 import { WormholeContext } from 'app/lib/wormhole/context'
 
 import { TransferState } from 'app/lib/wormhole/constant/wormhole'
-import { WormholeTransfer } from 'app/lib/wormhole/transfer'
 import { OptionsFetchSignature } from 'app/lib/stat/constants/constants'
+import { WohEthSol } from 'app/lib/wormhole'
 import { utils } from '@senswap/sen-js'
+import { SOL_ADDRESS } from 'app/constant/sol'
 
 /**
  * Interface & Utility
@@ -51,7 +52,7 @@ const initialState: State = {
 export const fetchWormholeHistory = createAsyncThunk<{
   wormhole: TransferState[]
 }>(`${NAME}/fetchWormholeHistory`, async () => {
-  const listTransferState = await WormholeTransfer.fetchAll()
+  const listTransferState = await WohEthSol.fetchAll()
   const history: TransferState[] = Object.values(listTransferState)
   return {
     wormhole: history.reverse(),
@@ -69,9 +70,16 @@ export const updateWormholeHistory = createAsyncThunk<
     history: { wormhole },
   } = getState()
   const id = stateTransfer.context.id
-  const newHistory = wormhole.filter((val) => val.context.id !== id)
-  newHistory.unshift(JSON.parse(JSON.stringify(stateTransfer)))
-  return { wormhole: newHistory }
+  const stateClone = JSON.parse(JSON.stringify(stateTransfer))
+
+  const newHistory: TransferState[] = [...wormhole]
+  for (const idx in newHistory) {
+    if (newHistory[idx].context.id === id) {
+      newHistory[idx] = stateClone
+      return { wormhole: newHistory }
+    }
+  }
+  return { wormhole: [stateClone, ...newHistory] }
 })
 
 export const fetchTransactionHistory = createAsyncThunk<
@@ -99,20 +107,20 @@ export const fetchTransactionHistory = createAsyncThunk<
 
     let history: TransactionTransferHistoryData[] = []
     if (isLoadMore) history = [...transaction]
-
     for (const transLogItem of translogData) {
       const historyItem = {} as TransactionTransferHistoryData
       const actionTransfer = transLogItem.programTransfer[0]
-
       if (!actionTransfer) continue
       if (!actionTransfer.destination || !actionTransfer.source) continue
       if (!walletAddress) continue
-
       const des = actionTransfer.destination
-      const myWalletAddress = await splt.deriveAssociatedAddress(
-        walletAddress,
-        des.mint,
-      )
+
+      let associatrdAddr = walletAddress
+      if (des.mint !== SOL_ADDRESS)
+        associatrdAddr = await splt.deriveAssociatedAddress(
+          walletAddress,
+          des.mint,
+        )
       const time = new Date(transLogItem.blockTime * 1000)
 
       historyItem.time = moment(time).format('DD MMM, YYYY hh:mm')
@@ -124,7 +132,7 @@ export const fetchTransactionHistory = createAsyncThunk<
       historyItem.from = actionTransfer.source.address
       historyItem.to = des.address
       historyItem.mint = des.mint
-      historyItem.isReceive = myWalletAddress === des.address ? true : false
+      historyItem.isReceive = associatrdAddr === des.address ? true : false
       history.push(historyItem)
     }
 

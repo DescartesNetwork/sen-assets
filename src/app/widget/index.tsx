@@ -2,8 +2,6 @@ import { Row, Col, Card } from 'antd'
 import ListAccount from './listAccount'
 import WalletInfor from './walletInfor'
 
-import '../static/styles/index.less'
-
 const Widget = () => {
   return (
     <Card

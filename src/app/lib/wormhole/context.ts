@@ -29,12 +29,9 @@ export type WormholeContext = {
   wormholeRpc: string
   // Token
   tokenInfo: TokenEtherInfo
-  //network
-  etherNetwork: EtherNetwork
-  solNetWork: SolNetWork
 }
 
-export const createWohContext = (
+export const createEtherSolContext = (
   tokenInfo: TokenEtherInfo,
 ): WormholeContext => {
   const etherNetwork: EtherNetwork = getEtherNetwork()
@@ -54,8 +51,5 @@ export const createWohContext = (
     wormholeRpc: WORMHOLE_RPC_HOST[solNetWork],
     // Token
     tokenInfo: tokenInfo,
-    //network
-    etherNetwork: etherNetwork,
-    solNetWork: solNetWork,
   }
 }

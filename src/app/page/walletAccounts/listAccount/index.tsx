@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { AccountData, DEFAULT_EMPTY_ADDRESS } from '@senswap/sen-js'
+import { AccountData } from '@senswap/sen-js'
 
 import { Col, Row } from 'antd'
 import AccountCard from './accountCard'
 import Search from 'app/page/walletAccounts/search/search'
 import LazyLoad from 'react-lazyload'
 
-import { useMint } from 'senhub/providers'
+import { useMint, useWallet } from 'senhub/providers'
 import { selectAccount } from 'app/model/account.controller'
 import { AppState } from 'app/model'
 import Sol from './solCard'
@@ -15,10 +15,9 @@ import Sol from './solCard'
 const ListAccount = () => {
   const dispatch = useDispatch()
   const { accountSelected } = useSelector((state: AppState) => state.account)
-  const [listAccount, setListAccount] = useState<string[]>([])
   const { tokenProvider } = useMint()
-
-  const isSolAccount = accountSelected === DEFAULT_EMPTY_ADDRESS
+  const { wallet } = useWallet()
+  const [listAccount, setListAccount] = useState<string[]>([])
 
   const onSearch = useCallback(
     async (accounts: Record<string, AccountData>) => {
@@ -43,8 +42,8 @@ const ListAccount = () => {
 
   useEffect(() => {
     if (accountSelected) return
-    dispatch(selectAccount({ account: DEFAULT_EMPTY_ADDRESS }))
-  }, [accountSelected, dispatch, listAccount])
+    dispatch(selectAccount({ account: wallet.address }))
+  }, [accountSelected, dispatch, wallet.address])
 
   return (
     <Row gutter={[12, 12]}>
@@ -53,7 +52,7 @@ const ListAccount = () => {
       </Col>
       <Col span={24}>
         <Sol
-          active={isSolAccount}
+          active={accountSelected === wallet.address}
           onClick={(account) => dispatch(selectAccount({ account }))}
         />
       </Col>
