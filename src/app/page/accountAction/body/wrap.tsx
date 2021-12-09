@@ -161,7 +161,7 @@ const Wrap = () => {
           </Col>
           <Col span={24}>
             <NumericInput
-              placeholder={'0'}
+              placeholder="0"
               size="large"
               prefix={
                 <MintSymbol

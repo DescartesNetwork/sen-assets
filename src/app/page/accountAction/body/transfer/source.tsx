@@ -22,7 +22,7 @@ const Source = ({
       </Col>
       <Col span={24}>
         <NumericInput
-          placeholder={'0'}
+          placeholder="0"
           prefix={
             <Typography.Text type="secondary">
               <MintSymbol mintAddress={mintAccount.mint} />
