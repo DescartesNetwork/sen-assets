@@ -17,6 +17,8 @@ import {
 } from '../constants/constants'
 
 import { DateHelper } from '../helpers/date'
+import { account } from '@senswap/sen-js'
+import { SOL_ADDRESS } from 'app/constant/sol'
 
 type InstructionData = ParsedInstruction | PartiallyDecodedInstruction
 
@@ -24,7 +26,7 @@ export class TransLogService {
   programId: string
   solana: Solana
   configs: OptionsFetchSignature
-  constructor(configs: OptionsFetchSignature, programId: string) {
+  constructor(programId: string, configs: OptionsFetchSignature) {
     this.programId = programId
     this.solana = new Solana()
     this.configs = configs
@@ -52,7 +54,13 @@ export class TransLogService {
   ): TransLog | undefined {
     const { blockTime, meta, transaction } = confirmedTrans
     if (!blockTime || !meta) return
-    const { postTokenBalances, preTokenBalances, err } = meta
+    const {
+      postTokenBalances,
+      preTokenBalances,
+      err,
+      postBalances,
+      preBalances,
+    } = meta
     const { signatures, message } = transaction
     if (err !== null) return
 
@@ -69,6 +77,8 @@ export class TransLogService {
       message.accountKeys,
       postTokenBalances || [],
       preTokenBalances || [],
+      postBalances,
+      preBalances,
     )
     // system program transaction
     if (this.isParsedInstruction(instructionData)) {
@@ -117,15 +127,20 @@ export class TransLogService {
     parsedTransfer: ParsedInfoTransfer,
     mapAccount: Map<string, ActionInfo>,
   ): ActionTransfer | undefined {
-    const { source, destination, amount } = parsedTransfer
-    if (!amount || !mapAccount.has(source) || !mapAccount.has(destination))
+    const { source, destination, amount, lamports } = parsedTransfer
+    const amountTransfer = amount || lamports.toString()
+
+    if (
+      !amountTransfer ||
+      !mapAccount.has(source) ||
+      !mapAccount.has(destination)
+    )
       return
 
     const actionTransfer = new ActionTransfer()
     actionTransfer.source = mapAccount.get(source)
     actionTransfer.destination = mapAccount.get(destination)
-    actionTransfer.amount = amount
-
+    actionTransfer.amount = amountTransfer
     return actionTransfer
   }
 
@@ -133,9 +148,10 @@ export class TransLogService {
     accountKeys: Array<ParsedMessageAccount>,
     postTokenBalances: Array<TokenBalance>,
     preTokenBalances: Array<TokenBalance>,
+    postBalances: number[],
+    preBalances: number[],
   ): Map<string, ActionInfo> {
     const mapAccountInfo = new Map<string, ActionInfo>()
-
     for (const postBalance of postTokenBalances) {
       const { accountIndex, mint, uiTokenAmount } = postBalance
       const info = new ActionInfo()
@@ -146,13 +162,27 @@ export class TransLogService {
       mapAccountInfo.set(info.address, info)
     }
 
-    for (const postBalance of preTokenBalances) {
-      const { accountIndex, uiTokenAmount } = postBalance
+    for (const preBalance of preTokenBalances) {
+      const { accountIndex, uiTokenAmount } = preBalance
       const address = accountKeys[accountIndex].pubkey.toString()
       const info = mapAccountInfo.get(address) || new ActionInfo()
       info.preBalance = uiTokenAmount.amount
       mapAccountInfo.set(info.address, info)
     }
+
+    //this is use only for SOL address
+    accountKeys.forEach((accountData, idx) => {
+      const address = accountData.pubkey.toString()
+      if (!account.isAssociatedAddress(address)) {
+        const info = mapAccountInfo.get(address) || new ActionInfo()
+        info.address = address
+        info.mint = SOL_ADDRESS
+        info.postBalance = String(postBalances[idx] || 0)
+        info.preBalance = String(preBalances[idx] || 0)
+        info.decimals = 9
+        mapAccountInfo.set(info.address, info)
+      }
+    })
 
     return mapAccountInfo
   }

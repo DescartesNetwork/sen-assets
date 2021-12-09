@@ -9,7 +9,7 @@ import { fetchTransactionHistory } from 'app/model/history.controller'
 import { TRANSACTION_COLUMNS } from './column'
 
 const ROW_PER_PAGE = 4
-const LIMIT_IN_STORE = 8
+const LIMIT_IN_STORE = 9
 
 const Transaction = () => {
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
@@ -26,7 +26,7 @@ const Transaction = () => {
         accountAddress: accountSelected,
         isLoadMore: false,
       }),
-    )
+    ).unwrap()
     setIsLoading(false)
   }, [dispatch, accountSelected])
 

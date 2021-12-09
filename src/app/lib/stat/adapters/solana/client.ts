@@ -84,6 +84,7 @@ export class Solana {
       } else if (confirmedSignatureInfos?.length < limit) break
     }
     const confirmedTransactions = await this.fetchConfirmTransaction(signatures)
+
     return confirmedTransactions
   }
 }

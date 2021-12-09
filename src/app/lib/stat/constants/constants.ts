@@ -58,6 +58,7 @@ export type ParsedInfoTransfer = {
   source: string
   destination: string
   amount: string
+  lamports: number
 }
 
 export type TotalFarmSummary = {

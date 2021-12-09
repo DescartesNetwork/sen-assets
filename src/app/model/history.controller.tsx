@@ -100,7 +100,7 @@ export const fetchTransactionHistory = createAsyncThunk<
       limit,
     }
 
-    const transLogService = new TransLogService(option, accountAddress)
+    const transLogService = new TransLogService(accountAddress, option)
     const walletAddress = await window.sentre.wallet?.getAddress()
 
     const translogData = await transLogService.collect()
