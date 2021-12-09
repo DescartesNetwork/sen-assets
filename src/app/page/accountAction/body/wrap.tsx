@@ -6,7 +6,7 @@ import { Button, Col, Row, Space, Typography } from 'antd'
 import { MintSymbol } from 'app/shared/components/mint'
 
 import { useWallet } from 'senhub/providers'
-import NumericInput from 'app/shared/components/numericInput'
+import NumericInput from 'shared/antd/numericInput'
 import { notifyError, notifySuccess } from 'app/helper'
 import { useMintAccount } from 'app/shared/hooks/useMintAccount'
 import { selectAccount } from 'app/model/account.controller'
@@ -161,7 +161,7 @@ const Wrap = () => {
           </Col>
           <Col span={24}>
             <NumericInput
-              placeholder={'0'}
+              placeholder="0"
               size="large"
               prefix={
                 <MintSymbol
@@ -180,7 +180,7 @@ const Wrap = () => {
                 )
               }
               value={value}
-              onChange={setValue}
+              onValue={setValue}
               max={maxWrapAmount}
               disabled={!isWrap}
             />
