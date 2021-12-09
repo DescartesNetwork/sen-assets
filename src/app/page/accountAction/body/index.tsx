@@ -39,7 +39,7 @@ const Body = () => {
         <Tabs.TabPane tab="Receive" key="Receive">
           <Receive accountAddr={accountSelected} />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Wrap" key="Wrap" disabled={!canWrap}>
+        <Tabs.TabPane tab="Wrap/Unwrap" key="Wrap/Unwrap" disabled={!canWrap}>
           <Wrap />
         </Tabs.TabPane>
         <Tabs.TabPane tab="Close" key="Close" disabled={mint === SOL_ADDRESS}>

@@ -18,9 +18,9 @@ export const TokenPrice = ({ mintAddress }: { mintAddress: string }) => {
           <PriceIndicator mintAddress={mintAddress} colorized />
           <PriceChange mintAddress={mintAddress} colorized />
           <Divider
-            className="text-secondary"
+            // className="text-secondary"
             type="vertical"
-            style={{ padding: 0 }}
+            style={{ padding: 0, borderLeft: '1px solid #BEC4EC' }}
           />
           <Typography.Text className="text-color">
             <Price mintAddress={mintAddress} />
