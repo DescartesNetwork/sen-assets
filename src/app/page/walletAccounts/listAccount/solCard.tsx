@@ -39,13 +39,18 @@ const SolCard = ({
             </Tooltip>
             <Divider type="vertical" style={{ margin: 0 }} />
             <Typography.Text>
-              <Price mintAddress={SOL_ADDRESS} />
+              <Balance accountAddr={walletAddr} inUSD />
             </Typography.Text>
           </Space>
         </Col>
         <Col>
           <PriceIndicator mintAddress={SOL_ADDRESS} colorized />
-          <PriceChange mintAddress={SOL_ADDRESS} colorized />
+          <Space>
+            <PriceChange mintAddress={SOL_ADDRESS} colorized />
+            <Typography.Text type="secondary">
+              <Price mintAddress={SOL_ADDRESS} />
+            </Typography.Text>
+          </Space>
         </Col>
       </Row>
     </Card>

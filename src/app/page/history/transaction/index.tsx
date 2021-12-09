@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Col, Row, Table } from 'antd'
-import IonIcon from 'shared/ionicon'
+import IonIcon from 'shared/antd/ionicon'
 
 import { AppDispatch, AppState } from 'app/model'
 import { fetchTransactionHistory } from 'app/model/history.controller'

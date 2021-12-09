@@ -178,6 +178,13 @@ export const setVisibleProcess = createAsyncThunk<
   return { visible }
 })
 
+export const clearProcess = createAsyncThunk(
+  `${NAME}/clearProcess`,
+  async () => {
+    return { visible: false, amount: '', processId: '' }
+  },
+)
+
 /**
  * Usual procedure
  */
@@ -218,6 +225,10 @@ const slice = createSlice({
       )
       .addCase(
         fetchEtherTokens.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        clearProcess.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

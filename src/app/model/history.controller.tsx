@@ -6,7 +6,7 @@ import { TransferData } from 'app/lib/wormhole/constant/wormhole'
 import { WormholeContext } from 'app/lib/wormhole/context'
 
 import { TransferState } from 'app/lib/wormhole/constant/wormhole'
-import { OptionsFetchSignature } from 'app/lib/stat/constants/constants'
+import { OptionsFetchSignature } from 'app/lib/stat/constants/transaction'
 import { WohEthSol } from 'app/lib/wormhole'
 import { utils } from '@senswap/sen-js'
 import { SOL_ADDRESS } from 'app/constant/sol'
@@ -99,25 +99,24 @@ export const fetchTransactionHistory = createAsyncThunk<
       lastSignature,
       limit,
     }
-
-    const transLogService = new TransLogService(accountAddress, option)
     const walletAddress = await window.sentre.wallet?.getAddress()
+    if (!walletAddress) throw new Error('Login fist')
 
-    const translogData = await transLogService.collect()
+    const transLogService = new TransLogService()
+    const transLogData = await transLogService.collect(accountAddress, option)
 
     let history: TransactionTransferHistoryData[] = []
     if (isLoadMore) history = [...transaction]
-    for (const transLogItem of translogData) {
+    for (const transLogItem of transLogData) {
       const historyItem = {} as TransactionTransferHistoryData
       const actionTransfer = transLogItem.programTransfer[0]
       if (!actionTransfer) continue
       if (!actionTransfer.destination || !actionTransfer.source) continue
-      if (!walletAddress) continue
       const des = actionTransfer.destination
 
-      let associatrdAddr = walletAddress
+      let associatedAddr = walletAddress
       if (des.mint !== SOL_ADDRESS)
-        associatrdAddr = await splt.deriveAssociatedAddress(
+        associatedAddr = await splt.deriveAssociatedAddress(
           walletAddress,
           des.mint,
         )
@@ -133,7 +132,7 @@ export const fetchTransactionHistory = createAsyncThunk<
       historyItem.from = actionTransfer.source.address
       historyItem.to = des.address
       historyItem.mint = des.mint
-      historyItem.isReceive = associatrdAddr === des.address ? true : false
+      historyItem.isReceive = associatedAddr === des.address ? true : false
       if (accountAddress !== walletAddress) history.push(historyItem)
       else if (des.mint === SOL_ADDRESS) history.push(historyItem)
     }
