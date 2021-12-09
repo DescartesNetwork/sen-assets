@@ -34,6 +34,7 @@ const Transaction = () => {
     fetchHistory()
     return () => {
       setIsLoading(true)
+      setAmountRow(ROW_PER_PAGE)
     }
   }, [fetchHistory])
 

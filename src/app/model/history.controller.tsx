@@ -100,7 +100,7 @@ export const fetchTransactionHistory = createAsyncThunk<
       limit,
     }
     const walletAddress = await window.sentre.wallet?.getAddress()
-    if(!walletAddress) throw new Error("Login fist");
+    if (!walletAddress) throw new Error('Login fist')
 
     const transLogService = new TransLogService()
     const transLogData = await transLogService.collect(accountAddress, option)
@@ -120,6 +120,7 @@ export const fetchTransactionHistory = createAsyncThunk<
           walletAddress,
           des.mint,
         )
+
       const time = new Date(transLogItem.blockTime * 1000)
 
       historyItem.time = moment(time).format('DD MMM, YYYY hh:mm')
@@ -132,7 +133,8 @@ export const fetchTransactionHistory = createAsyncThunk<
       historyItem.to = des.address
       historyItem.mint = des.mint
       historyItem.isReceive = associatedAddr === des.address ? true : false
-      history.push(historyItem)
+      if (accountAddress !== walletAddress) history.push(historyItem)
+      else if (des.mint === SOL_ADDRESS) history.push(historyItem)
     }
 
     return { transaction: history }
