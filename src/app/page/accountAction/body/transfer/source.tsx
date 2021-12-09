@@ -1,6 +1,6 @@
 import { Row, Col, Typography, Button } from 'antd'
 import { MintSymbol } from 'app/shared/components/mint'
-import NumericInput from 'app/shared/components/numericInput'
+import NumericInput from 'shared/antd/numericInput'
 
 import { useMintAccount } from 'app/shared/hooks/useMintAccount'
 
@@ -22,7 +22,7 @@ const Source = ({
       </Col>
       <Col span={24}>
         <NumericInput
-          placeholder={0}
+          placeholder={'0'}
           prefix={
             <Typography.Text type="secondary">
               <MintSymbol mintAddress={mintAccount.mint} />
@@ -38,7 +38,7 @@ const Source = ({
             </Button>
           }
           value={value}
-          onChange={onChange}
+          onValue={onChange}
           max={mintAccount.balance}
         />
       </Col>

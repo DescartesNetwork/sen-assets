@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { Row, Col, Typography, Button } from 'antd'
 import SourceMintSelect from './sourceMintSelect'
-import NumericInput from 'app/shared/components/numericInput'
+import NumericInput from 'shared/antd/numericInput'
 
 import { AppState } from 'app/model'
 import { setSourceToken } from 'app/model/wormhole.controller'
@@ -29,7 +29,7 @@ const SelectMintInput = () => {
       <Col span={24}>
         <NumericInput
           disabled={!tokenAddress || !!processId}
-          placeholder={'0'}
+          placeholder="0"
           prefix={<SourceMintSelect />}
           suffix={
             <Button
@@ -44,7 +44,7 @@ const SelectMintInput = () => {
             </Button>
           }
           value={amount}
-          onChange={onChange}
+          onValue={onChange}
           max={maxAmount}
         />
       </Col>
