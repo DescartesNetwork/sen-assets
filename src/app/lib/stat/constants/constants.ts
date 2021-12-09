@@ -1,4 +1,4 @@
-import { TokenInfo } from '@solana/spl-token-registry';
+import { TokenInfo } from '@solana/spl-token-registry'
 export const DATA_SIZE_POOL_SCHEMA = 241
 export const OFFSET_TAXMAN_COMPARE = 65
 export const TRANSLOG_PROGRAM_DATA_SCHEMA = { key: 'code', type: 'u8' }
@@ -8,7 +8,7 @@ export const SECOND_WAIT_COLLECTING = 60000
 export const STAT_DATE_RANGE = 10
 export const LPT_DECIMALS = 9
 
-export const DEFAULT_TOKEN_INFO:TokenInfo = {
+export const DEFAULT_TOKEN_INFO: TokenInfo = {
   address: '',
   chainId: 0,
   decimals: 0,
@@ -58,10 +58,18 @@ export type ParsedInfoTransfer = {
   source: string
   destination: string
   amount: string
+  lamports: number
 }
 
 export type TotalFarmSummary = {
   ttl: number
   stake: number
   unstake: number
+}
+
+export type OptionsFetchSignature = {
+  limit?: number
+  lastSignature?: string
+  secondFrom?: number
+  secondTo?: number
 }
