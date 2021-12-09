@@ -1,7 +1,7 @@
 import { Card, Col, Row, Space, Typography } from 'antd'
 import { MintAvatar, MintName, MintSymbol } from 'app/shared/components/mint'
 import Balance from 'app/components/balance'
-import IonIcon from 'shared/ionicon'
+import IonIcon from 'shared/antd/ionicon'
 
 import { useAccount } from 'senhub/providers'
 

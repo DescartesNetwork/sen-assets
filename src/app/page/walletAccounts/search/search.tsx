@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 
 import { Row, Col, Input, Button } from 'antd'
-import IonIcon from 'shared/ionicon'
+import IonIcon from 'shared/antd/ionicon'
 
 import { AccountData } from '@senswap/sen-js'
 import { useAccount, useMint, usePool } from 'senhub/providers'
@@ -71,7 +71,7 @@ const Search = ({
               type="text"
               style={{ marginLeft: -7 }}
               size="small"
-              onClick={keyword ? () => setKeyword('') : () => { }}
+              onClick={keyword ? () => setKeyword('') : () => {}}
               icon={
                 <IonIcon name={keyword ? 'close-outline' : 'search-outline'} />
               }

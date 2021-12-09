@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Checkbox, Col, Row, Space, Typography } from 'antd'
-import IonIcon from 'shared/ionicon'
+import IonIcon from 'shared/antd/ionicon'
 import { Progress } from 'app/components/progress'
 
 import { AppDispatch, AppState } from 'app/model'

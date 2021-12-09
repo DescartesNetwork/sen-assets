@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 
 import { Avatar } from 'antd'
-import IonIcon from 'shared/ionicon'
+import IonIcon from 'shared/antd/ionicon'
 
 import useTokenProvider from '../../hooks/useTokenProvider'
 
@@ -16,7 +16,7 @@ const MintAvatar = ({
 }) => {
   const tokens = useTokenProvider(mintAddress)
   return (
-    <Avatar.Group style={{ display: 'block' }} >
+    <Avatar.Group style={{ display: 'block' }}>
       {tokens.map((token, i) => (
         <Avatar
           key={token?.address || i}
