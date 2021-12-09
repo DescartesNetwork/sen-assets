@@ -66,3 +66,5 @@ export const WORMHOLE_NETWORK: {
     logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk/logo.png',
   },
 ]
+
+export const WOH_WALLET = 'WohWallet'
