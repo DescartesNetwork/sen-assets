@@ -10,9 +10,11 @@ import { SOL_ADDRESS } from 'app/constant/sol'
 const SolCard = ({
   onClick = () => {},
   active = false,
+  price = true,
 }: {
   onClick?: (address: string) => void
   active?: boolean
+  price?: boolean
 }) => {
   const {
     wallet: { address: walletAddr, lamports },
@@ -43,15 +45,17 @@ const SolCard = ({
             </Typography.Text>
           </Space>
         </Col>
-        <Col>
-          <PriceIndicator mintAddress={SOL_ADDRESS} colorized />
-          <Space>
-            <PriceChange mintAddress={SOL_ADDRESS} colorized />
-            <Typography.Text type="secondary">
-              <Price mintAddress={SOL_ADDRESS} />
-            </Typography.Text>
-          </Space>
-        </Col>
+        {price && (
+          <Col>
+            <PriceIndicator mintAddress={SOL_ADDRESS} colorized />
+            <Space>
+              <PriceChange mintAddress={SOL_ADDRESS} colorized />
+              <Typography.Text type="secondary">
+                <Price mintAddress={SOL_ADDRESS} />
+              </Typography.Text>
+            </Space>
+          </Col>
+        )}
       </Row>
     </Card>
   )
