@@ -11,15 +11,20 @@ let timeoutId: ReturnType<typeof setTimeout> | undefined
  * - Only accept numeric characters
  * @remarks The props of input follows the same as https://ant.design/components/input/#API. Extra & Overrided props
  * @param max - Maximum
- * @param onChange - A triggerred function when enter a value number
+ * @param onValue - A triggerred function if a valid number
  */
 const NumericInput = forwardRef(
   (
     {
       max,
+      onValue = () => {},
       onChange = () => {},
+      onBlur = () => {},
       ...props
-    }: InputProps & { onChange?: (val: string) => void; max: string },
+    }: InputProps & {
+      onValue?: (val: string) => void
+      max?: string | number
+    },
     ref: any,
   ) => {
     const [error, setError] = useState('')
@@ -39,11 +44,11 @@ const NumericInput = forwardRef(
         }
         const reg = /^\d*(\.\d*)?$/
         if (!reg.test(val)) return onError('Invalid character')
-        if (max && parseFloat(val) > parseFloat(max))
+        if (max && parseFloat(val) > parseFloat(max.toString()))
           return onError('Not enough balance')
-        return onChange(val)
+        return onValue(val)
       },
-      [max, onChange],
+      [max, onValue],
     )
     // Handle cursor
     innerRef?.current?.setSelectionRange(cursor, cursor)
@@ -60,10 +65,12 @@ const NumericInput = forwardRef(
         <Input
           {...props}
           onBlur={(e) => {
+            onBlur(e)
             const value = Number(e.target.value)
             if (e.target.value) onAmount(value ? value.toString() : '')
           }}
           onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            onChange(e)
             setCursor(e.target.selectionStart)
             onAmount(e.target.value || '')
           }}

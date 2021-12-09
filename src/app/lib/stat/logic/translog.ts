@@ -6,6 +6,7 @@ import {
   PartiallyDecodedInstruction,
   TokenBalance,
 } from '@solana/web3.js'
+import { account } from '@senswap/sen-js'
 
 import { ActionInfo, ActionTransfer, TransLog } from '../entities/trans-log'
 import { Solana } from '../adapters/solana/client'
@@ -14,32 +15,25 @@ import {
   ParsedAction,
   ParsedInfoTransfer,
   ParsedType,
-} from '../constants/constants'
-
+} from '../constants/transaction'
 import { DateHelper } from '../helpers/date'
-import { account } from '@senswap/sen-js'
-import { SOL_ADDRESS } from 'app/constant/sol'
+import { SOL_ADDRESS, SOL_DECIMALS } from '../constants/sol'
 
 type InstructionData = ParsedInstruction | PartiallyDecodedInstruction
 
 export class TransLogService {
-  programId: string
   solana: Solana
-  configs: OptionsFetchSignature
-  constructor(programId: string, configs: OptionsFetchSignature) {
-    this.programId = programId
+  constructor() {
     this.solana = new Solana()
-    this.configs = configs
   }
 
-  async collect(): Promise<TransLog[]> {
-    if (!this.configs.secondFrom) this.configs.secondFrom = 0
-    if (!this.configs.secondTo)
-      this.configs.secondTo = new Date().getTime() / 1000
-
+  async collect(
+    programId: string,
+    configs: OptionsFetchSignature,
+  ): Promise<TransLog[]> {
     const confirmedTrans = await this.solana.fetchTransactions(
-      this.programId,
-      this.configs,
+      programId,
+      configs,
     )
     const transLogs: Array<TransLog> = []
     for (const trans of confirmedTrans) {
@@ -152,6 +146,8 @@ export class TransLogService {
     preBalances: number[],
   ): Map<string, ActionInfo> {
     const mapAccountInfo = new Map<string, ActionInfo>()
+
+    // Associated Address
     for (const postBalance of postTokenBalances) {
       const { accountIndex, mint, uiTokenAmount } = postBalance
       const info = new ActionInfo()
@@ -170,16 +166,16 @@ export class TransLogService {
       mapAccountInfo.set(info.address, info)
     }
 
-    //this is use only for SOL address
+    // Wallet address
     accountKeys.forEach((accountData, idx) => {
       const address = accountData.pubkey.toString()
       if (!account.isAssociatedAddress(address)) {
         const info = mapAccountInfo.get(address) || new ActionInfo()
         info.address = address
         info.mint = SOL_ADDRESS
-        info.postBalance = String(postBalances[idx] || 0)
-        info.preBalance = String(preBalances[idx] || 0)
-        info.decimals = 9
+        info.postBalance = String(postBalances[idx] || 0) // lamports
+        info.preBalance = String(preBalances[idx] || 0) // lamports
+        info.decimals = SOL_DECIMALS
         mapAccountInfo.set(info.address, info)
       }
     })
