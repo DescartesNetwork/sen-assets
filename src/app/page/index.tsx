@@ -1,11 +1,9 @@
 import { Row, Col } from 'antd'
 
 import SenAssets from './walletAccounts'
-import Balance from './accountAction'
+import AccountAction from './accountAction'
 import WormHole from './wormhole'
 import History from './history'
-
-import 'app/static/styles/index.less'
 
 const Page = () => {
   return (
@@ -14,7 +12,7 @@ const Page = () => {
         <SenAssets />
       </Col>
       <Col xl={8} md={12} sm={24}>
-        <Balance />
+        <AccountAction />
       </Col>
       <Col xl={8} md={12} sm={24}>
         <WormHole />

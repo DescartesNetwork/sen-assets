@@ -26,12 +26,13 @@ const Body = () => {
     <Card
       bordered={false}
       style={{ marginTop: -20, boxShadow: 'none' }}
-      bodyStyle={{
-        padding: 16,
-        paddingTop: 4 /* TabPane padding-top:12 + 4 = 16 */,
-      }}
+      bodyStyle={{ padding: 0 }}
     >
-      <Tabs activeKey={activeKey} onChange={setActiveKey}>
+      <Tabs
+        activeKey={activeKey}
+        onChange={setActiveKey}
+        style={{ padding: 16, paddingTop: 4 }}
+      >
         <Tabs.TabPane tab="Send" key="Send">
           <Transfer accountAddr={accountSelected} />
         </Tabs.TabPane>

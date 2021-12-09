@@ -20,6 +20,7 @@ import { WormholeProvider } from './provider'
 import { IEtherWallet } from '../etherWallet/walletInterface'
 import { TokenEtherInfo } from 'app/model/wormhole.controller'
 import { createEtherSolContext } from './context'
+import { StepTransfer, TransferData } from './constant/wormhole'
 
 class WohEthSol extends WormholeProvider {
   private srcWallet: IEtherWallet
@@ -63,8 +64,8 @@ class WohEthSol extends WormholeProvider {
   protected initTransferData = async (amount: string) => {
     const srcAddr = await this.srcWallet.getAddress()
     const targetAddr = await this.targetWallet.getAddress()
-    return {
-      step: 0,
+    const data: TransferData = {
+      nextStep: StepTransfer.Transfer,
       amount: amount,
       from: srcAddr,
       to: targetAddr,
@@ -74,6 +75,7 @@ class WohEthSol extends WormholeProvider {
       txId: '',
       blockHash: '',
     }
+    return data
   }
 
   protected submitTransfer = async () => {

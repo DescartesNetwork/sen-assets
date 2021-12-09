@@ -10,9 +10,15 @@ export enum WormholeStoreKey {
 export type WormholeStatus = 'pending' | 'failed' | 'success'
 
 // Transfer
-export const STEP_TRANSFER_AMOUNT = 3
+export enum StepTransfer {
+  Transfer = 'Transfer',
+  WaitSigned = 'WaitSigned',
+  Redeem = 'Redeem',
+  Finish = 'Finish',
+}
+
 export type TransferData = {
-  step: number
+  nextStep: StepTransfer
   amount: string
   from: string
   to: string
