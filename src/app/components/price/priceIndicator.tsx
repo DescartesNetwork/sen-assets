@@ -1,4 +1,4 @@
-import IonIcon from 'shared/ionicon'
+import IonIcon from 'shared/antd/ionicon'
 
 import { parseColor, PriceColor } from './parseColor'
 import useMintCgk from 'app/shared/hooks/useMintCgk'

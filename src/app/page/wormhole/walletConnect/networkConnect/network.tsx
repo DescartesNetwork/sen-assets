@@ -8,7 +8,7 @@ import {
   Tooltip,
   Typography,
 } from 'antd'
-import IonIcon from 'shared/ionicon'
+import IonIcon from 'shared/antd/ionicon'
 
 import { WORMHOLE_NETWORK } from 'app/lib/wormhole/constant/wormhole'
 import { shortenAddress } from 'shared/util'

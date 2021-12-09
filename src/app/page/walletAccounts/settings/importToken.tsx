@@ -14,7 +14,7 @@ import {
   Input,
   Avatar,
 } from 'antd'
-import IonIcon from 'shared/ionicon'
+import IonIcon from 'shared/antd/ionicon'
 import PoweredBy from 'os/components/poweredBy'
 
 import { useAccount, useMint, useWallet } from 'senhub/providers'

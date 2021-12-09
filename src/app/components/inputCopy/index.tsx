@@ -2,7 +2,7 @@ import { useState } from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 
 import { Button, Input, InputProps, Tooltip } from 'antd'
-import IonIcon from 'shared/ionicon'
+import IonIcon from 'shared/antd/ionicon'
 
 import { asyncWait } from 'shared/util'
 

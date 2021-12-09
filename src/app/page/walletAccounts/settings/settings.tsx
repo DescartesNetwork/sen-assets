@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Row, Col, Space, Popover, Typography, Switch } from 'antd'
-import IonIcon from 'shared/ionicon'
+import IonIcon from 'shared/antd/ionicon'
 import ImportToken from './importToken'
 
 import { AppState } from 'app/model'

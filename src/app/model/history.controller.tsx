@@ -6,8 +6,10 @@ import { TransferData } from 'app/lib/wormhole/constant/wormhole'
 import { WormholeContext } from 'app/lib/wormhole/context'
 
 import { TransferState } from 'app/lib/wormhole/constant/wormhole'
+import { OptionsFetchSignature } from 'app/lib/stat/constants/constants'
 import { WohEthSol } from 'app/lib/wormhole'
 import { utils } from '@senswap/sen-js'
+import { SOL_ADDRESS } from 'app/constant/sol'
 
 /**
  * Interface & Utility
@@ -35,6 +37,8 @@ export type TransactionTransferHistoryData = {
   mint: string
   isReceive: boolean
 }
+
+const LIMIT_TRANSACTION = 15
 
 const NAME = 'history'
 const initialState: State = {
@@ -80,42 +84,61 @@ export const updateWormholeHistory = createAsyncThunk<
 
 export const fetchTransactionHistory = createAsyncThunk<
   { transaction: TransactionTransferHistoryData[] },
-  { addressWallet: string }
->(`${NAME}/fetchTransactionHistory`, async ({ addressWallet }) => {
-  const splt = window.sentre.splt
-  const TranslogService = new TransLogService(addressWallet)
-  const translogData = await TranslogService.collect()
-  const history: TransactionTransferHistoryData[] = []
+  { accountAddress: string; lastSignature?: string; isLoadMore: boolean },
+  { state: { history: State } }
+>(
+  `${NAME}/fetchTransactionHistory`,
+  async ({ accountAddress, lastSignature, isLoadMore }, { getState }) => {
+    const splt = window.sentre.splt
+    const limit = LIMIT_TRANSACTION
+    const {
+      history: { transaction },
+    } = getState()
 
-  for (const transLogItem of translogData) {
-    const historyItem = {} as TransactionTransferHistoryData
-    const actionTransfer = transLogItem.programTransfer[0]
+    const option: OptionsFetchSignature = {
+      lastSignature,
+      limit,
+    }
 
-    if (!actionTransfer) continue
-    if (!actionTransfer.destination || !actionTransfer.source) continue
+    const transLogService = new TransLogService(accountAddress, option)
+    const walletAddress = await window.sentre.wallet?.getAddress()
 
-    const des = actionTransfer.destination
-    const myWalletAddress = await splt.deriveAssociatedAddress(
-      addressWallet,
-      des.mint,
-    )
-    const time = new Date(transLogItem.blockTime * 1000)
+    const translogData = await transLogService.collect()
 
-    historyItem.time = moment(time).format('DD MMM, YYYY hh:mm')
-    historyItem.key = transLogItem.signature
-    historyItem.transactionId = transLogItem.signature
-    historyItem.amount = Number(
-      utils.undecimalize(BigInt(actionTransfer.amount), des.decimals),
-    )
-    historyItem.from = actionTransfer.source.address
-    historyItem.to = des.address
-    historyItem.mint = des.mint
-    historyItem.isReceive = myWalletAddress === des.address ? true : false
-    history.push(historyItem)
-  }
+    let history: TransactionTransferHistoryData[] = []
+    if (isLoadMore) history = [...transaction]
+    for (const transLogItem of translogData) {
+      const historyItem = {} as TransactionTransferHistoryData
+      const actionTransfer = transLogItem.programTransfer[0]
+      if (!actionTransfer) continue
+      if (!actionTransfer.destination || !actionTransfer.source) continue
+      if (!walletAddress) continue
+      const des = actionTransfer.destination
 
-  return { transaction: history }
-})
+      let associatrdAddr = walletAddress
+      if (des.mint !== SOL_ADDRESS)
+        associatrdAddr = await splt.deriveAssociatedAddress(
+          walletAddress,
+          des.mint,
+        )
+      const time = new Date(transLogItem.blockTime * 1000)
+
+      historyItem.time = moment(time).format('DD MMM, YYYY hh:mm')
+      historyItem.key = transLogItem.signature
+      historyItem.transactionId = transLogItem.signature
+      historyItem.amount = Number(
+        utils.undecimalize(BigInt(actionTransfer.amount), des.decimals),
+      )
+      historyItem.from = actionTransfer.source.address
+      historyItem.to = des.address
+      historyItem.mint = des.mint
+      historyItem.isReceive = associatrdAddr === des.address ? true : false
+      history.push(historyItem)
+    }
+
+    return { transaction: history }
+  },
+)
 
 /**
  * Usual procedure

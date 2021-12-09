@@ -1,32 +1,56 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Col, Row, Table } from 'antd'
-import IonIcon from 'shared/ionicon'
+import IonIcon from 'shared/antd/ionicon'
 
 import { AppDispatch, AppState } from 'app/model'
 import { fetchTransactionHistory } from 'app/model/history.controller'
-import { useWallet } from 'senhub/providers'
 import { TRANSACTION_COLUMNS } from './column'
 
 const ROW_PER_PAGE = 4
+const LIMIT_IN_STORE = 9
 
 const Transaction = () => {
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
   const [isLoading, setIsLoading] = useState(true)
+
   const dispatch = useDispatch<AppDispatch>()
-  const {
-    wallet: { address },
-  } = useWallet()
   const { transaction } = useSelector((state: AppState) => state.history)
+  const { accountSelected } = useSelector((state: AppState) => state.account)
+
+  const fetchHistory = useCallback(async () => {
+    if (!accountSelected) return
+    await dispatch(
+      fetchTransactionHistory({
+        accountAddress: accountSelected,
+        isLoadMore: false,
+      }),
+    ).unwrap()
+    setIsLoading(false)
+  }, [dispatch, accountSelected])
 
   useEffect(() => {
-    dispatch(fetchTransactionHistory({ addressWallet: address })).finally(() =>
-      setIsLoading(false),
-    )
-  }, [dispatch, address])
+    fetchHistory()
+    return () => {
+      setIsLoading(true)
+    }
+  }, [fetchHistory])
 
-  const onHandleViewMore = () => setAmountRow(amountRow + ROW_PER_PAGE)
+  const onHandleViewMore = () => {
+    const currentTransactionDataLength = transaction.slice(0, amountRow).length
+    if (transaction.length - currentTransactionDataLength <= LIMIT_IN_STORE) {
+      const lastSignature = transaction[transaction.length - 1].transactionId
+      dispatch(
+        fetchTransactionHistory({
+          accountAddress: accountSelected,
+          lastSignature,
+          isLoadMore: true,
+        }),
+      )
+    }
+    setAmountRow(amountRow + ROW_PER_PAGE)
+  }
 
   return (
     <Row gutter={[16, 16]} justify="center">
