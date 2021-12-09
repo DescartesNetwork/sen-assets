@@ -6,7 +6,7 @@ import SelectMintInput from 'app/page/wormhole/sourceInput'
 
 const WormHole = () => {
   return (
-    <Card className="card-page" bordered={false}>
+    <Card className="card-page">
       <Row gutter={[14, 14]}>
         <Col span={24}>
           <WormTitle />

@@ -40,8 +40,8 @@ export const WORMHOLE_COLUMNS = [
         <NetworkAvatar chainId={context.srcChainId} />
         <Typography.Text>
           <NetworkName chainId={context.srcChainId} />
-        </Typography.Text>{' '}
-        -
+        </Typography.Text>
+        <span>-</span>
         <NetworkAvatar chainId={context.targetChainId} />
         <Typography.Text>
           <NetworkName chainId={context.targetChainId} />

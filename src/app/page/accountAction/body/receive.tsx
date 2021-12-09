@@ -43,13 +43,13 @@ const Receive = ({ accountAddr }: { accountAddr: string }) => {
         <Row gutter={[8, 8]}>
           <Col flex="auto">
             <Typography.Text>
-              {devMode ? 'Derive associated address' : 'Wallet address'}
+              {devMode ? 'Associated account address' : 'Wallet address'}
             </Typography.Text>
           </Col>
           <Col>
             {accountAddr !== wallet.address && (
               <Space>
-                <Typography.Text>Dev mode</Typography.Text>
+                <Typography.Text>Developer mode</Typography.Text>
                 <Switch size="small" checked={devMode} onChange={setDevMode} />
               </Space>
             )}
