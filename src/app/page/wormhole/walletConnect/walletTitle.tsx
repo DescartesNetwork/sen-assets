@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import { Space, Tooltip, Typography } from 'antd'
-import IonIcon from 'shared/ionicon'
+import IonIcon from 'shared/antd/ionicon'
 
 const WalletTitle = ({ title, label }: { title: string; label: string }) => {
   const [visible, setVisible] = useState(false)

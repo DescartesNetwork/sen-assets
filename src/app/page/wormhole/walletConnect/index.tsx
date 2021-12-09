@@ -1,17 +1,13 @@
 import { Card, Col, Row, Tooltip } from 'antd'
 import WalletTitle from './walletTitle'
 
-import IonIcon from 'shared/ionicon'
+import IonIcon from 'shared/antd/ionicon'
 import SourceWallet from './networkConnect/sourceWallet'
 import TargetWallet from './networkConnect/targetWallet'
 
 const WormWallet = () => {
   return (
-    <Card
-      bordered={false}
-      className="account-item"
-      bodyStyle={{ padding: 16 }}
-    >
+    <Card bordered={false} className="account-item" bodyStyle={{ padding: 16 }}>
       <Row gutter={[16, 16]} justify="center">
         <Col span={24}>
           <WalletTitle title="Source Network" label="Source" />
