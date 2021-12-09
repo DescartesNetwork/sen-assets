@@ -133,8 +133,9 @@ export const fetchTransactionHistory = createAsyncThunk<
       historyItem.to = des.address
       historyItem.mint = des.mint
       historyItem.isReceive = associatedAddr === des.address ? true : false
-      if (accountAddress !== walletAddress) history.push(historyItem)
-      else if (des.mint === SOL_ADDRESS) history.push(historyItem)
+
+      if (accountAddress === walletAddress && des.mint !== SOL_ADDRESS) continue
+      history.push(historyItem)
     }
 
     return { transaction: history }
