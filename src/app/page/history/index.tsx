@@ -16,7 +16,7 @@ const History = () => {
   }, [dispatch])
 
   return (
-    <Card bodyStyle={{ paddingTop: 12 }}>
+    <Card bodyStyle={{ paddingTop: 12 }} bordered={false}>
       <Row gutter={[24, 24]}>
         <Col span={24}>
           <Tabs>
