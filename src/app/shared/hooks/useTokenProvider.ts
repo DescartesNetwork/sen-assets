@@ -13,9 +13,7 @@ const useTokenProvider = (mintAddress: string) => {
   const fetchTokenInfo = useCallback(async () => {
     if (!mintAddress) return setTokenInfo([undefined])
     // Normal mint
-    console.log('mintAddress', mintAddress)
     const token = await tokenProvider.findByAddress(mintAddress)
-    console.log('token', token)
     if (token) return setTokenInfo([token])
     // LP mint
     const poolData = Object.values(pools).find(
