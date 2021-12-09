@@ -16,35 +16,40 @@ const WalletInfor = () => {
   const [hidden, setHidden] = useState(false)
 
   return (
-    <Row gutter={[16, 16]}>
+    <Row gutter={[16, 16]} wrap={false} align="middle">
+      <Col>
+        <Avatar size={48}>
+          <span style={{ fontSize: 24 }}>{utils.randEmoji(address)}</span>
+        </Avatar>
+      </Col>
       <Col flex="auto">
-        <Row gutter={[16, 16]}>
-          <Col>
-            <Avatar size={48}>
-              <span style={{ fontSize: 24 }}>{utils.randEmoji(address)}</span>
-            </Avatar>
+        <Row>
+          <Col span={24}>
+            <Row gutter={[2, 2]} align="middle">
+              <Col flex="auto">
+                <Typography.Text>
+                  {shortenAddress(address, 3, '...')}
+                </Typography.Text>
+              </Col>
+              <Col>
+                <Address />
+              </Col>
+            </Row>
           </Col>
-          <Col>
-            <Space direction="vertical" size={4}>
-              <Typography.Text>
-                {shortenAddress(address, 3, '...')}
-              </Typography.Text>
-              <Space>
-                <Balance hidden={hidden} />
-                <Button
-                  type="text"
-                  icon={ <IonIcon
-                    name={hidden ? 'eye-off-outline' : 'eye-outline'}
-                  />}
-                  onClick={() => setHidden(!hidden)}
-                />
-              </Space>
+          <Col span={24}>
+            <Space>
+              <Balance hidden={hidden} />
+              <Button
+                type="text"
+                size="small"
+                icon={
+                  <IonIcon name={hidden ? 'eye-off-outline' : 'eye-outline'} />
+                }
+                onClick={() => setHidden(!hidden)}
+              />
             </Space>
           </Col>
         </Row>
-      </Col>
-      <Col>
-        <Address />
       </Col>
     </Row>
   )
