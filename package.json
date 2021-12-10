@@ -1,8 +1,13 @@
 {
   "name": "senhub",
   "version": "2.0.0",
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
+  },
   "dependencies": {
-    "@certusone/wormhole-sdk": "0.0.7",
+    "@certusone/wormhole-sdk": "^0.1.3",
     "@dnd-kit/core": "^4.0.1",
     "@dnd-kit/sortable": "^5.0.0",
     "@metamask/detect-provider": "^1.2.0",
@@ -25,6 +30,7 @@
     "localforage": "^1.10.0",
     "numbro": "^2.3.5",
     "os-browserify": "^0.3.0",
+    "path-browserify": "^1.0.1",
     "qrcode.react": "^1.0.1",
     "react": "^17.0.2",
     "react-copy-to-clipboard": "^5.0.4",

@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Connection, Transaction } from '@solana/web3.js'
-import { getSignedVAA, parseSequenceFromLogEth, getEmitterAddressEth, CHAIN_ID_ETH, CHAIN_ID_SOLANA,  } from '@certusone/wormhole-sdk'
+import { getSignedVAA, parseSequenceFromLogEth, getEmitterAddressEth, CHAIN_ID_ETH, CHAIN_ID_SOLANA, getIsTransferCompletedEth } from '@certusone/wormhole-sdk'
 
 import { account, WalletInterface, utils } from '@senswap/sen-js'
 import { TokenEtherInfo, TransactionEtherInfo } from 'app/model/wormhole.controller'
@@ -234,3 +234,4 @@ export const clearWormholeDb = async () => {
 export const logError = (error: unknown) => {
   window.notify({ type: 'error', description: (error as any).message })
 }
+

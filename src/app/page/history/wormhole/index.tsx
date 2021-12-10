@@ -26,6 +26,7 @@ const WormholeHistory = () => {
     if (!sourceWalletAddress) return
     dispatch(fetchWormholeBlockchainHistory({ address: sourceWalletAddress }))
   }, [dispatch, sourceWalletAddress])
+  console.log(wormhole)
 
   const onHandleViewMore = () => setAmountRow(amountRow + ROW_PER_PAGE)
 
