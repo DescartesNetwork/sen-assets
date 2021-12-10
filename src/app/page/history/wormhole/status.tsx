@@ -12,12 +12,11 @@ import {
 
 const ColumnStatus = ({ data }: { data: TransferState }) => {
   const { processId } = useSelector((state: AppState) => state.wormhole)
-
   const status = useMemo((): WormholeStatus => {
     if (data.transferData.nextStep === StepTransfer.Finish) return 'success'
     if (processId === data.context.id) return 'pending'
     return 'failed'
-  }, [data.context.id, data.transferData, processId])
+  }, [data.context.id, data.transferData.nextStep, processId])
 
   return <StatusTag tag={status} />
 }

@@ -36,7 +36,6 @@ export const getSignedVAAWithRetry = async (
   let attempts = 0
   while (true) {
     try {
-     
       console.log('Retry to get signed vaa:', ++attempts)
       const re = await getSignedVAA(...args)
       return re

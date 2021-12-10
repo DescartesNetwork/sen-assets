@@ -70,7 +70,6 @@ export class WormholeProvider {
     }
     if (transferData.nextStep === StepTransfer.Redeem) {
       const newTxId = await this.redeem(transferData.vaaHex)
-
       transferData.txId = newTxId
       transferData.nextStep = StepTransfer.Finish
       const newState = await this.backup()
@@ -88,7 +87,6 @@ export class WormholeProvider {
   protected backup = async () => {
     const database = await WormholeProvider.fetchAll()
     const state = this.getState()
-    
     database[state.context.id] = state
     setWormholeDb(WormholeStoreKey.Transfer, database)
     return state

@@ -6,8 +6,6 @@ export type EthAddressConfig = {
   ropsten: string
 }
 
-
-
 export const ETH_BRIDGE_ADDRESS: EthAddressConfig = {
   mainnet: '0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B',
   goerli: '0x706abc4E45D419950511e474C7B9Ed348A4a716c',
@@ -26,6 +24,12 @@ export type EthChainIdConfig = {
   ropsten: number
 }
 
+export type EtherConfigSet = {
+  mainnet: string
+  goerli: string
+  ropsten: string
+}
+
 export const CHAIN_ID_ETH: EthChainIdConfig = {
   mainnet: 1,
   goerli: 5,
@@ -40,4 +44,12 @@ export type MoralisStructure = {
 export const MORALIS_INFO: MoralisStructure = {
   url: 'https://deep-index.moralis.io/api/v2',
   apiKey: 'N6yeIUl1FxCPZWbXyxLHWPAjSr6ahQeJTX3d19pSKCwHsLCzpWE7z1hilon4xDOd'
+}
+
+export const INFURA_API_KEY: String = '5eb1b92f2065414d9dd21858fac54257'
+
+export const INFURA_API_URL: EtherConfigSet = {
+  mainnet: `https://mainnet.infura.io/v3/${INFURA_API_KEY}`,
+  goerli: `https://goerli.infura.io/v3/${INFURA_API_KEY}`,
+  ropsten: `https://ropsten.infura.io/v3/${INFURA_API_KEY}`,
 }
