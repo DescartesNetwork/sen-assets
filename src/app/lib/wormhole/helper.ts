@@ -1,18 +1,32 @@
 import axios from 'axios'
 import { Connection, Transaction } from '@solana/web3.js'
-import { getSignedVAA, parseSequenceFromLogEth, getEmitterAddressEth, CHAIN_ID_ETH, CHAIN_ID_SOLANA, getIsTransferCompletedEth } from '@certusone/wormhole-sdk'
+import {
+  getSignedVAA,
+  parseSequenceFromLogEth,
+  getEmitterAddressEth,
+  CHAIN_ID_SOLANA,
+  getIsTransferCompletedSolana,
+} from '@certusone/wormhole-sdk'
 
 import { account, WalletInterface, utils } from '@senswap/sen-js'
-import { TokenEtherInfo, TransactionEtherInfo } from 'app/model/wormhole.controller'
+import {
+  TokenEtherInfo,
+  TransactionEtherInfo,
+} from 'app/model/wormhole.controller'
 import WohEthSol from './wohEthSol'
 import { asyncWait } from 'shared/util'
 import storage from 'shared/storage'
 import PDB from 'shared/pdb'
-import { WormholeStoreKey, TransferState, TransferData, StepTransfer } from './constant/wormhole'
+import {
+  WormholeStoreKey,
+  TransferState,
+  TransferData,
+  StepTransfer,
+} from './constant/wormhole'
 import { MORALIS_INFO, ETH_TOKEN_BRIDGE_ADDRESS } from './constant/ethConfig'
 import { web3 } from '../etherWallet/web3Config'
 import ABI from './abi.json'
-import { createEtherSolContext } from './context'
+import { createEtherSolContext, WormholeContext } from './context'
 
 const abiDecoder = require('abi-decoder')
 
@@ -22,12 +36,13 @@ export const getSignedVAAWithRetry = async (
   let attempts = 0
   while (true) {
     try {
-      await asyncWait(10000)
+     
       console.log('Retry to get signed vaa:', ++attempts)
       const re = await getSignedVAA(...args)
       return re
     } catch (er) {
       // Nothing
+      await asyncWait(10000)
     }
   }
 }
@@ -69,7 +84,7 @@ export const fetchTokenEther = async (
 export const fetchTransactionsAAddress = async (
   address: string,
   networkName: string,
-) : Promise<TransferState[]> => {
+): Promise<TransferState[]> => {
   if (networkName === 'mainnet') networkName = 'eth'
 
   // Get ABI token
@@ -78,12 +93,10 @@ export const fetchTransactionsAAddress = async (
   //   url: `https://api-goerli.etherscan.io/api?module=contract&action=getabi&address=0xba62bcfcaafc6622853cca2be6ac7d845bc0f2dc&apikey=H7IQG6XU3FAV5MVCVJC7WD2RVSXX5DPJP8`,
   // })
 
-  const listTransferState = await WohEthSol.fetchAll()
-
   abiDecoder.addABI(ABI)
 
-  const tokens:TransferState[] = []
-  const { data} = await axios({
+  const tokens: TransferState[] = []
+  const { data } = await axios({
     method: 'get',
     url: `${MORALIS_INFO.url}/${address}?chain=${networkName}`,
     headers: {
@@ -91,29 +104,37 @@ export const fetchTransactionsAAddress = async (
     },
   })
 
-  let calledTokens:Record<string, TokenEtherInfo> = {}
+  let calledTokens: Record<string, TokenEtherInfo> = {}
 
   for (const token of data.result as TransactionEtherInfo[]) {
     if (token.to_address === ETH_TOKEN_BRIDGE_ADDRESS.goerli) {
       token.input = abiDecoder.decodeMethod(token.input)
       let tokenInfo = calledTokens[`${token.input.params[0].value}`]
       if (!tokenInfo) {
-        tokenInfo = await fetchInfoAToken(token.input.params[0].value, networkName)
+        tokenInfo = await fetchInfoAToken(
+          token.input.params[0].value,
+          networkName,
+        )
         calledTokens[`${token.input.params[0].value}`] = tokenInfo
       }
-      if( Number(token.input.params[2].value) === CHAIN_ID_SOLANA){
+      if (Number(token.input.params[2].value) === CHAIN_ID_SOLANA) {
         const context = createEtherSolContext(tokenInfo)
-        const value = await web3.eth
-          .getTransactionReceipt(
-            token.hash,
-          )
+        const value = await web3.eth.getTransactionReceipt(token.hash)
         const sequence = parseSequenceFromLogEth(
           value,
           context.srcBridgeAddress,
         )
-        const transferData:TransferData = {
-          nextStep: getNextStep(Object.values(listTransferState), value.transactionHash),
-          amount: utils.undecimalize(BigInt(token.input.params[1].value), tokenInfo.decimals),
+        const nextStep =  await getNextStep(
+          value.transactionHash,
+          context,
+          sequence
+        )
+        const transferData: TransferData = {
+          nextStep,
+          amount: utils.undecimalize(
+            BigInt(token.input.params[1].value),
+            tokenInfo.decimals,
+          ),
           from: address,
           to: '',
           emitterAddress: getEmitterAddressEth(context.srcTokenBridgeAddress),
@@ -126,7 +147,6 @@ export const fetchTransactionsAAddress = async (
         tokens.push({
           context: context,
           transferData: transferData,
-
         })
       }
     }
@@ -134,23 +154,35 @@ export const fetchTransactionsAAddress = async (
   return tokens
 }
 
-export const getNextStep = (
-  data: TransferState[],
-  txHash: string
-) => {
-  for (let item of data) {
+export const getNextStep = async( txHash: string, context: WormholeContext, sequence: string) : Promise<StepTransfer> => {
+  const listTransferState = await WohEthSol.fetchAll()
+
+  for (let item of Object.values(listTransferState)) {
     if (txHash === item.transferData.txHash) {
       return item.transferData.nextStep
     }
   }
-  return StepTransfer.Unknown
+
+  const { vaaBytes } = await getSignedVAA(
+    context.wormholeRpc,
+    context.srcChainId,
+    getEmitterAddressEth(context.srcTokenBridgeAddress),
+    sequence,
+  )
+
+  const isRedeemed = await getIsTransferCompletedSolana(
+    context.targetTokenBridgeAddress,
+    vaaBytes,
+    window.sentre.splt.connection,
+  )
+  return isRedeemed ? StepTransfer.Finish : StepTransfer.Transfer
 }
 
 export const fetchInfoAToken = async (
   address: string,
   networkName: string,
 ): Promise<TokenEtherInfo> => {
-  const {data}  = await axios({
+  const { data } = await axios({
     method: 'get',
     url: `${MORALIS_INFO.url}/erc20/metadata?chain=${networkName}&addresses=${address}`,
     headers: {
@@ -166,7 +198,7 @@ export const fetchInfoAToken = async (
     symbol: data[0]?.symbol,
     thumbnail: data[0]?.thumbnail,
     address: data[0]?.address,
-    amount: data[0]?.amount
+    amount: data[0]?.amount,
   }
 }
 
@@ -234,4 +266,3 @@ export const clearWormholeDb = async () => {
 export const logError = (error: unknown) => {
   window.notify({ type: 'error', description: (error as any).message })
 }
-

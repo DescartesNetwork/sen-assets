@@ -5,7 +5,6 @@ const STATUS_COLOR: Record<string, number[]> = {
   pending: [212, 177, 6],
   error: [215, 35, 17],
   failed: [215, 35, 17],
-  unknown: [122, 123, 133]
 }
 
 const StatusTag = ({ tag }: { tag: string }) => {

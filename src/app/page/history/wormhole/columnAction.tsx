@@ -31,7 +31,6 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
 
   const status = useMemo((): WormholeStatus => {
     if (transferData.nextStep === StepTransfer.Finish) return 'success'
-    if (transferData.nextStep === StepTransfer.Unknown) return 'unknown'
     if (processId === context.id) return 'pending'
     return 'failed'
   }, [context.id, processId, transferData.nextStep])

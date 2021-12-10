@@ -15,7 +15,6 @@ export enum StepTransfer {
   WaitSigned = 'WaitSigned',
   Redeem = 'Redeem',
   Finish = 'Finish',
-  Unknown = 'Unknown',
 }
 
 export type TransferData = {

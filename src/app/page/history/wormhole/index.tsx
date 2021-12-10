@@ -26,7 +26,6 @@ const WormholeHistory = () => {
     if (!sourceWalletAddress) return
     dispatch(fetchWormholeBlockchainHistory({ address: sourceWalletAddress }))
   }, [dispatch, sourceWalletAddress])
-  console.log(wormhole)
 
   const onHandleViewMore = () => setAmountRow(amountRow + ROW_PER_PAGE)
 
@@ -50,19 +49,6 @@ const WormholeHistory = () => {
           icon={<IonIcon name="chevron-down-outline" />}
         >
           View more
-        </Button>
-      </Col>
-      <Col>
-        <Button
-          onClick={() =>
-            fetchTransactionsAAddress(
-              '0xf27F3863177A72957D409054c3f48a5fe35dF84B',
-              'goerli',
-            )
-          }
-          icon={<IonIcon name="chevron-down-outline" />}
-        >
-          Fetch
         </Button>
       </Col>
     </Row>

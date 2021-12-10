@@ -15,7 +15,6 @@ const ColumnStatus = ({ data }: { data: TransferState }) => {
 
   const status = useMemo((): WormholeStatus => {
     if (data.transferData.nextStep === StepTransfer.Finish) return 'success'
-    if (data.transferData.nextStep === StepTransfer.Unknown) return 'unknown'
     if (processId === data.context.id) return 'pending'
     return 'failed'
   }, [data.context.id, data.transferData, processId])
