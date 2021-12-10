@@ -24,10 +24,10 @@ export const WORMHOLE_COLUMNS = [
   {
     title: 'TRANSACTION ID',
     render: (data: TransferState) => {
-      const blockHash = data.transferData.blockHash
+      const txHash = data.transferData.txHash
       return (
         <Typography.Text style={{ fontWeight: 700 }}>
-          {blockHash ? shortenAddress(blockHash, 8, '...') : '--'}
+          {txHash ? shortenAddress(txHash, 8, '...') : '--'}
         </Typography.Text>
       )
     },

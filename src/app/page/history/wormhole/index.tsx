@@ -6,26 +6,28 @@ import IonIcon from 'shared/ionicon'
 
 import { WORMHOLE_COLUMNS } from './column'
 import { AppState } from 'app/model'
-import { fetchWormholeHistory } from 'app/model/history.controller'
-import { fetchLogsAAddress, fetchTransactionsAAddress } from '../../../lib/wormhole/helper'
+import {
+  //fetchWormholeHistory,
+  fetchWormholeBlockchainHistory,
+} from 'app/model/history.controller'
+import { fetchTransactionsAAddress } from '../../../lib/wormhole/helper'
 
 const ROW_PER_PAGE = 4
 
 const WormholeHistory = () => {
   const dispatch = useDispatch()
   const { wormhole } = useSelector((state: AppState) => state.history)
+  const { sourceWalletAddress } = useSelector(
+    (state: AppState) => state.wormhole,
+  )
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
 
   useEffect(() => {
-    dispatch(fetchWormholeHistory())
-  }, [dispatch])
-
-  // useEffect(()=>{
-  //   dispatch(fetchTransactionsAAddress('0xf27F3863177A72957D409054c3f48a5fe35dF84B', 'goerli'))
-  // })
+    if (!sourceWalletAddress) return
+    dispatch(fetchWormholeBlockchainHistory({ address: sourceWalletAddress }))
+  }, [dispatch, sourceWalletAddress])
 
   const onHandleViewMore = () => setAmountRow(amountRow + ROW_PER_PAGE)
-  console.log(wormhole, 'slslskdkdkdk')
 
   return (
     <Row gutter={[16, 16]} justify="center">
@@ -51,7 +53,12 @@ const WormholeHistory = () => {
       </Col>
       <Col>
         <Button
-          onClick={()=>fetchTransactionsAAddress('0xf27F3863177A72957D409054c3f48a5fe35dF84B', 'goerli')}
+          onClick={() =>
+            fetchTransactionsAAddress(
+              '0xf27F3863177A72957D409054c3f48a5fe35dF84B',
+              'goerli',
+            )
+          }
           icon={<IonIcon name="chevron-down-outline" />}
         >
           Fetch

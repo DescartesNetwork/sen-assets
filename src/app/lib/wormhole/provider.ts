@@ -45,14 +45,13 @@ export class WormholeProvider {
     if (!this.transferData)
       this.transferData = await this.initTransferData(amount)
     const { transferData } = this.getState()
-
     const { attested } = await this.isAttested()
     if (!attested) await this.attest(onUpdate)
 
     if (transferData.nextStep === StepTransfer.Transfer) {
-      const { emitterAddress, sequence, blockHash } =
+      const { emitterAddress, sequence, txHash } =
         await this.submitTransfer()
-      transferData.blockHash = blockHash
+      transferData.txHash = txHash
       transferData.emitterAddress = emitterAddress
       transferData.sequence = sequence
       transferData.nextStep = StepTransfer.WaitSigned
@@ -71,6 +70,7 @@ export class WormholeProvider {
     }
     if (transferData.nextStep === StepTransfer.Redeem) {
       const newTxId = await this.redeem(transferData.vaaHex)
+
       transferData.txId = newTxId
       transferData.nextStep = StepTransfer.Finish
       const newState = await this.backup()
@@ -90,7 +90,6 @@ export class WormholeProvider {
     const state = this.getState()
     
     database[state.context.id] = state
-    console.log(database)
     setWormholeDb(WormholeStoreKey.Transfer, database)
     return state
   }
@@ -121,7 +120,7 @@ export class WormholeProvider {
   protected submitTransfer = async (): Promise<{
     sequence: string
     emitterAddress: string
-    blockHash: string
+    txHash: string
   }> => {
     throw new Error('Invalid function submitTransfer')
   }

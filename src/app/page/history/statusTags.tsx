@@ -5,11 +5,13 @@ const STATUS_COLOR: Record<string, number[]> = {
   pending: [212, 177, 6],
   error: [215, 35, 17],
   failed: [215, 35, 17],
+  unknown: [122, 123, 133]
 }
 
 const StatusTag = ({ tag }: { tag: string }) => {
   const setColorTag = (opacity?: number) => {
     let color = STATUS_COLOR[tag]
+
     return `rgba(${color[0]},  ${color[1]}, ${color[2]},${opacity || 1})`
   }
 

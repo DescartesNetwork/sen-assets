@@ -17,6 +17,10 @@ const overrideWebpackConfig = ({ context, webpackConfig, pluginOptions }) => {
     util: require.resolve('util/'), // For IPFS
     stream: require.resolve('stream-browserify'), // For WASM
     assert: require.resolve('assert/'), // For Ethereum Web3
+    os: require.resolve("os-browserify/browser"),
+    http: require.resolve("stream-http"),
+    crypto: require.resolve("crypto-browserify"),
+    https: require.resolve("https-browserify")
   }
   // Fix unrecognized change / caching problem
   webpackConfig.cache.buildDependencies.config.push(

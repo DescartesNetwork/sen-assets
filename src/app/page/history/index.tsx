@@ -5,14 +5,14 @@ import { Card, Col, Row, Tabs } from 'antd'
 import Bridge from './wormhole'
 import Transaction from './transaction'
 
-import { fetchWormholeHistory } from 'app/model/history.controller'
+//import { fetchWormholeHistory } from 'app/model/history.controller'
 import './index.less'
 
 const History = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(fetchWormholeHistory())
+  //  dispatch(fetchWormholeHistory())
   }, [dispatch])
 
   return (
