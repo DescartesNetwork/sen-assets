@@ -1,6 +1,6 @@
 import { Button, Space, Typography } from 'antd'
 import StatusTag from '../statusTags'
-import IonIcon from 'shared/ionicon'
+import IonIcon from 'shared/antd/ionicon'
 
 import { explorer, shortenAddress } from 'shared/util'
 import { MintSymbol } from 'app/shared/components/mint'
@@ -17,7 +17,10 @@ export const TRANSACTION_COLUMNS = [
     key: 'transactionId',
     render: (text: string) => (
       <Space align="baseline">
-        <Typography.Text style={{ fontWeight: 700 }}>
+        <Typography.Text
+          onClick={() => window.open(explorer(text), '_blank')}
+          style={{ fontWeight: 700, cursor: 'pointer' }}
+        >
           {shortenAddress(text, 8, '...')}
         </Typography.Text>
         <Button

@@ -6,42 +6,34 @@ import {
   PartiallyDecodedInstruction,
   TokenBalance,
 } from '@solana/web3.js'
+import { account } from '@senswap/sen-js'
 
 import { ActionInfo, ActionTransfer, TransLog } from '../entities/trans-log'
 import { Solana } from '../adapters/solana/client'
 import {
+  OptionsFetchSignature,
   ParsedAction,
   ParsedInfoTransfer,
   ParsedType,
-} from '../constants/constants'
-
+} from '../constants/transaction'
 import { DateHelper } from '../helpers/date'
+import { SOL_ADDRESS, SOL_DECIMALS } from '../constants/sol'
 
 type InstructionData = ParsedInstruction | PartiallyDecodedInstruction
 
-type TransLogServiceConfig = {
-  secondFrom?: number
-  secondTo?: number
-  lastSignature?: string
-}
-
 export class TransLogService {
   solana: Solana
-  programId: string
-  configs?: TransLogServiceConfig
-  constructor(programId: string, configs?: TransLogServiceConfig) {
+  constructor() {
     this.solana = new Solana()
-    this.programId = programId
-    this.configs = configs
   }
 
-  async collect(): Promise<TransLog[]> {
-    const secondFrom = this.configs?.secondFrom || 0
-    const secondTo = this.configs?.secondTo || new Date().getTime() / 1000
+  async collect(
+    programId: string,
+    configs: OptionsFetchSignature,
+  ): Promise<TransLog[]> {
     const confirmedTrans = await this.solana.fetchTransactions(
-      this.programId,
-      secondFrom,
-      secondTo,
+      programId,
+      configs,
     )
     const transLogs: Array<TransLog> = []
     for (const trans of confirmedTrans) {
@@ -56,7 +48,13 @@ export class TransLogService {
   ): TransLog | undefined {
     const { blockTime, meta, transaction } = confirmedTrans
     if (!blockTime || !meta) return
-    const { postTokenBalances, preTokenBalances, err } = meta
+    const {
+      postTokenBalances,
+      preTokenBalances,
+      err,
+      postBalances,
+      preBalances,
+    } = meta
     const { signatures, message } = transaction
     if (err !== null) return
 
@@ -73,6 +71,8 @@ export class TransLogService {
       message.accountKeys,
       postTokenBalances || [],
       preTokenBalances || [],
+      postBalances,
+      preBalances,
     )
     // system program transaction
     if (this.isParsedInstruction(instructionData)) {
@@ -121,15 +121,20 @@ export class TransLogService {
     parsedTransfer: ParsedInfoTransfer,
     mapAccount: Map<string, ActionInfo>,
   ): ActionTransfer | undefined {
-    const { source, destination, amount } = parsedTransfer
-    if (!amount || !mapAccount.has(source) || !mapAccount.has(destination))
+    const { source, destination, amount, lamports } = parsedTransfer
+    const amountTransfer = amount || lamports.toString()
+
+    if (
+      !amountTransfer ||
+      !mapAccount.has(source) ||
+      !mapAccount.has(destination)
+    )
       return
 
     const actionTransfer = new ActionTransfer()
     actionTransfer.source = mapAccount.get(source)
     actionTransfer.destination = mapAccount.get(destination)
-    actionTransfer.amount = amount
-
+    actionTransfer.amount = amountTransfer
     return actionTransfer
   }
 
@@ -137,9 +142,12 @@ export class TransLogService {
     accountKeys: Array<ParsedMessageAccount>,
     postTokenBalances: Array<TokenBalance>,
     preTokenBalances: Array<TokenBalance>,
+    postBalances: number[],
+    preBalances: number[],
   ): Map<string, ActionInfo> {
     const mapAccountInfo = new Map<string, ActionInfo>()
 
+    // Associated Address
     for (const postBalance of postTokenBalances) {
       const { accountIndex, mint, uiTokenAmount } = postBalance
       const info = new ActionInfo()
@@ -150,13 +158,27 @@ export class TransLogService {
       mapAccountInfo.set(info.address, info)
     }
 
-    for (const postBalance of preTokenBalances) {
-      const { accountIndex, uiTokenAmount } = postBalance
+    for (const preBalance of preTokenBalances) {
+      const { accountIndex, uiTokenAmount } = preBalance
       const address = accountKeys[accountIndex].pubkey.toString()
       const info = mapAccountInfo.get(address) || new ActionInfo()
       info.preBalance = uiTokenAmount.amount
       mapAccountInfo.set(info.address, info)
     }
+
+    // Wallet address
+    accountKeys.forEach((accountData, idx) => {
+      const address = accountData.pubkey.toString()
+      if (!account.isAssociatedAddress(address)) {
+        const info = mapAccountInfo.get(address) || new ActionInfo()
+        info.address = address
+        info.mint = SOL_ADDRESS
+        info.postBalance = String(postBalances[idx] || 0) // lamports
+        info.preBalance = String(preBalances[idx] || 0) // lamports
+        info.decimals = SOL_DECIMALS
+        mapAccountInfo.set(info.address, info)
+      }
+    })
 
     return mapAccountInfo
   }

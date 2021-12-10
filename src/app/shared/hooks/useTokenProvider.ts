@@ -6,7 +6,9 @@ import { useMint, usePool } from 'senhub/providers'
 const useTokenProvider = (mintAddress: string) => {
   const { tokenProvider } = useMint()
   const { pools } = usePool()
-  const [tokenInfo, setTokenInfo] = useState<(TokenInfo | undefined)[]>([])
+  const [tokenInfo, setTokenInfo] = useState<(TokenInfo | undefined)[]>([
+    undefined,
+  ])
 
   const fetchTokenInfo = useCallback(async () => {
     if (!mintAddress) return setTokenInfo([undefined])

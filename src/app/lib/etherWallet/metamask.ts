@@ -1,13 +1,11 @@
-import { IEtherWallet } from './walletInterface'
-
 import { ethers } from 'ethers'
 import detectEthereumProvider from '@metamask/detect-provider'
 
+import session from 'shared/session'
+import { IEtherWallet } from './walletInterface'
+import { WOH_WALLET } from '../wormhole/constant/wormhole'
 class MetamaskWallet implements IEtherWallet {
-  detectedProvider = async () => {
-    const detectedProvider = await detectEthereumProvider()
-    return !!detectedProvider
-  }
+  static walletType = 'MetaMask'
 
   getProvider = async () => {
     const detectedProvider: any = await detectEthereumProvider()
@@ -21,6 +19,14 @@ class MetamaskWallet implements IEtherWallet {
     const addr = await provider.send('eth_requestAccounts', [])
     if (!addr[0]) throw new Error('There is no Ethereum account')
     return addr[0]
+  }
+
+  connect = async (): Promise<void> => {
+    session.set(WOH_WALLET, MetamaskWallet.walletType)
+  }
+
+  disconnect = async (): Promise<void> => {
+    session.clear(WOH_WALLET)
   }
 }
 

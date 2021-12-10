@@ -55,7 +55,7 @@ const ListAccount = () => {
         <Search onChange={onSearch} />
       </Col>
       <Col span={24}>
-        <Sol onClick={(account) => handleOnClick(account)} />
+        <Sol onClick={(account) => handleOnClick(account)} price={false} />
       </Col>
       {listAccount.map((address) => (
         <Col span={24} key={address}>

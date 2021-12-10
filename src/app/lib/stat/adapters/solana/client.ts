@@ -6,7 +6,7 @@ import {
   PublicKey,
 } from '@solana/web3.js'
 
-
+import { OptionsFetchSignature } from '../../constants/transaction'
 
 const DEFAULT_LIMIT = 700
 const TRANSACTION_LIMIT = 150
@@ -52,24 +52,20 @@ export class Solana {
 
   async fetchTransactions(
     programId: string,
-    secondFrom: number,
-    secondTo: number,
+    options: OptionsFetchSignature,
   ): Promise<ParsedConfirmedTransaction[]> {
-    secondFrom = Math.floor(secondFrom)
-    secondTo = Math.floor(secondTo)
+    const currentTime = new Date().getTime() / 1000
+    let { secondFrom, secondTo, lastSignature, limit } = options
+    secondFrom = Math.floor(secondFrom || 0)
+    secondTo = Math.floor(secondTo || currentTime)
 
     const programPublicKey = new PublicKey(programId)
-    let lastSignature
     let signatures: string[] = []
-
     let isStop = false
+
     while (!isStop) {
       const confirmedSignatureInfos: ConfirmedSignatureInfo[] =
-        await this.fetchSignatures(
-          programPublicKey,
-          lastSignature,
-          DEFAULT_LIMIT,
-        )
+        await this.fetchSignatures(programPublicKey, lastSignature, limit)
       if (!confirmedSignatureInfos?.length || isStop) break
       for (const info of confirmedSignatureInfos) {
         const blockTime = info.blockTime
@@ -79,11 +75,12 @@ export class Solana {
           break
         }
         lastSignature = info.signature
-        signatures.push(lastSignature)
+        signatures.push(info.signature)
       }
+
+      if (limit && signatures.length >= limit) break
       if (confirmedSignatureInfos?.length < DEFAULT_LIMIT) break
     }
-
     const confirmedTransactions = await this.fetchConfirmTransaction(signatures)
     return confirmedTransactions
   }
