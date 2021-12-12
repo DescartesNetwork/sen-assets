@@ -10,6 +10,7 @@ import { OptionsFetchSignature } from 'app/lib/stat/constants/transaction'
 import { WohEthSol } from 'app/lib/wormhole'
 import { utils } from '@senswap/sen-js'
 import { SOL_ADDRESS } from 'app/constant/sol'
+import { TransLog } from 'app/lib/stat/entities/trans-log'
 
 /**
  * Interface & Utility
@@ -44,6 +45,11 @@ const NAME = 'history'
 const initialState: State = {
   wormhole: [],
   transaction: [],
+}
+
+const filterFunction = (transLog: TransLog) => {
+  if (!transLog.programTransfer.length) return false
+  return true
 }
 
 /**
@@ -103,7 +109,11 @@ export const fetchTransactionHistory = createAsyncThunk<
     if (!walletAddress) throw new Error('Login fist')
 
     const transLogService = new TransLogService()
-    const transLogData = await transLogService.collect(accountAddress, option)
+    const transLogData = await transLogService.collect(
+      accountAddress,
+      option,
+      filterFunction,
+    )
 
     let history: TransactionTransferHistoryData[] = []
     if (isLoadMore) history = [...transaction]
