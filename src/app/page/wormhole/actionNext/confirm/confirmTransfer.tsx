@@ -6,7 +6,6 @@ import IonIcon from 'shared/antd/ionicon'
 import { Progress } from 'app/components/progress'
 
 import { AppDispatch, AppState } from 'app/model'
-import { updateWormholeHistory } from 'app/model/history.controller'
 import {
   clearProcess,
   fetchEtherTokens,
@@ -16,6 +15,7 @@ import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
 import { asyncWait } from 'shared/util'
 import { StepTransfer, TransferState } from 'app/constant/types/wormhole'
+import { updateWohHistory } from 'app/model/wohHistory.controller'
 
 const ConfirmAction = ({
   onClose = () => {},
@@ -36,7 +36,7 @@ const ConfirmAction = ({
       await dispatch(fetchEtherTokens())
     }
     await dispatch(setProcess({ id: stateTransfer.context.id }))
-    await dispatch(updateWormholeHistory({ stateTransfer }))
+    await dispatch(updateWohHistory({ stateTransfer }))
   }
 
   const onTransfer = async () => {

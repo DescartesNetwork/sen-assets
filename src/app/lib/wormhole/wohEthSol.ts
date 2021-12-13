@@ -15,12 +15,12 @@ import {
 } from '@certusone/wormhole-sdk'
 import { account, utils, WalletInterface } from '@senswap/sen-js'
 
-import { getAssociatedAddress, sendTransaction } from './helper'
+import { getAssociatedAddress, sendTransaction } from './helper/utils'
 import { WormholeProvider } from './provider'
 import { IEtherWallet } from '../etherWallet/walletInterface'
 import {
   StepTransfer,
-  TokenInfo,
+  WohTokenInfo,
   TransferData,
 } from 'app/constant/types/wormhole'
 import { createEtherSolContext } from './context'
@@ -31,7 +31,7 @@ class WohEthSol extends WormholeProvider {
   constructor(
     sourceWallet: IEtherWallet,
     targetWallet: WalletInterface,
-    tokenInfo: TokenInfo,
+    tokenInfo: WohTokenInfo,
   ) {
     super()
     this.srcWallet = sourceWallet

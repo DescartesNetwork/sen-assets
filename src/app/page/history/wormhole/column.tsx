@@ -1,15 +1,14 @@
 import moment from 'moment'
+
 import { Space, Typography } from 'antd'
 import NetworkAvatar from 'app/components/network/networkAvatar'
 import ColumAction from './columnAction'
 import HistoryStatus from './status'
+import LazyLoad from 'react-lazyload'
+import NetworkName from 'app/components/network/networkName'
 
 import { shortenAddress } from 'shared/util'
-import NetworkName from 'app/components/network/networkName'
-import {
-  TransferState,
-  WormholeContext,
-} from 'app/constant/types/wormhole'
+import { TransferState, WormholeContext } from 'app/constant/types/wormhole'
 
 export const WORMHOLE_COLUMNS = [
   {
@@ -64,7 +63,11 @@ export const WORMHOLE_COLUMNS = [
   {
     title: 'STATUS',
     render: (data: TransferState) => {
-      return <HistoryStatus data={data} />
+      return (
+        <LazyLoad height={56}>
+          <HistoryStatus data={data} />
+        </LazyLoad>
+      )
     },
   },
   {

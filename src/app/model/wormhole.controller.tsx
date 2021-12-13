@@ -2,11 +2,10 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { WalletInterface } from '@senswap/sen-js'
 
-import { getEtherNetwork } from 'app/lib/wormhole/helper'
+import { fetchTokenEther } from 'app/lib/wormhole/helper/ether'
 import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
-import { fetchTokenEther } from 'app/lib/wormhole/helper'
 import {
-  TokenInfo,
+  WohTokenInfo,
   State,
   TransferState,
 } from 'app/constant/types/wormhole'
@@ -46,17 +45,16 @@ const initialState: State = {
 export const connectSourceWallet = createAsyncThunk<
   {
     sourceWalletAddress: string
-    sourceTokens: Record<string, TokenInfo>
+    sourceTokens: Record<string, WohTokenInfo>
     tokenAddress: string
   },
   { wallet: IEtherWallet }
 >(`${NAME}/connectSourceWallet`, async ({ wallet }) => {
   window.wormhole.sourceWallet.ether = wallet
   const address = await wallet.getAddress()
-  const etherNetwork = getEtherNetwork()
   // fetch wallet's tokens
-  const tokenList = await fetchTokenEther(address, etherNetwork)
-  const tokens: Record<string, TokenInfo> = {}
+  const tokenList = await fetchTokenEther(address)
+  const tokens: Record<string, WohTokenInfo> = {}
   for (const token of tokenList) {
     tokens[token.address] = token
   }
@@ -70,15 +68,14 @@ export const connectSourceWallet = createAsyncThunk<
 })
 
 export const fetchEtherTokens = createAsyncThunk<{
-  sourceTokens: Record<string, TokenInfo>
+  sourceTokens: Record<string, WohTokenInfo>
 }>(`${NAME}/fetchSourceTokens`, async () => {
   const wallet = window.wormhole.sourceWallet.ether
   if (!wallet) throw new Error('Login fist')
   const address = await wallet.getAddress()
-  const etherNetwork = getEtherNetwork()
   // fetch wallet's tokens
-  const tokenList = await fetchTokenEther(address, etherNetwork)
-  const tokens: Record<string, TokenInfo> = {}
+  const tokenList = await fetchTokenEther(address)
+  const tokens: Record<string, WohTokenInfo> = {}
   for (const token of tokenList) {
     tokens[token.address] = token
   }

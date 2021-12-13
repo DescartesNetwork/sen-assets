@@ -5,26 +5,32 @@ import { Button, Col, Row, Table } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import { WORMHOLE_COLUMNS } from './column'
-import { AppState } from 'app/model'
-import { fetchWormholeBlockchainHistory } from 'app/model/history.controller'
+import { AppDispatch, AppState } from 'app/model'
+import { fetchWohHistory } from 'app/model/wohHistory.controller'
+import { notifyError } from 'app/helper'
 
 const ROW_PER_PAGE = 4
 
 const WormholeHistory = () => {
   const [isLoading, setIsLoading] = useState(true)
-  const dispatch = useDispatch()
-  const { wormhole } = useSelector((state: AppState) => state.history)
-  const { sourceWalletAddress } = useSelector(
-    (state: AppState) => state.wormhole,
-  )
+  const dispatch = useDispatch<AppDispatch>()
+  const {
+    wohHistory,
+    wormhole: { sourceWalletAddress },
+  } = useSelector((state: AppState) => state)
+
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
 
   const fetchBridgeHistory = useCallback(async () => {
     if (!sourceWalletAddress) return
-    await dispatch(
-      fetchWormholeBlockchainHistory({ address: sourceWalletAddress }),
-    )
-    setIsLoading(false)
+    try {
+      await dispatch(fetchWohHistory({ address: sourceWalletAddress })).unwrap()
+    } catch (er) {
+      notifyError(er)
+      console.log('er', er)
+    } finally {
+      setIsLoading(false)
+    }
   }, [dispatch, sourceWalletAddress])
 
   useEffect(() => {
@@ -41,7 +47,7 @@ const WormholeHistory = () => {
       <Col span={24}>
         <Table
           columns={WORMHOLE_COLUMNS}
-          dataSource={wormhole.slice(0, amountRow)}
+          dataSource={Object.values(wohHistory).slice(0, amountRow)}
           rowClassName={(record, index) => (index % 2 ? 'odd-row' : 'even-row')}
           pagination={false}
           scroll={{ x: 1000 }}
@@ -51,7 +57,7 @@ const WormholeHistory = () => {
       </Col>
       <Col>
         <Button
-          disabled={amountRow >= wormhole.length}
+          disabled={amountRow >= Object.keys(wohHistory).length}
           onClick={onHandleViewMore}
           type="text"
           icon={<IonIcon name="chevron-down-outline" />}

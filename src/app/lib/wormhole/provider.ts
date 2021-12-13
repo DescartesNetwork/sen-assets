@@ -1,3 +1,4 @@
+import { getSignedVAA } from '@certusone/wormhole-sdk'
 import { Connection } from '@solana/web3.js'
 import {
   AttestData,
@@ -7,8 +8,9 @@ import {
   WormholeContext,
   WormholeStoreKey,
 } from 'app/constant/types/wormhole'
+import { asyncWait } from 'shared/util'
 
-import { getSignedVAAWithRetry, getWormholeDb, setWormholeDb } from './helper'
+import { getWormholeDb, setWormholeDb } from './helper/utils'
 
 export class WormholeProvider {
   protected context: WormholeContext | undefined
@@ -100,6 +102,22 @@ export class WormholeProvider {
     }
   }
 
+  protected getSignedVAAWithRetry = async (
+    ...args: Parameters<typeof getSignedVAA>
+  ) => {
+    let attempts = 0
+    while (true) {
+      try {
+        console.log('Retry to get signed vaa:', ++attempts)
+        const re = await getSignedVAA(...args)
+        return re
+      } catch (er) {
+        // Nothing
+        await asyncWait(10000)
+      }
+    }
+  }
+
   protected initTransferData = async (
     amount: string,
   ): Promise<TransferData> => {
@@ -182,7 +200,7 @@ export class WormholeProvider {
   private async getSignedVAA(emitterAddress: string, sequence: string) {
     const { context } = this.getState()
     // Get signedVAA
-    const { vaaBytes } = await getSignedVAAWithRetry(
+    const { vaaBytes } = await this.getSignedVAAWithRetry(
       context.wormholeRpc,
       context.srcChainId,
       emitterAddress,

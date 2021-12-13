@@ -1,14 +1,12 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import moment from 'moment'
+import { utils } from '@senswap/sen-js'
 
 import { TransLogService } from 'app/lib/stat/logic/translog'
 
 import { OptionsFetchSignature } from 'app/lib/stat/constants/transaction'
-import { utils } from '@senswap/sen-js'
-import { fetchWormholeHistory } from 'app/lib/wormhole/helper'
 import { SOL_ADDRESS } from 'app/constant/sol'
 import { TransactionTransferHistoryData } from 'app/constant/types/history'
-import { TransferState } from 'app/constant/types/wormhole'
 
 /**
  * Interface & Utility
@@ -22,52 +20,12 @@ const LIMIT_TRANSACTION = 15
 
 export type State = {
   transaction: TransactionTransferHistoryData[]
-  wormhole: TransferState[]
 }
 
 const NAME = 'history'
 const initialState: State = {
-  wormhole: [],
   transaction: [],
 }
-
-export const fetchWormholeBlockchainHistory = createAsyncThunk<
-  {
-    wormhole: TransferState[]
-  },
-  { address: string }
->(`${NAME}/fetchWormholeBlockchainHistory`, async ({ address }) => {
-  const data = await fetchWormholeHistory(address, 'goerli')
-  const history: TransferState[] = data
-  return {
-    wormhole: history.sort(function (a, b) {
-      return a.context.time - b.context.time
-    }),
-  }
-})
-
-export const updateWormholeHistory = createAsyncThunk<
-  {
-    wormhole: TransferState[]
-  },
-  { stateTransfer: TransferState },
-  { state: { history: State } }
->(`${NAME}/updateWormholeHistory`, async ({ stateTransfer }, { getState }) => {
-  const {
-    history: { wormhole },
-  } = getState()
-  const id = stateTransfer.context.id
-  const stateClone = JSON.parse(JSON.stringify(stateTransfer))
-
-  const newHistory: TransferState[] = [...wormhole]
-  for (const idx in newHistory) {
-    if (newHistory[idx].context.id === id) {
-      newHistory[idx] = stateClone
-      return { wormhole: newHistory }
-    }
-  }
-  return { wormhole: [stateClone, ...newHistory] }
-})
 
 export const fetchTransactionHistory = createAsyncThunk<
   { transaction: TransactionTransferHistoryData[] },
@@ -138,19 +96,10 @@ const slice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) =>
-    void builder
-      .addCase(
-        updateWormholeHistory.fulfilled,
-        (state, { payload }) => void Object.assign(state, payload),
-      )
-      .addCase(
-        fetchTransactionHistory.fulfilled,
-        (state, { payload }) => void Object.assign(state, payload),
-      )
-      .addCase(
-        fetchWormholeBlockchainHistory.fulfilled,
-        (state, { payload }) => void Object.assign(state, payload),
-      ),
+    void builder.addCase(
+      fetchTransactionHistory.fulfilled,
+      (state, { payload }) => void Object.assign(state, payload),
+    ),
 })
 
 export default slice.reducer

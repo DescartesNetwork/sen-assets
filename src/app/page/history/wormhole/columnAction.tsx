@@ -5,7 +5,6 @@ import { Button } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import { AppDispatch, AppState } from 'app/model'
-import { updateWormholeHistory } from 'app/model/history.controller'
 import {
   clearProcess,
   fetchEtherTokens,
@@ -21,6 +20,7 @@ import {
   TransferState,
   WormholeStatus,
 } from 'app/constant/types/wormhole'
+import { updateWohHistory } from 'app/model/wohHistory.controller'
 
 const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   const dispatch = useDispatch<AppDispatch>()
@@ -32,6 +32,7 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   const status = useMemo((): WormholeStatus => {
     if (transferData.nextStep === StepTransfer.Finish) return 'success'
     if (processId === context.id) return 'pending'
+    if (transferData.nextStep === StepTransfer.Unknown) return 'unknown'
     return 'failed'
   }, [context.id, processId, transferData.nextStep])
 
@@ -40,7 +41,7 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
       await asyncWait(5000)
       await dispatch(fetchEtherTokens())
     }
-    return dispatch(updateWormholeHistory({ stateTransfer })).unwrap()
+    return dispatch(updateWohHistory({ stateTransfer }))
   }
 
   const onRetry = async () => {
@@ -98,14 +99,8 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
       </Button>
     )
 
-  if (status === 'unknown')
-    return (
-      <Button type="primary" size="small" disabled={true}>
-        Unknown
-      </Button>
-    )
-
-  // status pending
+  if (status === 'unknown') return null
+  
   return (
     <Button
       type="text"

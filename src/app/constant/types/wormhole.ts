@@ -1,6 +1,6 @@
 import { ChainId } from '@certusone/wormhole-sdk'
 
-export type TokenInfo = {
+export type WohTokenInfo = {
   balance: string
   decimals: number
   logo: string
@@ -50,7 +50,7 @@ export type InputDetail = {
 
 export type State = {
   // source wallet
-  sourceTokens: Record<string, TokenInfo>
+  sourceTokens: Record<string, WohTokenInfo>
   sourceChain: ChainId
   sourceWalletAddress: string
   // target wallet
@@ -76,6 +76,7 @@ export enum StepTransfer {
   WaitSigned = 'WaitSigned',
   Redeem = 'Redeem',
   Finish = 'Finish',
+  Unknown = 'Unknown',
 }
 
 export type TransferData = {
@@ -118,5 +119,5 @@ export type WormholeContext = {
   // Wormhole
   wormholeRpc: string
   // Token
-  tokenInfo: TokenInfo
+  tokenInfo: WohTokenInfo
 }
