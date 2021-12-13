@@ -9,7 +9,7 @@ import {
   TokenInfo,
   State,
   TransferState,
-} from 'app/constant/types/wormhole.type'
+} from 'app/constant/types/wormhole'
 
 /**
  * Interface & Utility

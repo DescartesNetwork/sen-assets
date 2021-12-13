@@ -18,7 +18,7 @@ import {
   TransferState,
   WormholeContext,
   WormholeStoreKey,
-} from 'app/constant/types/wormhole.type'
+} from 'app/constant/types/wormhole'
 import WohEthSol from './wohEthSol'
 import { asyncWait } from 'shared/util'
 import storage from 'shared/storage'

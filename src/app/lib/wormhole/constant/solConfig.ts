@@ -1,4 +1,10 @@
-import { SolAddressConfig } from 'app/constant/types/addressSystem/solona.types'
+export type SolNetWork = 'mainnet' | 'devnet'
+
+export type SolAddressConfig = {
+  mainnet: string
+  testnet: string
+  devnet: string
+}
 
 export const SOL_BRIDGE_ADDRESS: SolAddressConfig = {
   mainnet: 'worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth',

@@ -6,7 +6,7 @@ import {
   TransferState,
   WormholeContext,
   WormholeStoreKey,
-} from 'app/constant/types/wormhole.type'
+} from 'app/constant/types/wormhole'
 
 import { getSignedVAAWithRetry, getWormholeDb, setWormholeDb } from './helper'
 

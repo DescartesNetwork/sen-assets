@@ -20,7 +20,7 @@ import {
   StepTransfer,
   TransferState,
   WormholeStatus,
-} from 'app/constant/types/wormhole.type'
+} from 'app/constant/types/wormhole'
 
 const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   const dispatch = useDispatch<AppDispatch>()

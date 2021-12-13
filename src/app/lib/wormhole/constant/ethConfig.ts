@@ -1,9 +1,27 @@
-import {
-  EthAddressConfig,
-  EthChainIdConfig,
-  EtherConfigSet,
-  MoralisStructure,
-} from 'app/constant/types/addressSystem/ethereum.types'
+export type EthAddressConfig = {
+  mainnet: string
+  goerli: string
+  ropsten: string
+}
+
+export type EthChainIdConfig = {
+  mainnet: number
+  goerli: number
+  ropsten: number
+}
+
+export type EtherNetwork = 'mainnet' | 'goerli'
+
+export type EtherConfigSet = {
+  mainnet: string
+  goerli: string
+  ropsten: string
+}
+
+export type MoralisStructure = {
+  url: string
+  apiKey: string
+}
 
 export const ETH_BRIDGE_ADDRESS: EthAddressConfig = {
   mainnet: '0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B',

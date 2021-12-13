@@ -15,7 +15,7 @@ import {
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
 import { asyncWait } from 'shared/util'
-import { StepTransfer, TransferState } from 'app/constant/types/wormhole.type'
+import { StepTransfer, TransferState } from 'app/constant/types/wormhole'
 
 const ConfirmAction = ({
   onClose = () => {},

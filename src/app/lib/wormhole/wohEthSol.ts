@@ -22,7 +22,7 @@ import {
   StepTransfer,
   TokenInfo,
   TransferData,
-} from 'app/constant/types/wormhole.type'
+} from 'app/constant/types/wormhole'
 import { createEtherSolContext } from './context'
 
 class WohEthSol extends WormholeProvider {

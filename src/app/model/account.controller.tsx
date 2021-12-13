@@ -1,5 +1,16 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { State } from 'app/constant/types/account.types'
+
+/**
+ * Interface & Utility
+ */
+
+export type State = {
+  accountSelected: string
+}
+
+/**
+ * Store constructor
+ */
 
 const NAME = 'account'
 const initialState: State = {

@@ -1,5 +1,5 @@
 import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
-import { SolAddressConfig } from 'app/constant/types/addressSystem/solona.types'
+import { SolAddressConfig } from './solConfig'
 
 // wormhole network
 export const WORMHOLE_RPC_HOST: SolAddressConfig = {

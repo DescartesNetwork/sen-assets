@@ -1,5 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { State } from 'app/constant/types/setting.types'
+
+/**
+ * Interface & Utility
+ */
+
+export type State = {
+  hiddenZeros: boolean
+  hiddenUnknownTokens: boolean
+}
+
+/**
+ * Store constructor
+ */
 
 const NAME = 'settings'
 const initialState: State = {

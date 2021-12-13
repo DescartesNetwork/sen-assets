@@ -1,13 +1,13 @@
-import { CHAIN_ID_ETH, ChainId, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
-import { EtherNetwork } from 'app/constant/types/addressSystem/ethereum.types'
-import { SolNetWork } from 'app/constant/types/addressSystem/solona.types'
+import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 
-import { TokenInfo, WormholeContext } from 'app/constant/types/wormhole.type'
+import { TokenInfo, WormholeContext } from 'app/constant/types/wormhole'
 import {
+  EtherNetwork,
   ETH_BRIDGE_ADDRESS,
   ETH_TOKEN_BRIDGE_ADDRESS,
 } from './constant/ethConfig'
 import {
+  SolNetWork,
   SOL_BRIDGE_ADDRESS,
   SOL_TOKEN_BRIDGE_ADDRESS,
 } from './constant/solConfig'

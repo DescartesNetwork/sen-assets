@@ -9,7 +9,7 @@ import NetworkName from 'app/components/network/networkName'
 import {
   TransferState,
   WormholeContext,
-} from 'app/constant/types/wormhole.type'
+} from 'app/constant/types/wormhole'
 
 export const WORMHOLE_COLUMNS = [
   {
