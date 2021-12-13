@@ -10,23 +10,23 @@ import {
 
 import { account, WalletInterface, utils } from '@senswap/sen-js'
 import {
-  TokenEtherInfo,
+  StepTransfer,
+  TokenInfo,
+  TransactionDataPerAddress,
   TransactionEtherInfo,
-} from 'app/model/wormhole.controller'
+  TransferData,
+  TransferState,
+  WormholeContext,
+  WormholeStoreKey,
+} from 'app/constant/types/wormhole.type'
 import WohEthSol from './wohEthSol'
 import { asyncWait } from 'shared/util'
 import storage from 'shared/storage'
 import PDB from 'shared/pdb'
-import {
-  WormholeStoreKey,
-  TransferState,
-  TransferData,
-  StepTransfer,
-} from './constant/wormhole'
 import { MORALIS_INFO, ETH_TOKEN_BRIDGE_ADDRESS } from './constant/ethConfig'
-import { web3 } from '../etherWallet/web3Config'
-import ABI from './abi.json'
-import { createEtherSolContext, WormholeContext } from './context'
+import { web3Http, web3WormholeContract } from '../etherWallet/web3Config'
+import { createEtherSolContext } from './context'
+import { ABI_FAU } from 'app/constant/abis'
 
 const abiDecoder = require('abi-decoder')
 
@@ -60,7 +60,7 @@ export const getEtherNetwork = () => {
 export const fetchTokenEther = async (
   address: string,
   networkName: string,
-): Promise<TokenEtherInfo[]> => {
+): Promise<TokenInfo[]> => {
   if (networkName === 'mainnet') networkName = 'eth'
   const tokens = []
   const { data } = await axios({
@@ -80,11 +80,37 @@ export const fetchTokenEther = async (
   return tokens
 }
 
-export const fetchTransactionsAAddress = async (
+export const fetchWormholeHistory = async (
   address: string,
   networkName: string,
 ): Promise<TransferState[]> => {
   if (networkName === 'mainnet') networkName = 'eth'
+  console.log(web3WormholeContract)
+
+  const tempevent = await web3WormholeContract.events
+    .allEvents(
+      {
+        fromBlock: 0,
+      },
+      function (error: any, event: any) {
+        console.log(event)
+      },
+    )
+    .on('connected', function (subscriptionId: any) {
+      console.log(subscriptionId)
+    })
+    .on('data', function (event: any) {
+      console.log(event) // same results as the optional callback above
+    })
+    .on('changed', function (event: any) {
+      // remove event from local database
+      console.log(event)
+    })
+    .on('error', function (error: any, receipt: any) {
+      // If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
+      console.log(error)
+    })
+  console.log(tempevent)
 
   // Get ABI token
   // const abi = await axios({
@@ -92,68 +118,14 @@ export const fetchTransactionsAAddress = async (
   //   url: `https://api-goerli.etherscan.io/api?module=contract&action=getabi&address=0xba62bcfcaafc6622853cca2be6ac7d845bc0f2dc&apikey=H7IQG6XU3FAV5MVCVJC7WD2RVSXX5DPJP8`,
   // })
 
-  abiDecoder.addABI(ABI)
-
-  const tokens: TransferState[] = []
-  const { data } = await axios({
-    method: 'get',
-    url: `${MORALIS_INFO.url}/${address}?chain=${networkName}`,
-    headers: {
-      'X-API-Key': MORALIS_INFO.apiKey,
-    },
-  })
-
-  let calledTokens: Record<string, TokenEtherInfo> = {}
-
-  for (const token of data.result as TransactionEtherInfo[]) {
-    if (token.to_address === ETH_TOKEN_BRIDGE_ADDRESS.goerli) {
-      token.input = abiDecoder.decodeMethod(token.input)
-      let tokenInfo = calledTokens[`${token.input.params[0].value}`]
-      if (!tokenInfo) {
-        tokenInfo = await fetchInfoAToken(
-          token.input.params[0].value,
-          networkName,
-        )
-        calledTokens[`${token.input.params[0].value}`] = tokenInfo
-      }
-      if (Number(token.input.params[2].value) === CHAIN_ID_SOLANA) {
-        const context = createEtherSolContext(tokenInfo)
-        const value = await web3.eth.getTransactionReceipt(token.hash)
-        const sequence = parseSequenceFromLogEth(
-          value,
-          context.srcBridgeAddress,
-        )
-        const nextStep =  await getNextStep(
-          value.transactionHash,
-          context,
-          sequence
-        )
-        const transferData: TransferData = {
-          nextStep,
-          amount: utils.undecimalize(
-            BigInt(token.input.params[1].value),
-            tokenInfo.decimals,
-          ),
-          from: address,
-          to: '',
-          emitterAddress: getEmitterAddressEth(context.srcTokenBridgeAddress),
-          sequence: sequence,
-          vaaHex: '',
-          txId: '',
-          txHash: value.transactionHash,
-        }
-
-        tokens.push({
-          context: context,
-          transferData: transferData,
-        })
-      }
-    }
-  }
-  return tokens
+  return await handleEtherTransactions(address, networkName)
 }
 
-export const getNextStep = async( txHash: string, context: WormholeContext, sequence: string) : Promise<StepTransfer> => {
+export const getNextStep = async (
+  txHash: string,
+  context: WormholeContext,
+  sequence: string,
+): Promise<StepTransfer> => {
   const listTransferState = await WohEthSol.fetchAll()
 
   for (let item of Object.values(listTransferState)) {
@@ -174,13 +146,94 @@ export const getNextStep = async( txHash: string, context: WormholeContext, sequ
     vaaBytes,
     window.sentre.splt.connection,
   )
-  return isRedeemed ? StepTransfer.Finish : StepTransfer.Transfer
+  return isRedeemed ? StepTransfer.Finish : StepTransfer.WaitSigned
+}
+
+export const fetchTransactionEtherAddress = async (
+  address: string,
+  networkName: string,
+): Promise<TransactionEtherInfo[]> => {
+  const { data }: { data: TransactionDataPerAddress } = await axios({
+    method: 'get',
+    url: `${MORALIS_INFO.url}/${address}?chain=${networkName}`,
+    headers: {
+      'X-API-Key': MORALIS_INFO.apiKey,
+    },
+  })
+  console.log(data)
+
+  return data.result
+}
+
+export const handleEtherTransactions = async (
+  address: string,
+  networkName: string,
+): Promise<TransferState[]> => {
+  abiDecoder.addABI(ABI_FAU)
+
+  const transactionHistory: TransferState[] = []
+  const data: TransactionEtherInfo[] = await fetchTransactionEtherAddress(
+    address,
+    networkName,
+  )
+  let calledTokens: Record<string, TokenInfo> = {}
+  for (let token of data) {
+    if (token.to_address === ETH_TOKEN_BRIDGE_ADDRESS.goerli) {
+      token.input = abiDecoder.decodeMethod(token.input)
+      let tokenInfo = calledTokens[`${token.input.params[0].value}`]
+      if (!tokenInfo) {
+        tokenInfo = await fetchInfoAToken(
+          token.input.params[0].value,
+          networkName,
+        )
+        calledTokens[`${token.input.params[0].value}`] = tokenInfo
+      }
+      if (Number(token.input.params[2].value) === CHAIN_ID_SOLANA) {
+        const TransferItem: TransferState = await createTransferState(
+          tokenInfo,
+          address,
+          token,
+        )
+        transactionHistory.push(TransferItem)
+      }
+    }
+  }
+  return transactionHistory
+}
+
+export const createTransferState = async (
+  tokenInfo: TokenInfo,
+  address: string,
+  token: TransactionEtherInfo,
+): Promise<TransferState> => {
+  const context = createEtherSolContext(tokenInfo)
+  const value = await web3Http.eth.getTransactionReceipt(token.hash)
+  const sequence = parseSequenceFromLogEth(value, context.srcBridgeAddress)
+  const nextStep = await getNextStep(value.transactionHash, context, sequence)
+  const transferData: TransferData = {
+    nextStep,
+    amount: utils.undecimalize(
+      BigInt(token.input.params[1].value),
+      tokenInfo.decimals,
+    ),
+    from: address,
+    to: '',
+    emitterAddress: getEmitterAddressEth(context.srcTokenBridgeAddress),
+    sequence: sequence,
+    vaaHex: '',
+    txId: '',
+    txHash: value.transactionHash,
+  }
+  return {
+    context,
+    transferData,
+  }
 }
 
 export const fetchInfoAToken = async (
   address: string,
   networkName: string,
-): Promise<TokenEtherInfo> => {
+): Promise<TokenInfo> => {
   const { data } = await axios({
     method: 'get',
     url: `${MORALIS_INFO.url}/erc20/metadata?chain=${networkName}&addresses=${address}`,
@@ -195,7 +248,6 @@ export const fetchInfoAToken = async (
     logo: data[0]?.logo,
     name: data[0]?.name,
     symbol: data[0]?.symbol,
-    thumbnail: data[0]?.thumbnail,
     address: data[0]?.address,
     amount: data[0]?.amount,
   }

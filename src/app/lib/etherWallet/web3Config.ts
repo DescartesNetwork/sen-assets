@@ -1,8 +1,23 @@
-import { INFURA_API_URL } from "../wormhole/constant/ethConfig";
+import {
+  ETH_TOKEN_BRIDGE_ADDRESS,
+  INFURA_API_HTTP_URL,
+  INFURA_API_WSS_URL,
+} from '../wormhole/constant/ethConfig'
+import { ABI_WORMHOLE } from 'app/constant/abis'
 
-const Web3 = require("web3");
+const Web3 = require('web3')
 
-export const web3 = new Web3(
+export const web3Http = new Web3(
   // Replace YOUR-PROJECT-ID with a Project ID from your Infura Dashboard
-  new Web3.providers.HttpProvider(INFURA_API_URL.goerli)
-);
+  new Web3.providers.HttpProvider(INFURA_API_HTTP_URL.goerli),
+)
+
+export const web3Wss = new Web3(
+  // Replace YOUR-PROJECT-ID with a Project ID from your Infura Dashboard
+  new Web3.providers.WebsocketProvider(INFURA_API_WSS_URL.mainnet),
+)
+
+export const web3WormholeContract = new web3Wss.eth.Contract(
+  ABI_WORMHOLE,
+  ETH_TOKEN_BRIDGE_ADDRESS.mainnet,
+)

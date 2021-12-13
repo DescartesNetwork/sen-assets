@@ -1,4 +1,4 @@
-[
+export const ABI_FAU = [
   {
     "constant": true,
     "inputs": [],
@@ -48,9 +48,9 @@
       { "name": "token", "type": "address" },
       { "name": "amount", "type": "uint256" },
       { "name": "recipientChain", "type": "uint16" },
-      {"name": "recipient", "type": "bytes32"},
-      {"name": "arbiterFee", "type": "uint256"},
-      {"name": "nonce", "type": "uint32"}
+      { "name": "recipient", "type": "bytes32" },
+      { "name": "arbiterFee", "type": "uint256" },
+      { "name": "nonce", "type": "uint32" }
     ],
     "name": "transferTokens",
     "outputs": [],

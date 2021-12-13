@@ -1,11 +1,15 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
+import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { WalletInterface } from '@senswap/sen-js'
 
 import { getEtherNetwork } from 'app/lib/wormhole/helper'
 import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
 import { fetchTokenEther } from 'app/lib/wormhole/helper'
-import { TransferState } from 'app/lib/wormhole/constant/wormhole'
+import {
+  TokenInfo,
+  State,
+  TransferState,
+} from 'app/constant/types/wormhole.type'
 
 /**
  * Interface & Utility
@@ -13,63 +17,6 @@ import { TransferState } from 'app/lib/wormhole/constant/wormhole'
 window.wormhole = {
   sourceWallet: {},
   targetWallet: {},
-}
-
-export type TokenEtherInfo = {
-  balance: string
-  decimals: number
-  logo: string
-  name: string
-  symbol: string
-  thumbnail: string
-  address: string
-  amount: number
-}
-
-export type TransactionEtherInfo = {
-  block_hash: string
-  block_number: string
-  block_timestamp: string
-  from_address: string
-  gas: string
-  gas_price: string
-  hash: string
-  input: InputEtherTransaction
-  nonce: string
-  receipt_contract_address: string
-  receipt_cumulative_gas_used: string
-  receipt_gas_used: string
-  receipt_root: string
-  receipt_status: string
-  to_address: string
-  transaction_index: string
-  value: string
-}
-
-export type InputEtherTransaction = {
-  name: string,
-  params: InputDetail[]
-}
-
-export type InputDetail = {
-  name: string,
-  type: string,
-  value: string
-}
-
-export type State = {
-  // source wallet
-  sourceTokens: Record<string, TokenEtherInfo>
-  sourceChain: ChainId
-  sourceWalletAddress: string
-  // target wallet
-  targetWalletAddress: string
-  targetChain: ChainId
-  // other
-  tokenAddress: string
-  amount: string
-  processId: string
-  visible: boolean
 }
 
 /**
@@ -99,7 +46,7 @@ const initialState: State = {
 export const connectSourceWallet = createAsyncThunk<
   {
     sourceWalletAddress: string
-    sourceTokens: Record<string, TokenEtherInfo>
+    sourceTokens: Record<string, TokenInfo>
     tokenAddress: string
   },
   { wallet: IEtherWallet }
@@ -109,7 +56,7 @@ export const connectSourceWallet = createAsyncThunk<
   const etherNetwork = getEtherNetwork()
   // fetch wallet's tokens
   const tokenList = await fetchTokenEther(address, etherNetwork)
-  const tokens: Record<string, TokenEtherInfo> = {}
+  const tokens: Record<string, TokenInfo> = {}
   for (const token of tokenList) {
     tokens[token.address] = token
   }
@@ -123,7 +70,7 @@ export const connectSourceWallet = createAsyncThunk<
 })
 
 export const fetchEtherTokens = createAsyncThunk<{
-  sourceTokens: Record<string, TokenEtherInfo>
+  sourceTokens: Record<string, TokenInfo>
 }>(`${NAME}/fetchSourceTokens`, async () => {
   const wallet = window.wormhole.sourceWallet.ether
   if (!wallet) throw new Error('Login fist')
@@ -131,7 +78,7 @@ export const fetchEtherTokens = createAsyncThunk<{
   const etherNetwork = getEtherNetwork()
   // fetch wallet's tokens
   const tokenList = await fetchTokenEther(address, etherNetwork)
-  const tokens: Record<string, TokenEtherInfo> = {}
+  const tokens: Record<string, TokenInfo> = {}
   for (const token of tokenList) {
     tokens[token.address] = token
   }

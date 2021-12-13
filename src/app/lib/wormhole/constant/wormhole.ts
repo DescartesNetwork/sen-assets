@@ -1,47 +1,5 @@
 import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
-import { WormholeContext } from '../context'
-import { SolAddressConfig } from './solConfig'
-
-export enum WormholeStoreKey {
-  Transfer = 'Transfer',
-  Provider = 'Provider',
-  SourceWallet = 'SourceWallet',
-}
-export type WormholeStatus = 'pending' | 'failed' | 'success' | 'unknown'
-
-// Transfer
-export enum StepTransfer {
-  Transfer = 'Transfer',
-  WaitSigned = 'WaitSigned',
-  Redeem = 'Redeem',
-  Finish = 'Finish',
-}
-
-export type TransferData = {
-  nextStep: StepTransfer
-  amount: string
-  from: string
-  to: string
-  sequence: string
-  emitterAddress: string
-  txHash: string
-  vaaHex: string
-  txId: string
-}
-
-export type AttestData = {
-  step: number
-  sequence: string
-  emitterAddress: string
-  vaaHex: string
-  txId: string
-}
-
-export type TransferState = {
-  context: WormholeContext
-  transferData: TransferData
-  attestData?: AttestData
-}
+import { SolAddressConfig } from 'app/constant/types/addressSystem/solona.types'
 
 // wormhole network
 export const WORMHOLE_RPC_HOST: SolAddressConfig = {

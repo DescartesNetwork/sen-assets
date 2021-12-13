@@ -4,10 +4,12 @@ import NetworkAvatar from 'app/components/network/networkAvatar'
 import ColumAction from './columnAction'
 import HistoryStatus from './status'
 
-import { WormholeContext } from 'app/lib/wormhole/context'
 import { shortenAddress } from 'shared/util'
-import { TransferState } from 'app/lib/wormhole/constant/wormhole'
 import NetworkName from 'app/components/network/networkName'
+import {
+  TransferState,
+  WormholeContext,
+} from 'app/constant/types/wormhole.type'
 
 export const WORMHOLE_COLUMNS = [
   {

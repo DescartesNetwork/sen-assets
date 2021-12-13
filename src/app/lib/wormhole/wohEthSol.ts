@@ -18,9 +18,12 @@ import { account, utils, WalletInterface } from '@senswap/sen-js'
 import { getAssociatedAddress, sendTransaction } from './helper'
 import { WormholeProvider } from './provider'
 import { IEtherWallet } from '../etherWallet/walletInterface'
-import { TokenEtherInfo } from 'app/model/wormhole.controller'
+import {
+  StepTransfer,
+  TokenInfo,
+  TransferData,
+} from 'app/constant/types/wormhole.type'
 import { createEtherSolContext } from './context'
-import { StepTransfer, TransferData } from './constant/wormhole'
 
 class WohEthSol extends WormholeProvider {
   private srcWallet: IEtherWallet
@@ -28,7 +31,7 @@ class WohEthSol extends WormholeProvider {
   constructor(
     sourceWallet: IEtherWallet,
     targetWallet: WalletInterface,
-    tokenInfo: TokenEtherInfo,
+    tokenInfo: TokenInfo,
   ) {
     super()
     this.srcWallet = sourceWallet

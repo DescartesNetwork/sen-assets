@@ -8,7 +8,7 @@ import {
   StepTransfer,
   TransferState,
   WormholeStatus,
-} from 'app/lib/wormhole/constant/wormhole'
+} from 'app/constant/types/wormhole.type'
 
 const ColumnStatus = ({ data }: { data: TransferState }) => {
   const { processId } = useSelector((state: AppState) => state.wormhole)
