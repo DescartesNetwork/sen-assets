@@ -2,43 +2,16 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import moment from 'moment'
 
 import { TransLogService } from 'app/lib/stat/logic/translog'
-import { TransferData } from 'app/lib/wormhole/constant/wormhole'
-import {
-  WormholeContext,
-} from 'app/lib/wormhole/context'
 
-import { TransferState } from 'app/lib/wormhole/constant/wormhole'
 import { OptionsFetchSignature } from 'app/lib/stat/constants/transaction'
 import { utils } from '@senswap/sen-js'
-import { fetchTransactionsAAddress } from 'app/lib/wormhole/helper'
+import { fetchWormholeHistory } from 'app/lib/wormhole/helper'
 import { SOL_ADDRESS } from 'app/constant/sol'
-
-/**
- * Interface & Utility
- */
-
-export type State = {
-  transaction: TransactionTransferHistoryData[]
-  wormhole: TransferState[]
-}
-
-/**
- * Store constructor
- */
-export type HistoryWormhole = {
-  context: WormholeContext
-  transfer: TransferData
-}
-export type TransactionTransferHistoryData = {
-  time: string
-  transactionId: string
-  from: string
-  to: string
-  amount: number
-  key: string
-  mint: string
-  isReceive: boolean
-}
+import {
+  State,
+  TransactionTransferHistoryData,
+} from 'app/constant/types/history.types'
+import { TransferState } from 'app/constant/types/wormhole.type'
 
 const LIMIT_TRANSACTION = 15
 
@@ -66,14 +39,14 @@ export const fetchWormholeBlockchainHistory = createAsyncThunk<
   {
     wormhole: TransferState[]
   },
-  {address:string}
->(`${NAME}/fetchWormholeBlockchainHistory`, async ({address}) => {
-  const data = await fetchTransactionsAAddress(address, 'goerli')
+  { address: string }
+>(`${NAME}/fetchWormholeBlockchainHistory`, async ({ address }) => {
+  const data = await fetchWormholeHistory(address, 'goerli')
   const history: TransferState[] = data
   return {
-    wormhole: history.sort(function(a, b) {
+    wormhole: history.sort(function (a, b) {
       return a.context.time - b.context.time
-    } ),
+    }),
   }
 })
 

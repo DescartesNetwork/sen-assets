@@ -1,13 +1,13 @@
 import { Connection } from '@solana/web3.js'
-
-import { WormholeContext } from './context'
 import {
   AttestData,
   StepTransfer,
   TransferData,
   TransferState,
+  WormholeContext,
   WormholeStoreKey,
-} from './constant/wormhole'
+} from 'app/constant/types/wormhole.type'
+
 import { getSignedVAAWithRetry, getWormholeDb, setWormholeDb } from './helper'
 
 export class WormholeProvider {
@@ -22,13 +22,12 @@ export class WormholeProvider {
     return JSON.parse(JSON.stringify(data)) || {}
   }
 
-  restore = async (id: string) => {
-    const database = await WormholeProvider.fetchAll()
-    const stateBackup = database[id]
+  restore = async (stateBackup: TransferState) => {
+    const stateClone = JSON.parse(JSON.stringify(stateBackup))
     if (!stateBackup) throw new Error('Not find state transfer')
-    this.transferData = stateBackup.transferData
-    this.attestData = stateBackup.attestData
-    this.context = stateBackup.context
+    this.transferData = stateClone.transferData
+    this.attestData = stateClone.attestData
+    this.context = stateClone.context
   }
 
   /**
@@ -49,8 +48,7 @@ export class WormholeProvider {
     if (!attested) await this.attest(onUpdate)
 
     if (transferData.nextStep === StepTransfer.Transfer) {
-      const { emitterAddress, sequence, txHash } =
-        await this.submitTransfer()
+      const { emitterAddress, sequence, txHash } = await this.submitTransfer()
       transferData.txHash = txHash
       transferData.emitterAddress = emitterAddress
       transferData.sequence = sequence

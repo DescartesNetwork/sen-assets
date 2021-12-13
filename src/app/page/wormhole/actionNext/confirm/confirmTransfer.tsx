@@ -12,10 +12,10 @@ import {
   fetchEtherTokens,
   setProcess,
 } from 'app/model/wormhole.controller'
-import { StepTransfer, TransferState } from 'app/lib/wormhole/constant/wormhole'
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
 import { asyncWait } from 'shared/util'
+import { StepTransfer, TransferState } from 'app/constant/types/wormhole.type'
 
 const ConfirmAction = ({
   onClose = () => {},

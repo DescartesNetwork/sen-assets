@@ -4,11 +4,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Button } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
-import {
-  StepTransfer,
-  TransferState,
-  WormholeStatus,
-} from 'app/lib/wormhole/constant/wormhole'
 import { AppDispatch, AppState } from 'app/model'
 import { updateWormholeHistory } from 'app/model/history.controller'
 import {
@@ -21,6 +16,11 @@ import {
 import { asyncWait, explorer } from 'shared/util'
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
+import {
+  StepTransfer,
+  TransferState,
+  WormholeStatus,
+} from 'app/constant/types/wormhole.type'
 
 const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   const dispatch = useDispatch<AppDispatch>()
@@ -58,7 +58,7 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
         targetWallet.sol,
         tokenTransfer,
       )
-      await wormholeTransfer.restore(context.id)
+      await wormholeTransfer.restore(transferState)
       await onUpdate(transferState)
       const txId = await wormholeTransfer.transfer(
         transferData.amount,
@@ -99,15 +99,11 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
     )
 
   if (status === 'unknown')
-  return (
-    <Button
-      type="primary"
-      size="small"
-      disabled={true}
-    >
-      Unknown
-    </Button>
-  )
+    return (
+      <Button type="primary" size="small" disabled={true}>
+        Unknown
+      </Button>
+    )
 
   // status pending
   return (
