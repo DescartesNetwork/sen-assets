@@ -6,18 +6,24 @@ import IonIcon from 'shared/antd/ionicon'
 
 import { WORMHOLE_COLUMNS } from './column'
 import { AppState } from 'app/model'
-import { fetchWormholeHistory } from 'app/model/history.controller'
+import {
+  fetchWormholeBlockchainHistory,
+} from 'app/model/history.controller'
 
 const ROW_PER_PAGE = 4
 
 const WormholeHistory = () => {
   const dispatch = useDispatch()
   const { wormhole } = useSelector((state: AppState) => state.history)
+  const { sourceWalletAddress } = useSelector(
+    (state: AppState) => state.wormhole,
+  )
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
 
   useEffect(() => {
-    dispatch(fetchWormholeHistory())
-  }, [dispatch])
+    if (!sourceWalletAddress) return
+    dispatch(fetchWormholeBlockchainHistory({ address: sourceWalletAddress }))
+  }, [dispatch, sourceWalletAddress])
 
   const onHandleViewMore = () => setAmountRow(amountRow + ROW_PER_PAGE)
 

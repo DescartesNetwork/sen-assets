@@ -3,12 +3,14 @@ import moment from 'moment'
 
 import { TransLogService } from 'app/lib/stat/logic/translog'
 import { TransferData } from 'app/lib/wormhole/constant/wormhole'
-import { WormholeContext } from 'app/lib/wormhole/context'
+import {
+  WormholeContext,
+} from 'app/lib/wormhole/context'
 
 import { TransferState } from 'app/lib/wormhole/constant/wormhole'
 import { OptionsFetchSignature } from 'app/lib/stat/constants/transaction'
-import { WohEthSol } from 'app/lib/wormhole'
 import { utils } from '@senswap/sen-js'
+import { fetchTransactionsAAddress } from 'app/lib/wormhole/helper'
 import { SOL_ADDRESS } from 'app/constant/sol'
 
 /**
@@ -49,13 +51,29 @@ const initialState: State = {
 /**
  * Actions
  */
-export const fetchWormholeHistory = createAsyncThunk<{
-  wormhole: TransferState[]
-}>(`${NAME}/fetchWormholeHistory`, async () => {
-  const listTransferState = await WohEthSol.fetchAll()
-  const history: TransferState[] = Object.values(listTransferState)
+// export const fetchWormholeHistory = createAsyncThunk<{
+//   wormhole: TransferState[]
+// }>(`${NAME}/fetchWormholeHistory`, async () => {
+//   const listTransferState = await WohEthSol.fetchAll()
+//   console.log(listTransferState, 'ngueyn duy tra')
+//   const history: TransferState[] = Object.values(listTransferState)
+//   return {
+//     wormhole: history.reverse(),
+//   }
+// })
+
+export const fetchWormholeBlockchainHistory = createAsyncThunk<
+  {
+    wormhole: TransferState[]
+  },
+  {address:string}
+>(`${NAME}/fetchWormholeBlockchainHistory`, async ({address}) => {
+  const data = await fetchTransactionsAAddress(address, 'goerli')
+  const history: TransferState[] = data
   return {
-    wormhole: history.reverse(),
+    wormhole: history.sort(function(a, b) {
+      return a.context.time - b.context.time
+    } ),
   }
 })
 
@@ -152,16 +170,20 @@ const slice = createSlice({
   reducers: {},
   extraReducers: (builder) =>
     void builder
-      .addCase(
-        fetchWormholeHistory.fulfilled,
-        (state, { payload }) => void Object.assign(state, payload),
-      )
+      // .addCase(
+      //   fetchWormholeHistory.fulfilled,
+      //   (state, { payload }) => void Object.assign(state, payload),
+      // )
       .addCase(
         updateWormholeHistory.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(
         fetchTransactionHistory.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        fetchWormholeBlockchainHistory.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

@@ -73,7 +73,7 @@ class WohEthSol extends WormholeProvider {
       sequence: '',
       vaaHex: '',
       txId: '',
-      blockHash: '',
+      txHash: '',
     }
     return data
   }
@@ -117,7 +117,7 @@ class WohEthSol extends WormholeProvider {
     return {
       sequence,
       emitterAddress,
-      blockHash: transferReceipt.blockHash,
+      txHash: transferReceipt.transactionHash,
     }
   }
 

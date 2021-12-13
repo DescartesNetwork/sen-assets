@@ -7,7 +7,7 @@ export enum WormholeStoreKey {
   Provider = 'Provider',
   SourceWallet = 'SourceWallet',
 }
-export type WormholeStatus = 'pending' | 'failed' | 'success'
+export type WormholeStatus = 'pending' | 'failed' | 'success' | 'unknown'
 
 // Transfer
 export enum StepTransfer {
@@ -24,7 +24,7 @@ export type TransferData = {
   to: string
   sequence: string
   emitterAddress: string
-  blockHash: string
+  txHash: string
   vaaHex: string
   txId: string
 }

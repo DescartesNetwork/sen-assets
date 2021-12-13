@@ -98,6 +98,17 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
       </Button>
     )
 
+  if (status === 'unknown')
+  return (
+    <Button
+      type="primary"
+      size="small"
+      disabled={true}
+    >
+      Unknown
+    </Button>
+  )
+
   // status pending
   return (
     <Button

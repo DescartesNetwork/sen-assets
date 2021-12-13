@@ -26,6 +26,37 @@ export type TokenEtherInfo = {
   amount: number
 }
 
+export type TransactionEtherInfo = {
+  block_hash: string
+  block_number: string
+  block_timestamp: string
+  from_address: string
+  gas: string
+  gas_price: string
+  hash: string
+  input: InputEtherTransaction
+  nonce: string
+  receipt_contract_address: string
+  receipt_cumulative_gas_used: string
+  receipt_gas_used: string
+  receipt_root: string
+  receipt_status: string
+  to_address: string
+  transaction_index: string
+  value: string
+}
+
+export type InputEtherTransaction = {
+  name: string,
+  params: InputDetail[]
+}
+
+export type InputDetail = {
+  name: string,
+  type: string,
+  value: string
+}
+
 export type State = {
   // source wallet
   sourceTokens: Record<string, TokenEtherInfo>

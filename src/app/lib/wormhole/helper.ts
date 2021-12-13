@@ -1,14 +1,34 @@
 import axios from 'axios'
-
 import { Connection, Transaction } from '@solana/web3.js'
-import { getSignedVAA } from '@certusone/wormhole-sdk'
-import { account, WalletInterface, utils } from '@senswap/sen-js'
+import {
+  getSignedVAA,
+  parseSequenceFromLogEth,
+  getEmitterAddressEth,
+  CHAIN_ID_SOLANA,
+  getIsTransferCompletedSolana,
+} from '@certusone/wormhole-sdk'
 
-import { TokenEtherInfo } from 'app/model/wormhole.controller'
+import { account, WalletInterface, utils } from '@senswap/sen-js'
+import {
+  TokenEtherInfo,
+  TransactionEtherInfo,
+} from 'app/model/wormhole.controller'
+import WohEthSol from './wohEthSol'
 import { asyncWait } from 'shared/util'
 import storage from 'shared/storage'
 import PDB from 'shared/pdb'
-import { WormholeStoreKey } from './constant/wormhole'
+import {
+  WormholeStoreKey,
+  TransferState,
+  TransferData,
+  StepTransfer,
+} from './constant/wormhole'
+import { MORALIS_INFO, ETH_TOKEN_BRIDGE_ADDRESS } from './constant/ethConfig'
+import { web3 } from '../etherWallet/web3Config'
+import ABI from './abi.json'
+import { createEtherSolContext, WormholeContext } from './context'
+
+const abiDecoder = require('abi-decoder')
 
 export const getSignedVAAWithRetry = async (
   ...args: Parameters<typeof getSignedVAA>
@@ -45,19 +65,140 @@ export const fetchTokenEther = async (
   const tokens = []
   const { data } = await axios({
     method: 'get',
-    url: `https://deep-index.moralis.io/api/v2/${address}/erc20?chain=${networkName}`,
+    url: `${MORALIS_INFO.url}/${address}/erc20?chain=${networkName}`,
     headers: {
-      'X-API-Key':
-        'N6yeIUl1FxCPZWbXyxLHWPAjSr6ahQeJTX3d19pSKCwHsLCzpWE7z1hilon4xDOd',
+      'X-API-Key': MORALIS_INFO.apiKey,
     },
   })
   for (const token of data) {
     token.decimals = Number(token.decimals)
+    token.balance = BigInt(token.balance)
     token.amount = utils.undecimalize(token.balance, token.decimals)
     token.address = token.token_address
     tokens.push(token)
   }
   return tokens
+}
+
+export const fetchTransactionsAAddress = async (
+  address: string,
+  networkName: string,
+): Promise<TransferState[]> => {
+  if (networkName === 'mainnet') networkName = 'eth'
+
+  // Get ABI token
+  // const abi = await axios({
+  //   method: 'get',
+  //   url: `https://api-goerli.etherscan.io/api?module=contract&action=getabi&address=0xba62bcfcaafc6622853cca2be6ac7d845bc0f2dc&apikey=H7IQG6XU3FAV5MVCVJC7WD2RVSXX5DPJP8`,
+  // })
+
+  abiDecoder.addABI(ABI)
+
+  const tokens: TransferState[] = []
+  const { data } = await axios({
+    method: 'get',
+    url: `${MORALIS_INFO.url}/${address}?chain=${networkName}`,
+    headers: {
+      'X-API-Key': MORALIS_INFO.apiKey,
+    },
+  })
+
+  let calledTokens: Record<string, TokenEtherInfo> = {}
+
+  for (const token of data.result as TransactionEtherInfo[]) {
+    if (token.to_address === ETH_TOKEN_BRIDGE_ADDRESS.goerli) {
+      token.input = abiDecoder.decodeMethod(token.input)
+      let tokenInfo = calledTokens[`${token.input.params[0].value}`]
+      if (!tokenInfo) {
+        tokenInfo = await fetchInfoAToken(
+          token.input.params[0].value,
+          networkName,
+        )
+        calledTokens[`${token.input.params[0].value}`] = tokenInfo
+      }
+      if (Number(token.input.params[2].value) === CHAIN_ID_SOLANA) {
+        const context = createEtherSolContext(tokenInfo)
+        const value = await web3.eth.getTransactionReceipt(token.hash)
+        const sequence = parseSequenceFromLogEth(
+          value,
+          context.srcBridgeAddress,
+        )
+        const nextStep =  await getNextStep(
+          value.transactionHash,
+          context,
+          sequence
+        )
+        const transferData: TransferData = {
+          nextStep,
+          amount: utils.undecimalize(
+            BigInt(token.input.params[1].value),
+            tokenInfo.decimals,
+          ),
+          from: address,
+          to: '',
+          emitterAddress: getEmitterAddressEth(context.srcTokenBridgeAddress),
+          sequence: sequence,
+          vaaHex: '',
+          txId: '',
+          txHash: value.transactionHash,
+        }
+
+        tokens.push({
+          context: context,
+          transferData: transferData,
+        })
+      }
+    }
+  }
+  return tokens
+}
+
+export const getNextStep = async( txHash: string, context: WormholeContext, sequence: string) : Promise<StepTransfer> => {
+  const listTransferState = await WohEthSol.fetchAll()
+
+  for (let item of Object.values(listTransferState)) {
+    if (txHash === item.transferData.txHash) {
+      return item.transferData.nextStep
+    }
+  }
+
+  const { vaaBytes } = await getSignedVAA(
+    context.wormholeRpc,
+    context.srcChainId,
+    getEmitterAddressEth(context.srcTokenBridgeAddress),
+    sequence,
+  )
+
+  const isRedeemed = await getIsTransferCompletedSolana(
+    context.targetTokenBridgeAddress,
+    vaaBytes,
+    window.sentre.splt.connection,
+  )
+  return isRedeemed ? StepTransfer.Finish : StepTransfer.Transfer
+}
+
+export const fetchInfoAToken = async (
+  address: string,
+  networkName: string,
+): Promise<TokenEtherInfo> => {
+  const { data } = await axios({
+    method: 'get',
+    url: `${MORALIS_INFO.url}/erc20/metadata?chain=${networkName}&addresses=${address}`,
+    headers: {
+      'X-API-Key': MORALIS_INFO.apiKey,
+    },
+  })
+
+  return {
+    balance: '',
+    decimals: data[0]?.decimals,
+    logo: data[0]?.logo,
+    name: data[0]?.name,
+    symbol: data[0]?.symbol,
+    thumbnail: data[0]?.thumbnail,
+    address: data[0]?.address,
+    amount: data[0]?.amount,
+  }
 }
 
 export const sendTransaction = async (
@@ -119,4 +260,8 @@ export const clearWormholeDb = async () => {
   if (!address) throw new Error('Login fist')
   const db = new PDB(address).dropInstance('wormhole')
   return db
+}
+
+export const logError = (error: unknown) => {
+  window.notify({ type: 'error', description: (error as any).message })
 }
