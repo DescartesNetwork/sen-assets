@@ -4,7 +4,6 @@ import { Space, Typography } from 'antd'
 import NetworkAvatar from 'app/components/network/networkAvatar'
 import ColumAction from './columnAction'
 import HistoryStatus from './status'
-import LazyLoad from 'react-lazyload'
 import NetworkName from 'app/components/network/networkName'
 
 import { shortenAddress } from 'shared/util'
@@ -63,11 +62,7 @@ export const WORMHOLE_COLUMNS = [
   {
     title: 'STATUS',
     render: (data: TransferState) => {
-      return (
-        <LazyLoad height={22} offset={300}>
-          <HistoryStatus data={data} />
-        </LazyLoad>
-      )
+      return  <HistoryStatus data={data} />
     },
   },
   {
