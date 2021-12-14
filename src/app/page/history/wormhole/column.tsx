@@ -64,7 +64,7 @@ export const WORMHOLE_COLUMNS = [
     title: 'STATUS',
     render: (data: TransferState) => {
       return (
-        <LazyLoad height={22}>
+        <LazyLoad height={22} offset={300}>
           <HistoryStatus data={data} />
         </LazyLoad>
       )
