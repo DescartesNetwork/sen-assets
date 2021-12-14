@@ -13,7 +13,7 @@ import {
   TransferState,
 } from 'app/constant/types/wormhole'
 import { createEtherSolContext, getEtherContext } from '../context'
-import { ABI_FAU } from 'app/constant/abis'
+import { ABI_TOKEN_IMPLEMENTATION } from 'app/constant/abis'
 import { Moralis } from './moralis'
 import { DataLoader } from 'shared/dataloader'
 import { web3Http, web3WormholeContract } from 'app/lib/etherWallet/web3Config'
@@ -137,7 +137,7 @@ export const fetchEtherSolHistory = async (
 const parseTransParam = (
   trans: TransactionEtherInfo,
 ): TransParam | undefined => {
-  abiDecoder.addABI(ABI_FAU)
+  abiDecoder.addABI(ABI_TOKEN_IMPLEMENTATION)
   const transParams: { name: string; type: string; value: string }[] =
     abiDecoder.decodeMethod(trans.input)?.params
   if (!transParams) return

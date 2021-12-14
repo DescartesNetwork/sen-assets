@@ -3,25 +3,19 @@ export const ABI_TOKEN_IMPLEMENTATION = [
     anonymous: false,
     inputs: [
       {
-        indexed: true,
+        indexed: false,
         internalType: 'address',
-        name: 'owner',
-        type: 'address',
-      },
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'spender',
+        name: 'previousAdmin',
         type: 'address',
       },
       {
         indexed: false,
-        internalType: 'uint256',
-        name: 'value',
-        type: 'uint256',
+        internalType: 'address',
+        name: 'newAdmin',
+        type: 'address',
       },
     ],
-    name: 'Approval',
+    name: 'AdminChanged',
     type: 'event',
   },
   {
@@ -30,44 +24,53 @@ export const ABI_TOKEN_IMPLEMENTATION = [
       {
         indexed: true,
         internalType: 'address',
-        name: 'from',
+        name: 'beacon',
+        type: 'address',
+      },
+    ],
+    name: 'BeaconUpgraded',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'oldContract',
         type: 'address',
       },
       {
         indexed: true,
         internalType: 'address',
-        name: 'to',
+        name: 'newContract',
         type: 'address',
       },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'value',
-        type: 'uint256',
-      },
     ],
-    name: 'Transfer',
+    name: 'ContractUpgraded',
     type: 'event',
   },
   {
+    anonymous: false,
     inputs: [
       {
+        indexed: true,
         internalType: 'address',
-        name: 'owner_',
-        type: 'address',
-      },
-      {
-        internalType: 'address',
-        name: 'spender_',
+        name: 'implementation',
         type: 'address',
       },
     ],
-    name: 'allowance',
+    name: 'Upgraded',
+    type: 'event',
+  },
+  {
+    inputs: [],
+    name: 'WETH',
     outputs: [
       {
-        internalType: 'uint256',
+        internalType: 'contract IWETH',
         name: '',
-        type: 'uint256',
+        type: 'address',
       },
     ],
     stateMutability: 'view',
@@ -77,61 +80,43 @@ export const ABI_TOKEN_IMPLEMENTATION = [
     inputs: [
       {
         internalType: 'address',
-        name: 'spender_',
+        name: 'tokenAddress',
         type: 'address',
       },
       {
-        internalType: 'uint256',
-        name: 'amount_',
-        type: 'uint256',
+        internalType: 'uint32',
+        name: 'nonce',
+        type: 'uint32',
       },
     ],
-    name: 'approve',
+    name: 'attestToken',
     outputs: [
       {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
+        internalType: 'uint64',
+        name: 'sequence',
+        type: 'uint64',
       },
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: 'payable',
     type: 'function',
   },
   {
     inputs: [
       {
-        internalType: 'address',
-        name: 'account_',
-        type: 'address',
+        internalType: 'uint16',
+        name: 'chainId_',
+        type: 'uint16',
       },
     ],
-    name: 'balanceOf',
+    name: 'bridgeContracts',
     outputs: [
       {
-        internalType: 'uint256',
+        internalType: 'bytes32',
         name: '',
-        type: 'uint256',
+        type: 'bytes32',
       },
     ],
     stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'account_',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'amount_',
-        type: 'uint256',
-      },
-    ],
-    name: 'burn',
-    outputs: [],
-    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -148,13 +133,197 @@ export const ABI_TOKEN_IMPLEMENTATION = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'decimals',
+    inputs: [
+      {
+        internalType: 'bytes',
+        name: 'encodedVm',
+        type: 'bytes',
+      },
+    ],
+    name: 'completeTransfer',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes',
+        name: 'encodedVm',
+        type: 'bytes',
+      },
+    ],
+    name: 'completeTransferAndUnwrapETH',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes',
+        name: 'encodedVm',
+        type: 'bytes',
+      },
+    ],
+    name: 'createWrapped',
     outputs: [
       {
-        internalType: 'uint8',
+        internalType: 'address',
+        name: 'token',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: 'uint8',
+            name: 'payloadID',
+            type: 'uint8',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'tokenAddress',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'uint16',
+            name: 'tokenChain',
+            type: 'uint16',
+          },
+          {
+            internalType: 'uint8',
+            name: 'decimals',
+            type: 'uint8',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'symbol',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'name',
+            type: 'bytes32',
+          },
+        ],
+        internalType: 'struct BridgeStructs.AssetMeta',
+        name: 'meta',
+        type: 'tuple',
+      },
+    ],
+    name: 'encodeAssetMeta',
+    outputs: [
+      {
+        internalType: 'bytes',
+        name: 'encoded',
+        type: 'bytes',
+      },
+    ],
+    stateMutability: 'pure',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: 'uint8',
+            name: 'payloadID',
+            type: 'uint8',
+          },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'tokenAddress',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'uint16',
+            name: 'tokenChain',
+            type: 'uint16',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'to',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'uint16',
+            name: 'toChain',
+            type: 'uint16',
+          },
+          {
+            internalType: 'uint256',
+            name: 'fee',
+            type: 'uint256',
+          },
+        ],
+        internalType: 'struct BridgeStructs.Transfer',
+        name: 'transfer',
+        type: 'tuple',
+      },
+    ],
+    name: 'encodeTransfer',
+    outputs: [
+      {
+        internalType: 'bytes',
+        name: 'encoded',
+        type: 'bytes',
+      },
+    ],
+    stateMutability: 'pure',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes32',
+        name: 'hash',
+        type: 'bytes32',
+      },
+    ],
+    name: 'governanceActionIsConsumed',
+    outputs: [
+      {
+        internalType: 'bool',
         name: '',
-        type: 'uint8',
+        type: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'governanceChainId',
+    outputs: [
+      {
+        internalType: 'uint16',
+        name: '',
+        type: 'uint16',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'governanceContract',
+    outputs: [
+      {
+        internalType: 'bytes32',
+        name: '',
+        type: 'bytes32',
       },
     ],
     stateMutability: 'view',
@@ -164,16 +333,11 @@ export const ABI_TOKEN_IMPLEMENTATION = [
     inputs: [
       {
         internalType: 'address',
-        name: 'spender_',
+        name: 'impl',
         type: 'address',
       },
-      {
-        internalType: 'uint256',
-        name: 'subtractedValue_',
-        type: 'uint256',
-      },
     ],
-    name: 'decreaseAllowance',
+    name: 'isInitialized',
     outputs: [
       {
         internalType: 'bool',
@@ -181,23 +345,18 @@ export const ABI_TOKEN_IMPLEMENTATION = [
         type: 'bool',
       },
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [
       {
-        internalType: 'address',
-        name: 'spender_',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'addedValue_',
-        type: 'uint256',
+        internalType: 'bytes32',
+        name: 'hash',
+        type: 'bytes32',
       },
     ],
-    name: 'increaseAllowance',
+    name: 'isTransferCompleted',
     outputs: [
       {
         internalType: 'bool',
@@ -205,209 +364,416 @@ export const ABI_TOKEN_IMPLEMENTATION = [
         type: 'bool',
       },
     ],
-    stateMutability: 'nonpayable',
+    stateMutability: 'view',
     type: 'function',
   },
   {
     inputs: [
       {
-        internalType: 'string',
-        name: 'name_',
-        type: 'string',
+        internalType: 'address',
+        name: 'token',
+        type: 'address',
       },
+    ],
+    name: 'isWrappedAsset',
+    outputs: [
       {
-        internalType: 'string',
-        name: 'symbol_',
-        type: 'string',
+        internalType: 'bool',
+        name: '',
+        type: 'bool',
       },
-      {
-        internalType: 'uint8',
-        name: 'decimals_',
-        type: 'uint8',
-      },
-      {
-        internalType: 'uint64',
-        name: 'sequence_',
-        type: 'uint64',
-      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
       {
         internalType: 'address',
-        name: 'owner_',
+        name: 'token',
         type: 'address',
+      },
+    ],
+    name: 'outstandingBridged',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes',
+        name: 'encoded',
+        type: 'bytes',
+      },
+    ],
+    name: 'parseAssetMeta',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'uint8',
+            name: 'payloadID',
+            type: 'uint8',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'tokenAddress',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'uint16',
+            name: 'tokenChain',
+            type: 'uint16',
+          },
+          {
+            internalType: 'uint8',
+            name: 'decimals',
+            type: 'uint8',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'symbol',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'name',
+            type: 'bytes32',
+          },
+        ],
+        internalType: 'struct BridgeStructs.AssetMeta',
+        name: 'meta',
+        type: 'tuple',
+      },
+    ],
+    stateMutability: 'pure',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes',
+        name: 'encoded',
+        type: 'bytes',
+      },
+    ],
+    name: 'parseRegisterChain',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'bytes32',
+            name: 'module',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'uint8',
+            name: 'action',
+            type: 'uint8',
+          },
+          {
+            internalType: 'uint16',
+            name: 'chainId',
+            type: 'uint16',
+          },
+          {
+            internalType: 'uint16',
+            name: 'emitterChainID',
+            type: 'uint16',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'emitterAddress',
+            type: 'bytes32',
+          },
+        ],
+        internalType: 'struct BridgeStructs.RegisterChain',
+        name: 'chain',
+        type: 'tuple',
+      },
+    ],
+    stateMutability: 'pure',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes',
+        name: 'encoded',
+        type: 'bytes',
+      },
+    ],
+    name: 'parseTransfer',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'uint8',
+            name: 'payloadID',
+            type: 'uint8',
+          },
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'tokenAddress',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'uint16',
+            name: 'tokenChain',
+            type: 'uint16',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'to',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'uint16',
+            name: 'toChain',
+            type: 'uint16',
+          },
+          {
+            internalType: 'uint256',
+            name: 'fee',
+            type: 'uint256',
+          },
+        ],
+        internalType: 'struct BridgeStructs.Transfer',
+        name: 'transfer',
+        type: 'tuple',
+      },
+    ],
+    stateMutability: 'pure',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes',
+        name: 'encoded',
+        type: 'bytes',
+      },
+    ],
+    name: 'parseUpgrade',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'bytes32',
+            name: 'module',
+            type: 'bytes32',
+          },
+          {
+            internalType: 'uint8',
+            name: 'action',
+            type: 'uint8',
+          },
+          {
+            internalType: 'uint16',
+            name: 'chainId',
+            type: 'uint16',
+          },
+          {
+            internalType: 'bytes32',
+            name: 'newContract',
+            type: 'bytes32',
+          },
+        ],
+        internalType: 'struct BridgeStructs.UpgradeContract',
+        name: 'chain',
+        type: 'tuple',
+      },
+    ],
+    stateMutability: 'pure',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes',
+        name: 'encodedVM',
+        type: 'bytes',
+      },
+    ],
+    name: 'registerChain',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'tokenImplementation',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'token',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
       },
       {
         internalType: 'uint16',
-        name: 'chainId_',
+        name: 'recipientChain',
         type: 'uint16',
       },
       {
         internalType: 'bytes32',
-        name: 'nativeContract_',
+        name: 'recipient',
         type: 'bytes32',
       },
-    ],
-    name: 'initialize',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'account_',
-        type: 'address',
-      },
       {
         internalType: 'uint256',
-        name: 'amount_',
+        name: 'arbiterFee',
         type: 'uint256',
       },
+      {
+        internalType: 'uint32',
+        name: 'nonce',
+        type: 'uint32',
+      },
     ],
-    name: 'mint',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'name',
+    name: 'transferTokens',
     outputs: [
-      {
-        internalType: 'string',
-        name: '',
-        type: 'string',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'nativeContract',
-    outputs: [
-      {
-        internalType: 'bytes32',
-        name: '',
-        type: 'bytes32',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'owner',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'symbol',
-    outputs: [
-      {
-        internalType: 'string',
-        name: '',
-        type: 'string',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'totalSupply',
-    outputs: [
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'recipient_',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'amount_',
-        type: 'uint256',
-      },
-    ],
-    name: 'transfer',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'sender_',
-        type: 'address',
-      },
-      {
-        internalType: 'address',
-        name: 'recipient_',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'amount_',
-        type: 'uint256',
-      },
-    ],
-    name: 'transferFrom',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'string',
-        name: 'name_',
-        type: 'string',
-      },
-      {
-        internalType: 'string',
-        name: 'symbol_',
-        type: 'string',
-      },
       {
         internalType: 'uint64',
-        name: 'sequence_',
+        name: 'sequence',
         type: 'uint64',
       },
     ],
-    name: 'updateDetails',
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes',
+        name: 'encodedVm',
+        type: 'bytes',
+      },
+    ],
+    name: 'updateWrapped',
+    outputs: [
+      {
+        internalType: 'address',
+        name: 'token',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'bytes',
+        name: 'encodedVM',
+        type: 'bytes',
+      },
+    ],
+    name: 'upgrade',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'wormhole',
+    outputs: [
+      {
+        internalType: 'contract IWormhole',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint16',
+        name: 'recipientChain',
+        type: 'uint16',
+      },
+      {
+        internalType: 'bytes32',
+        name: 'recipient',
+        type: 'bytes32',
+      },
+      {
+        internalType: 'uint256',
+        name: 'arbiterFee',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint32',
+        name: 'nonce',
+        type: 'uint32',
+      },
+    ],
+    name: 'wrapAndTransferETH',
+    outputs: [
+      {
+        internalType: 'uint64',
+        name: 'sequence',
+        type: 'uint64',
+      },
+    ],
+    stateMutability: 'payable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint16',
+        name: 'tokenChainId',
+        type: 'uint16',
+      },
+      {
+        internalType: 'bytes32',
+        name: 'tokenAddress',
+        type: 'bytes32',
+      },
+    ],
+    name: 'wrappedAsset',
+    outputs: [
+      {
+        internalType: 'address',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    stateMutability: 'payable',
+    type: 'receive',
   },
 ]
