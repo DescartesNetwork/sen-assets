@@ -23,6 +23,15 @@ export const getEtherContext = () => {
   }
 }
 
+export const getSolContext = () => {
+  const solNetWork: SolNetWork = getSolNetwork()
+  return {
+    chainId: CHAIN_ID_SOLANA,
+    tokenBridgeAddress: SOL_TOKEN_BRIDGE_ADDRESS[solNetWork],
+    bridgeAddress: SOL_BRIDGE_ADDRESS[solNetWork],
+  }
+}
+
 export const createEtherSolContext = (
   tokenInfo: WohTokenInfo,
 ): WormholeContext => {
