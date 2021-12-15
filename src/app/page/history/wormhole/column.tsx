@@ -61,12 +61,14 @@ export const WORMHOLE_COLUMNS = [
   },
   {
     title: 'STATUS',
+    width: 100,
     render: (data: TransferState) => {
-      return  <HistoryStatus data={data} />
+      return <HistoryStatus data={data} />
     },
   },
   {
     title: 'ACTION',
+    width: 100,
     render: (state: TransferState) => {
       return <ColumAction transferState={state} />
     },

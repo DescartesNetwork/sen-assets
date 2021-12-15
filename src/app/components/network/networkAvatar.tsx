@@ -16,11 +16,7 @@ const NetworkAvatar = ({
   )
 
   return (
-    <Avatar
-      src={networkConfig?.logo}
-      size={size}
-      style={{ border: 'none' }}
-    ></Avatar>
+    <Avatar src={networkConfig?.logo} size={size} style={{ border: 'none' }} />
   )
 }
 
