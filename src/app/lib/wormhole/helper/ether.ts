@@ -1,9 +1,7 @@
 import {
   CHAIN_ID_SOLANA,
-  getClaimAddressSolana,
   getIsTransferCompletedSolana,
   getOriginalAssetEth,
-  hexToNativeString,
   parseSequenceFromLogEth,
 } from '@certusone/wormhole-sdk'
 import { account, utils } from '@senswap/sen-js'
@@ -21,7 +19,7 @@ import {
   getEtherContext,
   getSolContext,
 } from '../context'
-import { ABI_TOKEN_IMPLEMENTATION } from 'app/constant/abis'
+import { ABI_TOKEN_IMPLEMENTATION } from 'app/lib/wormhole/constant/abis'
 import { Moralis } from './moralis'
 import { DataLoader } from 'shared/dataloader'
 import { web3Http } from 'app/lib/etherWallet/web3Config'
@@ -32,11 +30,11 @@ import { getAssociatedAddress } from './utils'
 
 const abiDecoder = require('abi-decoder')
 
-type TransParam = {
-  targetChain: number
-  amount: string
-  token: string
-}
+// type TransParam = {
+//   targetChain: number
+//   amount: string
+//   token: string
+// }
 
 export const fetchTokenEther = async (
   address: string,
@@ -146,7 +144,6 @@ export const fetchEtherSolHistory = async (
 
 const parseTransParam = async (trans: TransactionEtherInfo) => {
   abiDecoder.addABI(ABI_TOKEN_IMPLEMENTATION)
-  let i = 0
   const transParams: { name: string; type: string; value: string }[] =
     abiDecoder.decodeMethod(trans.input)?.params
   if (!transParams) return
