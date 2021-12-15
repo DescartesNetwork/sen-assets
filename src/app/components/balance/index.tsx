@@ -31,7 +31,7 @@ const Balance = ({
     if (inUSD) balance = Number(balance) * cgkData.price
     const prefix = inUSD ? '$' : ''
     return prefix + numeric(balance).format(wrapFormat)
-  }, [amount, cgkData.price, decimals, format, inUSD, maxLength])
+  }, [amount, cgkData.price, decimals, format, inUSD, maxLength, sortFomart])
 
   if (autoHidden && !cgkData.price) return <span>--</span>
   return <span>{balanceDisplay}</span>
