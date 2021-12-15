@@ -2,10 +2,11 @@ import {
   CHAIN_ID_SOLANA,
   getClaimAddressSolana,
   getIsTransferCompletedSolana,
+  getOriginalAssetEth,
   hexToNativeString,
   parseSequenceFromLogEth,
 } from '@certusone/wormhole-sdk'
-import { utils } from '@senswap/sen-js'
+import { account, utils } from '@senswap/sen-js'
 import { ethers } from 'ethers'
 
 import {
@@ -15,13 +16,19 @@ import {
   TransferData,
   TransferState,
 } from 'app/constant/types/wormhole'
-import { createEtherSolContext, getEtherContext } from '../context'
+import {
+  createEtherSolContext,
+  getEtherContext,
+  getSolContext,
+} from '../context'
 import { ABI_TOKEN_IMPLEMENTATION } from 'app/constant/abis'
 import { Moralis } from './moralis'
 import { DataLoader } from 'shared/dataloader'
 import { web3Http } from 'app/lib/etherWallet/web3Config'
 import { getEmitterAddressEth } from '@certusone/wormhole-sdk'
 import { getSignedVAA } from '@certusone/wormhole-sdk'
+import { getForeignAssetSolana } from '@certusone/wormhole-sdk'
+import { getAssociatedAddress } from './utils'
 
 const abiDecoder = require('abi-decoder')
 
@@ -137,9 +144,7 @@ export const fetchEtherSolHistory = async (
   return history
 }
 
-const parseTransParam = (
-  trans: TransactionEtherInfo,
-): TransParam | undefined => {
+const parseTransParam = async (trans: TransactionEtherInfo) => {
   abiDecoder.addABI(ABI_TOKEN_IMPLEMENTATION)
   const transParams: { name: string; type: string; value: string }[] =
     abiDecoder.decodeMethod(trans.input)?.params
@@ -147,9 +152,16 @@ const parseTransParam = (
   // parse token
   if (transParams.length === 6) {
     const u8arr = ethers.utils.arrayify(transParams[3].value)
+    console.log("transParams[3].value",transParams[3].value)
   }
   const tokenAddr = transParams[0]?.value
   if (!tokenAddr) return
+  console.log("1")
+  const solAddr = await DataLoader.load(
+    'getSolAssociatedAddress' + tokenAddr,
+    () => getSolAssociatedAddress(tokenAddr),
+  )
+  console.log('solAddr', solAddr)
   // parse recipientChain
   const amount = transParams[1]?.value
   const targetChainInput = transParams[2]?.value
@@ -180,7 +192,7 @@ const parseTransParam = (
 export const createTransferState = async (
   trans: TransactionEtherInfo,
 ): Promise<TransferState | undefined> => {
-  const params = parseTransParam(trans)
+  const params = await parseTransParam(trans)
   if (!params || params.targetChain !== CHAIN_ID_SOLANA) return
 
   const tokenInfo = await DataLoader.load(
@@ -245,4 +257,35 @@ export const restoreEther = async (
     transferData.nextStep = StepTransfer.WaitSigned
   }
   return cloneState
+}
+
+//
+const getSolAssociatedAddress = async (tokenEtherAddr: string) => {
+  const wrapTokenAddr = await getWrappedMintAddress(tokenEtherAddr)
+  const solWallet = window.sentre.wallet
+  if (!wrapTokenAddr || !solWallet) return null
+  const dstAddress = await getAssociatedAddress(wrapTokenAddr, solWallet)
+  return ethers.utils.hexlify(account.fromAddress(dstAddress).toBuffer())
+}
+
+const getWrappedMintAddress = async (tokenEtherAddr: string) => {
+  const etherWallet = window.wormhole.sourceWallet.ether
+  if (!etherWallet) throw new Error('Login fist')
+  const provider = await etherWallet.getProvider()
+
+  const etherContext = getEtherContext()
+  const originAsset = await getOriginalAssetEth(
+    etherContext.tokenBridgeAddress,
+    provider,
+    tokenEtherAddr,
+    etherContext.chainId,
+  )
+  const solContext = getSolContext()
+  const wrappedMintAddress = await getForeignAssetSolana(
+    window.sentre.splt.connection,
+    solContext.tokenBridgeAddress,
+    originAsset.chainId,
+    originAsset.assetAddress,
+  )
+  return wrappedMintAddress
 }
