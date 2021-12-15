@@ -11,13 +11,13 @@ const Balance = ({
   autoHidden = false,
   format = '0,0.[00]',
   maxLength,
-  sortFormat = '0,0.[00]a'
+  sortFormat = '0,0.[00]a',
 }: {
   accountAddr: string
   inUSD?: boolean
   autoHidden?: boolean
   format?: string
-  maxLength?: number,
+  maxLength?: number
   sortFormat?: string
 }) => {
   const { amount, mint, decimals } = useMintAccount(accountAddr)
@@ -26,8 +26,8 @@ const Balance = ({
   const balanceDisplay = useMemo(() => {
     let balance = Number(utils.undecimalize(amount, decimals))
     let wrapFormat = format
-    if (maxLength && String(balance).length > maxLength) sortFormat
-    
+    if (maxLength && String(balance).length > maxLength) wrapFormat = sortFormat
+
     if (inUSD) balance = Number(balance) * cgkData.price
     const prefix = inUSD ? '$' : ''
     return prefix + numeric(balance).format(wrapFormat)
