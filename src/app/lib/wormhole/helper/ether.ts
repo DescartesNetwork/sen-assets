@@ -148,13 +148,12 @@ const parseTransParam = async (trans: TransactionEtherInfo) => {
     abiDecoder.decodeMethod(trans.input)?.params
   if (!transParams) return
   // parse token
-  // parse recipientChain
   const tokenAddr = transParams[0]?.value
   if (!tokenAddr) return
+  // parse recipientChain
   if ((await isCurrentSolAddress(transParams, tokenAddr)) === false) {
     return
   }
-
   const amount = transParams[1]?.value
   const targetChainInput = transParams[2]?.value
   if (!amount || !targetChainInput) return
@@ -177,7 +176,6 @@ export const createTransferState = async (
   )
   const context = createEtherSolContext(tokenInfo)
   context.time = new Date(trans.block_timestamp).getTime()
-
   const transferData: TransferData = {
     nextStep: StepTransfer.Unknown,
     amount: utils.undecimalize(BigInt(params.amount), tokenInfo.decimals),
@@ -247,7 +245,6 @@ const isCurrentSolAddress = async (
   return transParams[3].value === solAddr
 }
 
-//
 const getSolReceipient = async (tokenEtherAddr: string) => {
   const wrapTokenAddr = await getWrappedMintAddress(tokenEtherAddr)
   const solWallet = window.sentre.wallet
@@ -260,7 +257,6 @@ const getWrappedMintAddress = async (tokenEtherAddr: string) => {
   const etherWallet = window.wormhole.sourceWallet.ether
   if (!etherWallet) throw new Error('Login fist')
   const provider = await etherWallet.getProvider()
-
   const etherContext = getEtherContext()
   const originAsset = await getOriginalAssetEth(
     etherContext.tokenBridgeAddress,

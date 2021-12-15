@@ -14,7 +14,6 @@ import {
   transferFromEth,
 } from '@certusone/wormhole-sdk'
 import { account, utils, WalletInterface } from '@senswap/sen-js'
-import { ethers } from 'ethers'
 
 import { getAssociatedAddress, sendTransaction } from './helper/utils'
 import { WormholeProvider } from './provider'
@@ -95,19 +94,16 @@ class WohEthSol extends WormholeProvider {
       transferData.amount,
       context.tokenInfo.decimals,
     )
-
     await approveEth(
       context.srcTokenBridgeAddress,
       context.tokenInfo.address,
       signer,
       amountTransfer,
     )
-    // console.log(wrappedMintAddress, this.targetWallet)
     const dstAddress = await getAssociatedAddress(
       wrappedMintAddress,
       this.targetWallet,
     )
-    // console.log(dstAddress)
     const transferReceipt = await transferFromEth(
       context.srcTokenBridgeAddress,
       signer,
@@ -116,10 +112,6 @@ class WohEthSol extends WormholeProvider {
       CHAIN_ID_SOLANA,
       account.fromAddress(dstAddress).toBuffer(),
     )
-    // console.log(
-    //   ethers.utils.hexlify(account.fromAddress(dstAddress).toBuffer()),
-    //   account.fromAddress(dstAddress),
-    // )
     const sequence = parseSequenceFromLogEth(
       transferReceipt,
       context.srcBridgeAddress,

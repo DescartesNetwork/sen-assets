@@ -5,6 +5,7 @@ import session from 'shared/session'
 import { IEtherWallet } from './walletInterface'
 import { WOH_WALLET } from '../wormhole/constant/wormhole'
 import { getEtherNetwork } from '../wormhole/helper/utils'
+
 class MetamaskWallet implements IEtherWallet {
   static walletType = 'MetaMask'
 
