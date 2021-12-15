@@ -146,23 +146,18 @@ export const fetchEtherSolHistory = async (
 
 const parseTransParam = async (trans: TransactionEtherInfo) => {
   abiDecoder.addABI(ABI_TOKEN_IMPLEMENTATION)
+  let i = 0
   const transParams: { name: string; type: string; value: string }[] =
     abiDecoder.decodeMethod(trans.input)?.params
   if (!transParams) return
   // parse token
-  if (transParams.length === 6) {
-    const u8arr = ethers.utils.arrayify(transParams[3].value)
-    console.log("transParams[3].value",transParams[3].value)
-  }
+  // parse recipientChain
   const tokenAddr = transParams[0]?.value
   if (!tokenAddr) return
-  console.log("1")
-  const solAddr = await DataLoader.load(
-    'getSolAssociatedAddress' + tokenAddr,
-    () => getSolAssociatedAddress(tokenAddr),
-  )
-  console.log('solAddr', solAddr)
-  // parse recipientChain
+  if ((await isCurrentSolAddress(transParams, tokenAddr)) === false) {
+    return
+  }
+
   const amount = transParams[1]?.value
   const targetChainInput = transParams[2]?.value
   if (!amount || !targetChainInput) return
@@ -172,22 +167,6 @@ const parseTransParam = async (trans: TransactionEtherInfo) => {
     targetChain: Number(targetChainInput),
   }
 }
-
-// export const getClaimSolana = async (transParams: { name: string; type: string; value: string }[]) => {
-//   const context =
-//   if (transParams.length === 6) {
-//     const vaaHex = await getSignedVAA(
-
-//     )
-//     console.log(
-//       getClaimAddressSolana(
-//         '0x8239d86fdda17f0152c29256022f9cbb411e7a149884d5042ea79f0832c4dda1',
-
-//       ),
-//       transParams[3].value,
-//     )
-//   }
-// }
 
 export const createTransferState = async (
   trans: TransactionEtherInfo,
@@ -259,8 +238,20 @@ export const restoreEther = async (
   return cloneState
 }
 
+const isCurrentSolAddress = async (
+  transParams: { name: string; type: string; value: string }[],
+  tokenAddr: string,
+): Promise<Boolean> => {
+  if (transParams.length !== 6) return false
+  const solAddr = await DataLoader.load(
+    'getSolAssociatedAddress' + tokenAddr,
+    () => getSolReceipient(tokenAddr),
+  )
+  return transParams[3].value === solAddr
+}
+
 //
-const getSolAssociatedAddress = async (tokenEtherAddr: string) => {
+const getSolReceipient = async (tokenEtherAddr: string) => {
   const wrapTokenAddr = await getWrappedMintAddress(tokenEtherAddr)
   const solWallet = window.sentre.wallet
   if (!wrapTokenAddr || !solWallet) return null
