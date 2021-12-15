@@ -82,6 +82,7 @@
     "@types/react-dom": "^17.0.9",
     "@types/react-router-dom": "^5.3.1",
     "@types/remarkable": "^2.0.3",
+    "@types/react-lazyload": "^3.1.1",
     "assert": "^2.0.0",
     "craco-module-federation": "^1.1.0",
     "crypto-browserify": "^3.12.0",
