@@ -4,6 +4,7 @@ import detectEthereumProvider from '@metamask/detect-provider'
 import session from 'shared/session'
 import { IEtherWallet } from './walletInterface'
 import { WOH_WALLET } from '../wormhole/constant/wormhole'
+import { getEtherNetwork } from '../wormhole/helper/utils'
 class MetamaskWallet implements IEtherWallet {
   static walletType = 'MetaMask'
 
@@ -11,6 +12,20 @@ class MetamaskWallet implements IEtherWallet {
     const detectedProvider: any = await detectEthereumProvider()
     if (!detectedProvider) throw new Error('No provider')
     const provider = new ethers.providers.Web3Provider(detectedProvider, 'any')
+
+    const chainId = getEtherNetwork() === 'goerli' ? '0x5' : '0x1'
+    if (window.ethereum) {
+      const windowEthereum: any = window.ethereum
+      await windowEthereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [
+          {
+            chainId,
+          },
+        ],
+      })
+    }
+
     return provider
   }
 

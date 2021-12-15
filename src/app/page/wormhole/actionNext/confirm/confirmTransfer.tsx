@@ -16,7 +16,6 @@ import { notifyError, notifySuccess } from 'app/helper'
 import { asyncWait } from 'shared/util'
 import { StepTransfer, TransferState } from 'app/constant/types/wormhole'
 import { updateWohHistory } from 'app/model/wohHistory.controller'
-import { getEtherNetwork } from 'app/lib/wormhole/helper/utils'
 
 const ConfirmAction = ({
   onClose = () => {},
@@ -44,21 +43,6 @@ const ConfirmAction = ({
     await setWaiting(true)
     try {
       //Transfer
-      // if (window.ethereum) {
-      //   console.log(Object.keys(window.ethereum))
-      // }
-      const chainId = getEtherNetwork() === 'goerli' ? '0x5' : '0x1'
-      if (window.ethereum) {
-        const windowEthereum: any = window.ethereum
-        await windowEthereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [
-            {
-              chainId: chainId,
-            },
-          ],
-        })
-      }
       const { sourceWallet, targetWallet } = window.wormhole
       const tokenTransfer = sourceTokens[tokenAddress]
       if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
