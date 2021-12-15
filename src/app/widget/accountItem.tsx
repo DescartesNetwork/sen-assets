@@ -47,10 +47,15 @@ const AccountItem = ({
           <Space>
             <Space direction="vertical" size={0} align="end">
               <Typography.Text>
-                <Balance accountAddr={accountAddr} />
+                <Balance accountAddr={accountAddr} maxLength={6} />
               </Typography.Text>
               <Typography.Text type="secondary" className="caption">
-                <Balance accountAddr={accountAddr} inUSD autoHidden />
+                <Balance
+                  accountAddr={accountAddr}
+                  inUSD
+                  autoHidden
+                  maxLength={6}
+                />
               </Typography.Text>
             </Space>
             <IonIcon

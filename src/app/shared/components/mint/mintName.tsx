@@ -15,7 +15,7 @@ const MintName = ({
   const names = useMemo(() => {
     let names = tokens
       .map((token) => {
-        if (!token) return shortenAddress(mintAddress)
+        if (!token) return shortenAddress(mintAddress, 2)
         const { name, address, symbol } = token
         if (tokens.length === 1 && name) return name
         if (symbol) return symbol
@@ -27,7 +27,7 @@ const MintName = ({
     //LPT token
     return `${names} LP`
   }, [mintAddress, separator, tokens])
-  return <span>{names}</span>
+  return <span style={{ whiteSpace: 'nowrap' }}>{names}</span>
 }
 
 export default MintName
