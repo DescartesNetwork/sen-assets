@@ -1,9 +1,12 @@
 import {
   CHAIN_ID_SOLANA,
+  getClaimAddressSolana,
   getIsTransferCompletedSolana,
+  hexToNativeString,
   parseSequenceFromLogEth,
 } from '@certusone/wormhole-sdk'
 import { utils } from '@senswap/sen-js'
+import { ethers } from 'ethers'
 
 import {
   StepTransfer,
@@ -16,7 +19,7 @@ import { createEtherSolContext, getEtherContext } from '../context'
 import { ABI_TOKEN_IMPLEMENTATION } from 'app/constant/abis'
 import { Moralis } from './moralis'
 import { DataLoader } from 'shared/dataloader'
-import { web3Http, web3WormholeContract } from 'app/lib/etherWallet/web3Config'
+import { web3Http } from 'app/lib/etherWallet/web3Config'
 import { getEmitterAddressEth } from '@certusone/wormhole-sdk'
 import { getSignedVAA } from '@certusone/wormhole-sdk'
 
@@ -142,10 +145,12 @@ const parseTransParam = (
     abiDecoder.decodeMethod(trans.input)?.params
   if (!transParams) return
   // parse token
+  if (transParams.length === 6) {
+    const u8arr = ethers.utils.arrayify(transParams[3].value)
+  }
   const tokenAddr = transParams[0]?.value
   if (!tokenAddr) return
   // parse recipientChain
-  console.log(transParams)
   const amount = transParams[1]?.value
   const targetChainInput = transParams[2]?.value
   if (!amount || !targetChainInput) return
@@ -155,6 +160,22 @@ const parseTransParam = (
     targetChain: Number(targetChainInput),
   }
 }
+
+// export const getClaimSolana = async (transParams: { name: string; type: string; value: string }[]) => {
+//   const context =
+//   if (transParams.length === 6) {
+//     const vaaHex = await getSignedVAA(
+
+//     )
+//     console.log(
+//       getClaimAddressSolana(
+//         '0x8239d86fdda17f0152c29256022f9cbb411e7a149884d5042ea79f0832c4dda1',
+
+//       ),
+//       transParams[3].value,
+//     )
+//   }
+// }
 
 export const createTransferState = async (
   trans: TransactionEtherInfo,

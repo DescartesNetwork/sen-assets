@@ -43,6 +43,20 @@ const ConfirmAction = ({
     await setWaiting(true)
     try {
       //Transfer
+      // if (window.ethereum) {
+      //   console.log(Object.keys(window.ethereum))
+      // }
+      if (window.ethereum) {
+        const windowEthereum: any = window.ethereum
+        await windowEthereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [
+            {
+              chainId: '0x5',
+            },
+          ],
+        })
+      }
       const { sourceWallet, targetWallet } = window.wormhole
       const tokenTransfer = sourceTokens[tokenAddress]
       if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)

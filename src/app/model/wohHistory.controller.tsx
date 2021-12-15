@@ -24,7 +24,7 @@ export const fetchWohHistory = createAsyncThunk<State, { address: string }>(
   async ({ address }) => {
     let etherHistory = await fetchEtherSolHistory(address)
     etherHistory = etherHistory.sort(function (a, b) {
-      return a.context.time - b.context.time
+      return b.context.time - a.context.time
     })
     const history: State = {}
     for (const data of etherHistory) {
