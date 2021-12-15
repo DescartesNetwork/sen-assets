@@ -17,7 +17,8 @@ const Balance = ({
   inUSD?: boolean
   autoHidden?: boolean
   format?: string
-  maxLength?: number
+  maxLength?: number,
+  sortFomart?: string
 }) => {
   const { amount, mint, decimals } = useMintAccount(accountAddr)
   const cgkData = useMintCgk(mint)
