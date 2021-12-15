@@ -30,12 +30,6 @@ import { getAssociatedAddress } from './utils'
 
 const abiDecoder = require('abi-decoder')
 
-// type TransParam = {
-//   targetChain: number
-//   amount: string
-//   token: string
-// }
-
 export const fetchTokenEther = async (
   address: string,
 ): Promise<WohTokenInfo[]> => {
@@ -51,55 +45,6 @@ export const fetchTokenEther = async (
   }
   return tokens
 }
-
-// export const fetchTransactions = async () => {
-//   console.log('Hello')
-//   console.log(
-//     getEmitterAddressEth('0x04b0dd4036faae6e1da014a123563c210a8b03b7'),
-//     '0x04b0dd4036faae6e1da014a123563c210a8b03b7',
-//   )
-//   web3WormholeContract.events
-//     .allEvents(
-//       {
-//         fromBlock: 0,
-//       },
-//       function (error: any, event: any) {
-//         console.log(event)
-//       },
-//     )
-//     .on('connected', function (subscriptionId: any) {
-//       console.log(subscriptionId)
-//     })
-//     .on('data', function (event: any) {
-//       console.log(event) // same results as the optional callback above
-//     })
-//     .on('changed', function (event: any) {
-// remove event from local database
-// console.log(event)
-// })
-// .on('error', function (error: any, receipt: any) {
-// If the transaction was rejected by the network with a receipt, the second parameter will be the receipt.
-//   console.log(error, receipt)
-// })
-// web3WormholeContract.events.allEv
-//   .getPastLogs({
-//     fromBlock: '13797328',
-//     address: '0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B',
-//   })
-//   .then((res: any) => {
-//     console.log(res)
-//   })
-//   .catch((err: any) => console.log('getPastLogs failed', err))
-// parser token
-// for (const token of data) {
-//   token.decimals = Number(token.decimals)
-//   token.balance = BigInt(token.balance)
-//   token.amount = utils.undecimalize(token.balance, token.decimals)
-//   token.address = token.token_address
-//   tokens.push(token)
-// }
-// return tokens
-// }
 
 export const fetchTransactionEtherAddress = async (
   address: string,
