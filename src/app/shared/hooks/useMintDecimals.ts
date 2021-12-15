@@ -16,7 +16,7 @@ const useMintDecimals = (mintAddress: string): number => {
     // LPT
     for (const poolAddr in pools) {
       const { mint_lpt } = pools[poolAddr]
-      if (mint_lpt === mintAddress) return LPT_DECIMALS
+      if (mint_lpt === mintAddress) return setDecimals(LPT_DECIMALS)
     }
     // Find on blockchain (slow than token provider)
     try {

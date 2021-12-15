@@ -58,7 +58,7 @@ const ListAccount = () => {
       </Col>
       {listAccount.map((address) => (
         <Col span={24} key={address}>
-          <LazyLoad height={64} overflow>
+          <LazyLoad height={70} offset={70} overflow>
             <AccountCard
               accountAddr={address}
               active={accountSelected === address}
