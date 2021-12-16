@@ -94,6 +94,7 @@ class WohEthSol extends WormholeProvider {
       transferData.amount,
       context.tokenInfo.decimals,
     )
+
     await approveEth(
       context.srcTokenBridgeAddress,
       context.tokenInfo.address,

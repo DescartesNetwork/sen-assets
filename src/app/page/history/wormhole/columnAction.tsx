@@ -46,7 +46,7 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
 
   const onRetry = async () => {
     try {
-      // await dispatch(restoreTransfer({ transferState: transferState })).unwrap()
+      await dispatch(restoreTransfer({ transferState: transferState })).unwrap()
       await dispatch(setProcess({ id: context.id })).unwrap()
       //Transfer
       const { sourceWallet, targetWallet } = window.wormhole
@@ -70,6 +70,7 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
     } catch (er) {
       notifyError(er)
       await dispatch(setProcess({ id: '' }))
+      dispatch(clearProcess())
     }
   }
 

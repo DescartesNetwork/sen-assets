@@ -119,13 +119,16 @@ export const createTransferState = async (
     'fetchEtherTokenInfo' + params.token,
     () => fetchEtherTokenInfo(params.token),
   )
+  const solWallet = await window.sentre.wallet?.getAddress()
+  if (!solWallet) throw new Error('Login fist')
+
   const context = createEtherSolContext(tokenInfo)
   context.time = new Date(trans.block_timestamp).getTime()
   const transferData: TransferData = {
     nextStep: StepTransfer.Unknown,
     amount: utils.undecimalize(BigInt(params.amount), tokenInfo.decimals),
     from: trans.from_address,
-    to: '',
+    to: solWallet,
     emitterAddress: '',
     sequence: '',
     vaaHex: '',
