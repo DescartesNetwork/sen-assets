@@ -13,7 +13,7 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
   const [dstAddress, setDstAddress] = useState('')
   const { mint, decimals } = useMintAccount(accountAddr)
   const [loading, setLoading] = useState(false)
-  const [amount, setAmount] = useState('0')
+  const [amount, setAmount] = useState('')
 
   const getDstAssociatedAddr = async (): Promise<string | undefined> => {
     const { splt, wallet } = window.sentre
@@ -50,6 +50,8 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
         dstAssociatedAddr,
         wallet,
       )
+      setAmount('')
+      setDstAddress('')
       return notifySuccess('Transfer', txId)
     } catch (er) {
       notifyError(er)
@@ -72,7 +74,7 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
           onClick={transfer}
           block
           loading={loading}
-          disabled={!Number(amount)}
+          disabled={!Number(amount) || !account.isAddress(dstAddress)}
         >
           Transfer
         </Button>
