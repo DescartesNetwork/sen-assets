@@ -3,7 +3,7 @@ import moment from 'moment'
 import { Space, Typography } from 'antd'
 import NetworkAvatar from 'app/components/network/networkAvatar'
 import ColumAction from './columnAction'
-import HistoryStatus from './status'
+import HistoryStatus from './columnStatus'
 import NetworkName from 'app/components/network/networkName'
 
 import { shortenAddress } from 'shared/util'
