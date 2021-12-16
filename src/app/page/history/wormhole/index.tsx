@@ -12,7 +12,7 @@ import { notifyError } from 'app/helper'
 const ROW_PER_PAGE = 4
 
 const WormholeHistory = () => {
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const dispatch = useDispatch<AppDispatch>()
   const {
     wohHistory,
@@ -24,10 +24,10 @@ const WormholeHistory = () => {
   const fetchBridgeHistory = useCallback(async () => {
     if (!sourceWalletAddress) return
     try {
+      setIsLoading(true)
       await dispatch(fetchWohHistory({ address: sourceWalletAddress })).unwrap()
     } catch (er) {
       notifyError(er)
-      console.log('er', er)
     } finally {
       setIsLoading(false)
     }
@@ -35,9 +35,6 @@ const WormholeHistory = () => {
 
   useEffect(() => {
     fetchBridgeHistory()
-    return () => {
-      setIsLoading(true)
-    }
   }, [fetchBridgeHistory])
 
   const onHandleViewMore = () => setAmountRow(amountRow + ROW_PER_PAGE)
