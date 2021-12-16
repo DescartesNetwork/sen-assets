@@ -25,7 +25,7 @@ const AccountCard = ({
       onClick={() => onClick(accountAddr)}
     >
       <Row>
-        <Col span={12}>
+        <Col span={13}>
           {/* Token Info */}
           <Space>
             <MintAvatar mintAddress={mint} size={32} />
@@ -40,8 +40,13 @@ const AccountCard = ({
           </Space>
         </Col>
         {/* Balance */}
-        <Col flex="auto" style={{ height: '100%' }}>
-          <Space direction="vertical" size={0} align="start">
+        <Col span={5} style={{ height: '100%' }}>
+          <Space
+            direction="vertical"
+            size={0}
+            align="end"
+            style={{ width: '100%' }}
+          >
             <Typography.Text>
               <Balance accountAddr={accountAddr} />
             </Typography.Text>
@@ -51,8 +56,13 @@ const AccountCard = ({
           </Space>
         </Col>
         {/* Token Price */}
-        <Col>
-          <Space direction="vertical" size={0} align="end">
+        <Col span={6}>
+          <Space
+            direction="vertical"
+            size={0}
+            align="end"
+            style={{ width: '100%' }}
+          >
             <Typography.Text>
               <Space size={2}>
                 <PriceIndicator mintAddress={mint} colorized />

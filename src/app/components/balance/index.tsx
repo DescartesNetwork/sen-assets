@@ -10,7 +10,7 @@ const Balance = ({
   inUSD = false,
   autoHidden = false,
   format = '0,0.[00]',
-  maxLength,
+  maxLength = 6,
   sortFormat = '0,0.[00]a',
 }: {
   accountAddr: string
@@ -25,12 +25,12 @@ const Balance = ({
 
   const balanceDisplay = useMemo(() => {
     let balance = Number(utils.undecimalize(amount, decimals))
-    let wrapFormat = format
-    if (maxLength && String(balance).length > maxLength) wrapFormat = sortFormat
-
     if (inUSD) balance = Number(balance) * cgkData.price
     const prefix = inUSD ? '$' : ''
-    return prefix + numeric(balance).format(wrapFormat)
+    let balanceUI = numeric(balance).format(format)
+    if (balanceUI.replace(/\D/g, '').length > maxLength)
+      balanceUI = numeric(balance).format(sortFormat)
+    return prefix + balanceUI
   }, [amount, cgkData.price, decimals, format, inUSD, maxLength, sortFormat])
 
   if (autoHidden && !cgkData.price) return <span>--</span>

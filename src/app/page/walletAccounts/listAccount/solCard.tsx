@@ -1,5 +1,4 @@
 import { Row, Col, Card, Tooltip, Divider, Space, Typography } from 'antd'
-import Price, { PriceChange, PriceIndicator } from 'app/components/price'
 import Balance from 'app/components/balance'
 import { MintAvatar } from 'app/shared/components/mint'
 
@@ -10,7 +9,6 @@ import { SOL_ADDRESS } from 'app/constant/sol'
 const SolCard = ({
   onClick = () => {},
   active = false,
-  price = true,
 }: {
   onClick?: (address: string) => void
   active?: boolean
@@ -45,17 +43,6 @@ const SolCard = ({
             </Typography.Text>
           </Space>
         </Col>
-        {price && (
-          <Col>
-            <PriceIndicator mintAddress={SOL_ADDRESS} colorized />
-            <Space>
-              <PriceChange mintAddress={SOL_ADDRESS} colorized />
-              <Typography.Text type="secondary">
-                <Price mintAddress={SOL_ADDRESS} />
-              </Typography.Text>
-            </Space>
-          </Col>
-        )}
       </Row>
     </Card>
   )
