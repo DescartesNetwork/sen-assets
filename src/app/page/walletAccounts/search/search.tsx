@@ -28,10 +28,10 @@ const Search = ({
     async (account: AccountData) => {
       const { mint, amount } = account
       if (!amount && hiddenZeros) return false
-      for (const pool of Object.values(pools))
-        if (pool.mint_lpt === mint) return true
       const mintData = await tokenProvider.findByAddress(mint)
       if (mintData) return true
+      for (const pool of Object.values(pools))
+        if (pool.mint_lpt === mint) return true
       return !hiddenUnknownTokens
     },
     [hiddenUnknownTokens, hiddenZeros, pools, tokenProvider],
