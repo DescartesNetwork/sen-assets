@@ -14,7 +14,6 @@ const SelectMintInput = () => {
   )
 
   const { amount: maxAmount, symbol } = sourceTokens[tokenAddress] || {}
-  console.log('maxAmount', maxAmount)
   const onChange = (amount: string) => dispatch(setSourceToken({ amount }))
 
   return (

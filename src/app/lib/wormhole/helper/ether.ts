@@ -226,7 +226,6 @@ export const fetchTransactions = async (): Promise<TransactionEtherInfo[]> => {
         toBlock,
       },
       function (error: any, events: any) {
-        console.log(events)
       },
     )
     for (let i = 0; i < tempTransactions.length; i++) {
@@ -238,7 +237,6 @@ export const fetchTransactions = async (): Promise<TransactionEtherInfo[]> => {
       if (receipient === solCurrentReceipient) {
         const value = await web3Http.eth.getTransaction(tempTransactions[i].transactionHash)
         const etherAddress = await window.wormhole.sourceWallet.ether?.getAddress()
-        console.log(value.from, etherAddress, value.from.toLowerCase() === etherAddress)
         if (value.from.toLowerCase() === etherAddress) {
           transactions.push(value)
         }
