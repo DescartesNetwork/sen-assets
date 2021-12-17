@@ -19,7 +19,7 @@ import {
   getEtherContext,
   getSolContext,
 } from '../context'
-import { ABI_BRIDGE, ABI_TOKEN_IMPLEMENTATION } from 'app/lib/wormhole/constant/abis'
+import { ABI_TOKEN_IMPLEMENTATION } from 'app/lib/wormhole/constant/abis'
 import { Moralis } from './moralis'
 import { DataLoader } from 'shared/dataloader'
 import { getEmitterAddressEth } from '@certusone/wormhole-sdk'
@@ -27,7 +27,6 @@ import { getSignedVAA } from '@certusone/wormhole-sdk'
 import { getForeignAssetSolana } from '@certusone/wormhole-sdk'
 import { getAssociatedAddress } from './utils'
 import { web3Http, web3WormholeContract } from 'app/lib/etherWallet/web3Config'
-import { ABI_IMPLEMENTATION } from '../constant/abis'
 
 const abiDecoder = require('abi-decoder')
 
@@ -81,7 +80,6 @@ export const fetchEtherSolHistory = async (
 ): Promise<TransferState[]> => {
   const history: TransferState[] = []
   let transactions = await fetchTransactions()
-  console.log(transactions)
   const transferData = await Promise.all(
     transactions.map(async (trans) => {
       const transferState = await createTransferState(trans)
@@ -108,7 +106,7 @@ const parseTransParam = async (trans: TransactionEtherInfo) : Promise<parsedTran
   return {
     amount,
     token: tokenAddr,
-    targetChain: Number(targetChainInput)
+    targetChain: Number(targetChainInput),
   }
 }
 
@@ -184,19 +182,6 @@ export const restoreEther = async (
   }
   return cloneState
 }
-
-// const checkCurentSolAddress = async (
-//   transParams: { name: string; type: string; value: string }[],
-//   tokenAddr: string,
-// ): Promise<boolean> => {
-//   if (transParams.length !== 6) return false
-//   const solAddr = await DataLoader.load(
-//     'getSolAssociatedAddress' + tokenAddr,
-//     () => getSolReceipient(tokenAddr),
-//   )
-  
-//   return transParams[3].value === solAddr
-// }
 
 const getSolReceipient = async (tokenEtherAddr: string) => {
   const wrapTokenAddr = await getWrappedMintAddress(tokenEtherAddr)

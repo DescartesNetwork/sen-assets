@@ -1,8 +1,6 @@
-import { ABI_TOKEN_IMPLEMENTATION } from '../wormhole/constant/abis'
 import { ABI_IMPLEMENTATION } from '../wormhole/constant/abis/implementation'
 import {
   ETH_BRIDGE_ADDRESS,
-  ETH_TOKEN_BRIDGE_ADDRESS,
   INFURA_API_HTTP_URL,
   INFURA_API_WSS_URL,
 } from '../wormhole/constant/ethConfig'
@@ -23,7 +21,4 @@ export const web3Wss = new Web3(
 export const web3WormholeContract = new web3Wss.eth.Contract(
   ABI_IMPLEMENTATION,
   ETH_BRIDGE_ADDRESS[getEtherNetwork()],
-  // {
-  //   from: ETH_TOKEN_BRIDGE_ADDRESS[getEtherNetwork()],
-  // },
 )
