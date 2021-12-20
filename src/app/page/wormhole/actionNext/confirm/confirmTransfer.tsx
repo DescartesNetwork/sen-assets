@@ -60,7 +60,7 @@ const ConfirmAction = ({
       return onClose(false)
     } catch (er) {
       notifyError(er)
-      await dispatch(setProcess({ id: '' }))
+      dispatch(clearProcess())
     } finally {
       setWaiting(false)
     }

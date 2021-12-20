@@ -116,24 +116,10 @@ export const setSourceToken = createAsyncThunk<
 
 export const setProcess = createAsyncThunk<
   State,
-  { id?: string },
+  { id: string },
   { state: { wormhole: State } }
 >(`${NAME}/setWormholeProcess`, async ({ id }, { getState }) => {
   const { wormhole } = getState()
-  const filterToken: Record<string, WohTokenInfo> = {}
-  // clear process
-  if (!id) {
-    for (const token of Object.values(wormhole.sourceTokens)) {
-      if (!!token.amount) filterToken[token.address] = { ...token }
-    }
-    const defaultToken = Object.values(filterToken)[0]?.address || ''
-    return {
-      ...wormhole,
-      processId: id || '',
-      sourceTokens: filterToken,
-      tokenAddress: defaultToken,
-    }
-  }
   return {
     ...wormhole,
     processId: id,
@@ -172,12 +158,27 @@ export const setVisibleProcess = createAsyncThunk<
   return { visible }
 })
 
-export const clearProcess = createAsyncThunk(
-  `${NAME}/clearProcess`,
-  async () => {
-    return { visible: false, amount: '', processId: '' }
-  },
-)
+export const clearProcess = createAsyncThunk<
+  Partial<State>,
+  void,
+  { state: { wormhole: State } }
+>(`${NAME}/clearProcess`, async (_, { getState }) => {
+  const { wormhole } = getState()
+  const filterToken: Record<string, WohTokenInfo> = {}
+  // clear process
+  for (const token of Object.values(wormhole.sourceTokens)) {
+    if (!!token.amount) filterToken[token.address] = { ...token }
+  }
+  const defaultToken = Object.values(filterToken)[0]?.address || ''
+
+  return {
+    visible: false,
+    amount: '',
+    processId: '',
+    tokenAddress: defaultToken,
+    sourceTokens: filterToken,
+  }
+})
 
 // export const clearProcessRetry = createAsyncThunk(
 //   `${NAME}/clearProcessRetry`,

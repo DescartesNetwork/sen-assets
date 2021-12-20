@@ -6,6 +6,9 @@ import {
 } from '@certusone/wormhole-sdk'
 import { account, utils } from '@senswap/sen-js'
 import { ethers } from 'ethers'
+import { getEmitterAddressEth } from '@certusone/wormhole-sdk'
+import { getSignedVAA } from '@certusone/wormhole-sdk'
+import { getForeignAssetSolana } from '@certusone/wormhole-sdk'
 
 import {
   StepTransfer,
@@ -22,9 +25,6 @@ import {
 import { ABI_TOKEN_IMPLEMENTATION } from 'app/lib/wormhole/constant/abis'
 import { Moralis } from './moralis'
 import { DataLoader } from 'shared/dataloader'
-import { getEmitterAddressEth } from '@certusone/wormhole-sdk'
-import { getSignedVAA } from '@certusone/wormhole-sdk'
-import { getForeignAssetSolana } from '@certusone/wormhole-sdk'
 import { getAssociatedAddress } from './utils'
 import { web3Http, web3WormholeContract } from 'app/lib/etherWallet/web3Config'
 
@@ -33,7 +33,7 @@ const abiDecoder = require('abi-decoder')
 type parsedTransaction = {
   targetChain: number
   amount: string
-  token: string,
+  token: string
 }
 type transParam = { name: string; type: string; value: string }
 
@@ -51,13 +51,6 @@ export const fetchTokenEther = async (
     tokens.push(token)
   }
   return tokens
-}
-
-export const fetchTransactionEtherAddress = async (
-  address: string,
-): Promise<TransactionEtherInfo[]> => {
-  const data = Moralis.fetchTransactions(address)
-  return data
 }
 
 export const fetchEtherTokenInfo = async (
@@ -79,7 +72,7 @@ export const fetchEtherSolHistory = async (
   address: string,
 ): Promise<TransferState[]> => {
   const history: TransferState[] = []
-  let transactions = await fetchTransactions()
+  let transactions = await fetchTransactionEtherAddress()
   const transferData = await Promise.all(
     transactions.map(async (trans) => {
       const transferState = await createTransferState(trans)
@@ -92,10 +85,11 @@ export const fetchEtherSolHistory = async (
   return history
 }
 
-const parseTransParam = async (trans: TransactionEtherInfo) : Promise<parsedTransaction | undefined> => {
+const parseTransParam = async (
+  trans: TransactionEtherInfo,
+): Promise<parsedTransaction | undefined> => {
   abiDecoder.addABI(ABI_TOKEN_IMPLEMENTATION)
-  const transParams: transParam[] =
-    abiDecoder.decodeMethod(trans.input)?.params
+  const transParams: transParam[] = abiDecoder.decodeMethod(trans.input)?.params
   if (!transParams) return
   // parse token
   const tokenAddr = transParams[0]?.value
@@ -212,10 +206,12 @@ const getWrappedMintAddress = async (tokenEtherAddr: string) => {
   return wrappedMintAddress
 }
 
-export const fetchTransactions = async (): Promise<TransactionEtherInfo[]> => {
+export const fetchTransactionEtherAddress = async (): Promise<
+  TransactionEtherInfo[]
+> => {
   const currentBlockNumber = await web3Http.eth.getBlockNumber()
   let fromBlock = currentBlockNumber - 6371
-  let toBlock : string | number = 'latest'
+  let toBlock: string | number = 'latest'
   let count = 0
   const transactions = []
   while (transactions.length < 5 && count < 30) {
@@ -225,8 +221,7 @@ export const fetchTransactions = async (): Promise<TransactionEtherInfo[]> => {
         fromBlock,
         toBlock,
       },
-      function (error: any, events: any) {
-      },
+      function (error: any, events: any) {},
     )
     for (let i = 0; i < tempTransactions.length; i++) {
       const tokenEtherAddr = `0x${tempTransactions[i].raw.data.slice(412, 452)}`
@@ -235,8 +230,11 @@ export const fetchTransactions = async (): Promise<TransactionEtherInfo[]> => {
       const solCurrentReceipient = await getSolReceipient(tokenEtherAddr)
       if (transactions.length >= 5) break
       if (receipient === solCurrentReceipient) {
-        const value = await web3Http.eth.getTransaction(tempTransactions[i].transactionHash)
-        const etherAddress = await window.wormhole.sourceWallet.ether?.getAddress()
+        const value = await web3Http.eth.getTransaction(
+          tempTransactions[i].transactionHash,
+        )
+        const etherAddress =
+          await window.wormhole.sourceWallet.ether?.getAddress()
         if (value.from.toLowerCase() === etherAddress) {
           transactions.push(value)
         }
@@ -245,7 +243,7 @@ export const fetchTransactions = async (): Promise<TransactionEtherInfo[]> => {
     if (transactions.length < 5) {
       toBlock = fromBlock
       fromBlock -= 6371
-      count ++
+      count++
     }
   }
   return transactions

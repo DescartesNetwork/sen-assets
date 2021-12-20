@@ -21,12 +21,11 @@ import {
   WormholeStatus,
 } from 'app/constant/types/wormhole'
 import { updateWohHistory } from 'app/model/wohHistory.controller'
+import { fetchEtherTokenInfo } from 'app/lib/wormhole/helper/ether'
 
 const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const { processId, sourceTokens, tokenAddress } = useSelector(
-    (state: AppState) => state.wormhole,
-  )
+  const { processId } = useSelector((state: AppState) => state.wormhole)
   const { context, transferData } = transferState
 
   const status = useMemo((): WormholeStatus => {
@@ -50,7 +49,9 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
       await dispatch(setProcess({ id: context.id })).unwrap()
       //Transfer
       const { sourceWallet, targetWallet } = window.wormhole
-      const tokenTransfer = sourceTokens[tokenAddress]
+      const tokenTransfer = await fetchEtherTokenInfo(
+        transferState.context.tokenInfo.address,
+      )
       if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
         throw new Error('Login fist')
 
@@ -69,7 +70,6 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
       dispatch(clearProcess())
     } catch (er) {
       notifyError(er)
-      await dispatch(setProcess({ id: '' }))
       dispatch(clearProcess())
     }
   }
