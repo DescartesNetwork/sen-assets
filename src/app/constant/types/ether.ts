@@ -1,2 +1,1 @@
-export const MAINNET_ETHER_ADDRESS_PREFIX = '0x1'
-export const GOERLI_ETHER_ADDRESS_PREFIX = '0x5'
+

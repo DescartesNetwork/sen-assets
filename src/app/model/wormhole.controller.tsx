@@ -180,14 +180,6 @@ export const clearProcess = createAsyncThunk<
   }
 })
 
-// export const clearProcessRetry = createAsyncThunk(
-//   `${NAME}/clearProcessRetry`,
-//   async ({ id }, { getState }) => {
-//     const { wormhole } = getState()
-//     return { visible: false, amount: '', processId: '' }
-//   },
-// )
-
 /**
  * Usual procedure
  */
