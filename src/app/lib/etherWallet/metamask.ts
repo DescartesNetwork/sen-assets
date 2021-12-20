@@ -8,7 +8,7 @@ import { getEtherNetwork } from '../wormhole/helper/utils'
 import {
   GOERLI_ETHER_ADDRESS_PREFIX,
   MAINNET_ETHER_ADDRESS_PREFIX,
-} from 'app/constant/types/ether'
+} from '../wormhole/constant/ethConfig'
 
 class MetamaskWallet implements IEtherWallet {
   static walletType = 'MetaMask'
