@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from 'react'
+import { utils } from '@senswap/sen-js'
 
 import { Skeleton, Typography } from 'antd'
 
 import { fetchCGK } from 'shared/helper'
 import { numeric } from 'shared/util'
 import { useAccount, useMint, useWallet } from 'senhub/providers'
-import { utils } from '@senswap/sen-js'
 
 const Balance = ({ hidden = false }: { hidden?: boolean }) => {
   const { accounts } = useAccount()
@@ -21,7 +21,7 @@ const Balance = ({ hidden = false }: { hidden?: boolean }) => {
     // Calculate SOL
     const cgkData = await fetchCGK('solana')
     const balance = numeric(utils.undecimalize(lamports, 9))
-    usd = usd + Number(balance) * (cgkData?.price || 0)
+    usd += Number(balance) * (cgkData?.price || 0)
 
     // Calculate mints
     for (const accountAddress of Object.keys(accounts)) {
@@ -31,9 +31,11 @@ const Balance = ({ hidden = false }: { hidden?: boolean }) => {
       const { extensions, decimals } = tokenInfor
       const ticket = extensions?.coingeckoId
       if (!ticket) continue
-      const price = (await fetchCGK(ticket)).price
-
-      usd = usd + Number(utils.undecimalize(amount, decimals)) * price
+      const cgkData = await fetchCGK(ticket)
+      const { price } = cgkData
+      const accountBalance =
+        Number(utils.undecimalize(amount, decimals)) * price
+      usd += accountBalance
     }
     return setUsd(usd)
   }, [lamports, accounts, tokenProvider])
