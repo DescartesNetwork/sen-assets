@@ -1,9 +1,14 @@
 import {
   CHAIN_ID_SOLANA,
   getIsTransferCompletedSolana,
+  getOriginalAssetEth,
   parseSequenceFromLogEth,
 } from '@certusone/wormhole-sdk'
-import { utils } from '@senswap/sen-js'
+import { account, utils } from '@senswap/sen-js'
+import { ethers } from 'ethers'
+import { getEmitterAddressEth } from '@certusone/wormhole-sdk'
+import { getSignedVAA } from '@certusone/wormhole-sdk'
+import { getForeignAssetSolana } from '@certusone/wormhole-sdk'
 
 import {
   StepTransfer,
@@ -11,22 +16,27 @@ import {
   TransactionEtherInfo,
   TransferData,
   TransferState,
+  RawEtherTransaction,
 } from 'app/constant/types/wormhole'
-import { createEtherSolContext, getEtherContext } from '../context'
-import { ABI_FAU } from 'app/constant/abis'
+import {
+  createEtherSolContext,
+  getEtherContext,
+  getSolContext,
+} from '../context'
+import { ABI_TOKEN_IMPLEMENTATION } from 'app/lib/wormhole/constant/abis'
 import { Moralis } from './moralis'
 import { DataLoader } from 'shared/dataloader'
-import { web3Http } from 'app/lib/etherWallet/web3Config'
-import { getEmitterAddressEth } from '@certusone/wormhole-sdk'
-import { getSignedVAA } from '@certusone/wormhole-sdk'
+import { getAssociatedAddress } from './utils'
+import { web3Http, web3WormholeContract } from 'app/lib/etherWallet/web3Config'
 
 const abiDecoder = require('abi-decoder')
 
-type TransParam = {
+type ParsedTransaction = {
   targetChain: number
   amount: string
   token: string
 }
+type TransParam = { name: string; type: string; value: string }
 
 export const fetchTokenEther = async (
   address: string,
@@ -42,13 +52,6 @@ export const fetchTokenEther = async (
     tokens.push(token)
   }
   return tokens
-}
-
-export const fetchTransactionEtherAddress = async (
-  address: string,
-): Promise<TransactionEtherInfo[]> => {
-  const data = Moralis.fetchTransactions(address)
-  return data
 }
 
 export const fetchEtherTokenInfo = async (
@@ -69,12 +72,10 @@ export const fetchEtherTokenInfo = async (
 export const fetchEtherSolHistory = async (
   address: string,
 ): Promise<TransferState[]> => {
-  const etherContext = getEtherContext()
   const history: TransferState[] = []
   let transactions = await fetchTransactionEtherAddress(address)
   const transferData = await Promise.all(
     transactions.map(async (trans) => {
-      if (trans.to_address !== etherContext.tokenBridgeAddress) return
       const transferState = await createTransferState(trans)
       return transferState
     }),
@@ -85,17 +86,15 @@ export const fetchEtherSolHistory = async (
   return history
 }
 
-const parseTransParam = (
+const parseTransParam = async (
   trans: TransactionEtherInfo,
-): TransParam | undefined => {
-  abiDecoder.addABI(ABI_FAU)
-  const transParams: { name: string; type: string; value: string }[] =
-    abiDecoder.decodeMethod(trans.input)?.params
+): Promise<ParsedTransaction | undefined> => {
+  abiDecoder.addABI(ABI_TOKEN_IMPLEMENTATION)
+  const transParams: TransParam[] = abiDecoder.decodeMethod(trans.input)?.params
   if (!transParams) return
   // parse token
   const tokenAddr = transParams[0]?.value
   if (!tokenAddr) return
-  // parse recipientChain
   const amount = transParams[1]?.value
   const targetChainInput = transParams[2]?.value
   if (!amount || !targetChainInput) return
@@ -109,21 +108,24 @@ const parseTransParam = (
 export const createTransferState = async (
   trans: TransactionEtherInfo,
 ): Promise<TransferState | undefined> => {
-  const params = parseTransParam(trans)
+  const params = await parseTransParam(trans)
   if (!params || params.targetChain !== CHAIN_ID_SOLANA) return
 
   const tokenInfo = await DataLoader.load(
     'fetchEtherTokenInfo' + params.token,
     () => fetchEtherTokenInfo(params.token),
   )
-  const context = createEtherSolContext(tokenInfo)
-  context.time = new Date(trans.block_timestamp).getTime()
+  const solWallet = await window.sentre.wallet?.getAddress()
+  if (!solWallet) throw new Error('Login fist')
 
+  const context = createEtherSolContext(tokenInfo)
+  const block = await web3Http.eth.getBlock(trans.blockNumber)
+  context.time = new Date(block.timestamp).getTime()
   const transferData: TransferData = {
     nextStep: StepTransfer.Unknown,
     amount: utils.undecimalize(BigInt(params.amount), tokenInfo.decimals),
-    from: trans.from_address,
-    to: '',
+    from: trans.from,
+    to: solWallet,
     emitterAddress: '',
     sequence: '',
     vaaHex: '',
@@ -162,16 +164,95 @@ export const restoreEther = async (
       getEmitterAddressEth(context.srcTokenBridgeAddress),
       sequence,
     )
-    transferData.vaaHex =   Buffer.from(vaaBytes).toString('hex')
+    transferData.vaaHex = Buffer.from(vaaBytes).toString('hex')
     const isRedeemed = await getIsTransferCompletedSolana(
       context.targetTokenBridgeAddress,
       vaaBytes,
       window.sentre.splt.connection,
     )
-    if(isRedeemed) transferData.nextStep = StepTransfer.Finish
+    if (isRedeemed) transferData.nextStep = StepTransfer.Finish
     else transferData.nextStep = StepTransfer.WaitSigned
   } catch (error) {
     transferData.nextStep = StepTransfer.WaitSigned
   }
   return cloneState
+}
+
+const getSolReceipient = async (tokenEtherAddr: string) => {
+  const wrapTokenAddr = await getWrappedMintAddress(tokenEtherAddr)
+  const solWallet = window.sentre.wallet
+  if (!wrapTokenAddr || !solWallet) return null
+  const dstAddress = await getAssociatedAddress(wrapTokenAddr, solWallet)
+  return ethers.utils.hexlify(account.fromAddress(dstAddress).toBuffer())
+}
+
+const getWrappedMintAddress = async (tokenEtherAddr: string) => {
+  const etherWallet = window.wormhole.sourceWallet.ether
+  if (!etherWallet) throw new Error('Login fist')
+  const provider = await etherWallet.getProvider()
+  const etherContext = getEtherContext()
+  const originAsset = await getOriginalAssetEth(
+    etherContext.tokenBridgeAddress,
+    provider,
+    tokenEtherAddr,
+    etherContext.chainId,
+  )
+  const solContext = getSolContext()
+  const wrappedMintAddress = await getForeignAssetSolana(
+    window.sentre.splt.connection,
+    solContext.tokenBridgeAddress,
+    originAsset.chainId,
+    originAsset.assetAddress,
+  )
+  return wrappedMintAddress
+}
+
+export const isTrxWithSol = async (
+  trans: RawEtherTransaction,
+): Promise<boolean> => {
+  const tokenEtherAddr = `0x${trans.raw.data.slice(412, 452)}`
+  const receipient = `0x${trans.raw.data.slice(456, 520)}`
+  if (receipient.length < 66) return false
+  const solCurrentReceipient = await getSolReceipient(tokenEtherAddr)
+  return receipient === solCurrentReceipient
+}
+
+export const fetchTransactionEtherAddress = async (
+  address: string,
+): Promise<TransactionEtherInfo[]> => {
+  const currentBlockNumber = await web3Http.eth.getBlockNumber()
+  let fromBlock = currentBlockNumber - 6371
+  let toBlock: string | number = 'latest'
+  let count = 0
+  const transactions: TransactionEtherInfo[] = []
+  while (transactions.length < 5 && count < 30) {
+    const tempTransactions: RawEtherTransaction[] =
+      await web3WormholeContract.getPastEvents(
+        'LogMessagePublished',
+        {
+          fromBlock,
+          toBlock,
+        },
+        function (error: any, events: any) {},
+      )
+    for (let i = 0; i < tempTransactions.length; i++) {
+      const isTrxSol = await isTrxWithSol(tempTransactions[i])
+      if (transactions.length >= 5) break
+
+      if (isTrxSol === false) continue
+
+      const value = await web3Http.eth.getTransaction(
+        tempTransactions[i].transactionHash,
+      )
+      if (value.from.toLowerCase() === address) {
+        transactions.push(value)
+      }
+    }
+    if (transactions.length < 5) {
+      toBlock = fromBlock
+      fromBlock -= 6371
+      count++
+    }
+  }
+  return transactions
 }

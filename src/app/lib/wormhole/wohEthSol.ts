@@ -51,6 +51,7 @@ class WohEthSol extends WormholeProvider {
       context.tokenInfo.address,
       CHAIN_ID_ETH,
     )
+
     const wrappedMintAddress = await getForeignAssetSolana(
       this.getConnection(),
       context.targetTokenBridgeAddress,

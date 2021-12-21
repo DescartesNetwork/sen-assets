@@ -12,8 +12,8 @@ const SelectMintInput = () => {
   const { sourceTokens, tokenAddress, amount, processId } = useSelector(
     (state: AppState) => state.wormhole,
   )
-  const { amount: maxAmount, symbol } = sourceTokens[tokenAddress] || {}
 
+  const { amount: maxAmount, symbol } = sourceTokens[tokenAddress] || {}
   const onChange = (amount: string) => dispatch(setSourceToken({ amount }))
 
   return (
@@ -45,7 +45,7 @@ const SelectMintInput = () => {
           }
           value={amount}
           onValue={onChange}
-          max={maxAmount}
+          max={maxAmount || '0'}
         />
       </Col>
     </Row>

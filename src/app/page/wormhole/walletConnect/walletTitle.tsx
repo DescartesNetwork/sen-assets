@@ -8,7 +8,7 @@ const WalletTitle = ({ title, label }: { title: string; label: string }) => {
 
   return (
     <Space>
-      <Typography.Text>{label}</Typography.Text>
+      <Typography.Text type="secondary">{label}</Typography.Text>
       <Tooltip
         title={title}
         visible={visible}

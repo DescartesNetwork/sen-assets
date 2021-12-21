@@ -4,11 +4,7 @@ import { WalletInterface } from '@senswap/sen-js'
 
 import { fetchTokenEther } from 'app/lib/wormhole/helper/ether'
 import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
-import {
-  WohTokenInfo,
-  State,
-  TransferState,
-} from 'app/constant/types/wormhole'
+import { WohTokenInfo, State, TransferState } from 'app/constant/types/wormhole'
 
 /**
  * Interface & Utility
@@ -120,11 +116,14 @@ export const setSourceToken = createAsyncThunk<
 
 export const setProcess = createAsyncThunk<
   State,
-  { id?: string },
+  { id: string },
   { state: { wormhole: State } }
 >(`${NAME}/setWormholeProcess`, async ({ id }, { getState }) => {
   const { wormhole } = getState()
-  return { ...wormhole, processId: id || '' }
+  return {
+    ...wormhole,
+    processId: id,
+  }
 })
 
 export const restoreTransfer = createAsyncThunk<
@@ -135,11 +134,17 @@ export const restoreTransfer = createAsyncThunk<
   const { sourceWallet } = window.wormhole
   if (!sourceWallet.ether) throw new Error('Login fist')
   const { wormhole } = getState()
-  const { context, transferData } = transferState
+  const {
+    context: { id, tokenInfo },
+    transferData,
+  } = transferState
   // restore data
-  const dataRestore = { ...wormhole }
-  dataRestore.tokenAddress = context.tokenInfo.address
-  dataRestore.processId = context.id
+  const dataRestore = JSON.parse(JSON.stringify(wormhole))
+  const tokenAddr = tokenInfo.address
+
+  dataRestore.sourceTokens[tokenAddr] = tokenInfo
+  dataRestore.tokenAddress = tokenAddr
+  dataRestore.processId = id
   dataRestore.amount = transferData.amount
   dataRestore.sourceWalletAddress = transferData.from
   dataRestore.targetWalletAddress = transferData.to
@@ -153,12 +158,27 @@ export const setVisibleProcess = createAsyncThunk<
   return { visible }
 })
 
-export const clearProcess = createAsyncThunk(
-  `${NAME}/clearProcess`,
-  async () => {
-    return { visible: false, amount: '', processId: '' }
-  },
-)
+export const clearProcess = createAsyncThunk<
+  Partial<State>,
+  void,
+  { state: { wormhole: State } }
+>(`${NAME}/clearProcess`, async (_, { getState }) => {
+  const { wormhole } = getState()
+  const filterToken: Record<string, WohTokenInfo> = {}
+  // clear process
+  for (const token of Object.values(wormhole.sourceTokens)) {
+    if (!!token.amount) filterToken[token.address] = { ...token }
+  }
+  const defaultToken = Object.values(filterToken)[0]?.address || ''
+
+  return {
+    visible: false,
+    amount: '',
+    processId: '',
+    tokenAddress: defaultToken,
+    sourceTokens: filterToken,
+  }
+})
 
 /**
  * Usual procedure
