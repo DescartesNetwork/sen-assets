@@ -1,31 +1,46 @@
-import { useCallback, useEffect, useState, useMemo } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { Skeleton, Typography } from 'antd'
 
 import { fetchCGK } from 'shared/helper'
 import { numeric } from 'shared/util'
-import { useWallet } from 'senhub/providers'
+import { useAccount, useMint, useWallet } from 'senhub/providers'
 import { utils } from '@senswap/sen-js'
 
 const Balance = ({ hidden = false }: { hidden?: boolean }) => {
-  const [cgkData, setCGKData] = useState<CgkData>()
-
+  const { accounts } = useAccount()
+  const { tokenProvider } = useMint()
   const {
     wallet: { lamports },
   } = useWallet()
+  const [usd, setUsd] = useState(0)
 
-  const balance = numeric(utils.undecimalize(lamports, 9)).format('0.[000]')
-  const usd = useMemo(() => {
-    return numeric(Number(balance) * (cgkData?.price || 0)).format('0,0.[000]')
-  }, [balance, cgkData])
+  const getTotalBalance = useCallback(async () => {
+    let usd = 0
 
-  const getCGKData = useCallback(async () => {
+    // Calculate SOL
     const cgkData = await fetchCGK('solana')
-    return setCGKData(cgkData)
-  }, [])
+    const balance = numeric(utils.undecimalize(lamports, 9))
+    usd = usd + Number(balance) * (cgkData?.price || 0)
+
+    // Calculate mints
+    for (const accountAddress of Object.keys(accounts)) {
+      const { mint: mintAddress, amount } = accounts[accountAddress] || {}
+      const tokenInfor = await tokenProvider.findByAddress(mintAddress)
+      if (!tokenInfor) continue
+      const { extensions, decimals } = tokenInfor
+      const ticket = extensions?.coingeckoId
+      if (!ticket) continue
+      const price = (await fetchCGK(ticket)).price
+
+      usd = usd + Number(utils.undecimalize(amount, decimals)) * price
+    }
+    return setUsd(usd)
+  }, [lamports, accounts, tokenProvider])
+
   useEffect(() => {
-    getCGKData()
-  }, [getCGKData])
+    getTotalBalance()
+  }, [getTotalBalance])
 
   return hidden ? (
     <Skeleton.Input
@@ -34,7 +49,9 @@ const Balance = ({ hidden = false }: { hidden?: boolean }) => {
       active
     />
   ) : (
-    <Typography.Text style={{ fontWeight: 700 }}>{`$${usd}`}</Typography.Text>
+    <Typography.Text style={{ fontWeight: 700 }}>{`$${numeric(usd).format(
+      '0,0.[00]',
+    )}`}</Typography.Text>
   )
 }
 
