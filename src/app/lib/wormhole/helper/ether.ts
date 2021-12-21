@@ -16,6 +16,7 @@ import {
   TransactionEtherInfo,
   TransferData,
   TransferState,
+  rawEtherTransaction,
 } from 'app/constant/types/wormhole'
 import {
   createEtherSolContext,
@@ -72,7 +73,7 @@ export const fetchEtherSolHistory = async (
   address: string,
 ): Promise<TransferState[]> => {
   const history: TransferState[] = []
-  let transactions = await fetchTransactionEtherAddress()
+  let transactions = await fetchTransactionEtherAddress(address)
   const transferData = await Promise.all(
     transactions.map(async (trans) => {
       const transferState = await createTransferState(trans)
@@ -206,38 +207,45 @@ const getWrappedMintAddress = async (tokenEtherAddr: string) => {
   return wrappedMintAddress
 }
 
-export const fetchTransactionEtherAddress = async (): Promise<
-  TransactionEtherInfo[]
-> => {
+export const isTrxWithSol = async (
+  trans: rawEtherTransaction,
+): Promise<boolean> => {
+  const tokenEtherAddr = `0x${trans.raw.data.slice(412, 452)}`
+  const receipient = `0x${trans.raw.data.slice(456, 520)}`
+  if (receipient.length < 66) return false
+  const solCurrentReceipient = await getSolReceipient(tokenEtherAddr)
+  return receipient === solCurrentReceipient
+}
+
+export const fetchTransactionEtherAddress = async (
+  address: string,
+): Promise<TransactionEtherInfo[]> => {
   const currentBlockNumber = await web3Http.eth.getBlockNumber()
   let fromBlock = currentBlockNumber - 6371
   let toBlock: string | number = 'latest'
   let count = 0
-  const transactions = []
+  const transactions: TransactionEtherInfo[] = []
   while (transactions.length < 5 && count < 30) {
-    const tempTransactions = await web3WormholeContract.getPastEvents(
-      'LogMessagePublished',
-      {
-        fromBlock,
-        toBlock,
-      },
-      function (error: any, events: any) {},
-    )
+    const tempTransactions: rawEtherTransaction[] =
+      await web3WormholeContract.getPastEvents(
+        'LogMessagePublished',
+        {
+          fromBlock,
+          toBlock,
+        },
+        function (error: any, events: any) {},
+      )
     for (let i = 0; i < tempTransactions.length; i++) {
-      const tokenEtherAddr = `0x${tempTransactions[i].raw.data.slice(412, 452)}`
-      const receipient = `0x${tempTransactions[i].raw.data.slice(456, 520)}`
-      if (receipient.length < 66) continue
-      const solCurrentReceipient = await getSolReceipient(tokenEtherAddr)
+      const isTrxSol = await isTrxWithSol(tempTransactions[i])
       if (transactions.length >= 5) break
-      if (receipient === solCurrentReceipient) {
-        const value = await web3Http.eth.getTransaction(
-          tempTransactions[i].transactionHash,
-        )
-        const etherAddress =
-          await window.wormhole.sourceWallet.ether?.getAddress()
-        if (value.from.toLowerCase() === etherAddress) {
-          transactions.push(value)
-        }
+
+      if (isTrxSol === false) continue
+
+      const value = await web3Http.eth.getTransaction(
+        tempTransactions[i].transactionHash,
+      )
+      if (value.from.toLowerCase() === address) {
+        transactions.push(value)
       }
     }
     if (transactions.length < 5) {

@@ -37,6 +37,39 @@ export type TransactionEtherInfo = {
   value: string
 }
 
+export type rawEtherTransaction = {
+  address: string
+  blockHash: string
+  blockNumber: string
+  event: string
+  id: string
+  logIndex: string
+  raw: rawLog
+  removed: string
+  returnValues: logDetail
+  signature: string
+  transactionHash: string
+  transactionIndex: string
+}
+
+export type rawLog = {
+  data: string
+  topics: string[]
+}
+
+export type logDetail = {
+  0: string
+  1: string
+  2: string
+  3: string
+  4: string
+  consistencyLevel: string
+  nonce: string
+  payload: string
+  sender: string
+  sequence: string
+}
+
 export type InputEtherTransaction = {
   name: string
   params: InputDetail[]
