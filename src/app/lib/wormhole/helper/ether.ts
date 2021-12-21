@@ -31,12 +31,12 @@ import { web3Http, web3WormholeContract } from 'app/lib/etherWallet/web3Config'
 
 const abiDecoder = require('abi-decoder')
 
-type parsedTransaction = {
+type ParsedTransaction = {
   targetChain: number
   amount: string
   token: string
 }
-type transParam = { name: string; type: string; value: string }
+type TransParam = { name: string; type: string; value: string }
 
 export const fetchTokenEther = async (
   address: string,
@@ -88,9 +88,9 @@ export const fetchEtherSolHistory = async (
 
 const parseTransParam = async (
   trans: TransactionEtherInfo,
-): Promise<parsedTransaction | undefined> => {
+): Promise<ParsedTransaction | undefined> => {
   abiDecoder.addABI(ABI_TOKEN_IMPLEMENTATION)
-  const transParams: transParam[] = abiDecoder.decodeMethod(trans.input)?.params
+  const transParams: TransParam[] = abiDecoder.decodeMethod(trans.input)?.params
   if (!transParams) return
   // parse token
   const tokenAddr = transParams[0]?.value
@@ -208,7 +208,7 @@ const getWrappedMintAddress = async (tokenEtherAddr: string) => {
 }
 
 export const isTrxWithSol = async (
-  trans: rawEtherTransaction,
+  trans: RawEtherTransaction,
 ): Promise<boolean> => {
   const tokenEtherAddr = `0x${trans.raw.data.slice(412, 452)}`
   const receipient = `0x${trans.raw.data.slice(456, 520)}`
