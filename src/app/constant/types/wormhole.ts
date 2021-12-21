@@ -37,27 +37,27 @@ export type TransactionEtherInfo = {
   value: string
 }
 
-export type rawEtherTransaction = {
+export type RawEtherTransaction = {
   address: string
   blockHash: string
   blockNumber: string
   event: string
   id: string
   logIndex: string
-  raw: rawLog
+  raw: RawLog
   removed: string
-  returnValues: logDetail
+  returnValues: LogDetail
   signature: string
   transactionHash: string
   transactionIndex: string
 }
 
-export type rawLog = {
+export type RawLog = {
   data: string
   topics: string[]
 }
 
-export type logDetail = {
+export type LogDetail = {
   0: string
   1: string
   2: string

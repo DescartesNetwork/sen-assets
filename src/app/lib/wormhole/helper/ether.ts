@@ -16,7 +16,7 @@ import {
   TransactionEtherInfo,
   TransferData,
   TransferState,
-  rawEtherTransaction,
+  RawEtherTransaction,
 } from 'app/constant/types/wormhole'
 import {
   createEtherSolContext,
@@ -226,7 +226,7 @@ export const fetchTransactionEtherAddress = async (
   let count = 0
   const transactions: TransactionEtherInfo[] = []
   while (transactions.length < 5 && count < 30) {
-    const tempTransactions: rawEtherTransaction[] =
+    const tempTransactions: RawEtherTransaction[] =
       await web3WormholeContract.getPastEvents(
         'LogMessagePublished',
         {
