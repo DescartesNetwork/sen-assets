@@ -245,9 +245,9 @@ export const fetchTransactionEtherAddress = async (
     let isStop = false
     await Promise.all(
       tempTransactions.map(async (tempTransaction) => {
-        const isTrxSol = await isTrxWithSol(tempTransaction)
         if (transactions.length >= 5) isStop = true
         if (isStop) return
+        const isTrxSol = await isTrxWithSol(tempTransaction)
         if (isTrxSol === false) return
 
         const value = await web3Http.eth.getTransaction(
