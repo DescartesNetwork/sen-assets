@@ -26,7 +26,6 @@ import {
 import { ABI_TOKEN_IMPLEMENTATION } from 'app/lib/wormhole/constant/abis'
 import { Moralis } from './moralis'
 import { DataLoader } from 'shared/dataloader'
-import { getAssociatedAddress } from './utils'
 import { web3Http, web3WormholeContract } from 'app/lib/etherWallet/web3Config'
 
 const abiDecoder = require('abi-decoder')
@@ -182,7 +181,12 @@ const getSolReceipient = async (tokenEtherAddr: string) => {
   const wrapTokenAddr = await getWrappedMintAddress(tokenEtherAddr)
   const solWallet = window.sentre.wallet
   if (!wrapTokenAddr || !solWallet) return null
-  const dstAddress = await getAssociatedAddress(wrapTokenAddr, solWallet)
+  const walletAddress = await solWallet.getAddress()
+  const { splt } = window.sentre
+  const dstAddress = await splt.deriveAssociatedAddress(
+    walletAddress,
+    wrapTokenAddr,
+  )
   return ethers.utils.hexlify(account.fromAddress(dstAddress).toBuffer())
 }
 
