@@ -242,19 +242,22 @@ export const fetchTransactionEtherAddress = async (
         },
         function (error: any, events: any) {},
       )
-    for (let i = 0; i < tempTransactions.length; i++) {
-      const isTrxSol = await isTrxWithSol(tempTransactions[i])
-      if (transactions.length >= 5) break
+    let isStop = false
+    await Promise.all(
+      tempTransactions.map(async (tempTransaction) => {
+        const isTrxSol = await isTrxWithSol(tempTransaction)
+        if (transactions.length >= 5) isStop = true
+        if (isStop) return
+        if (isTrxSol === false) return
 
-      if (isTrxSol === false) continue
-
-      const value = await web3Http.eth.getTransaction(
-        tempTransactions[i].transactionHash,
-      )
-      if (value.from.toLowerCase() === address) {
-        transactions.push(value)
-      }
-    }
+        const value = await web3Http.eth.getTransaction(
+          tempTransaction.transactionHash,
+        )
+        if (value.from.toLowerCase() === address) {
+          transactions.push(value)
+        }
+      }),
+    )
     if (transactions.length < 5) {
       toBlock = fromBlock
       fromBlock -= 6371
