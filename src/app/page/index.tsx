@@ -18,7 +18,7 @@ const Page = () => {
   }, [])
 
   return (
-    <Row gutter={[24, 24]}>
+    <Row gutter={[24, 24]} style={{ paddingBottom: 12 }}>
       <Col xl={8} md={12} sm={24}>
         <SenAssets />
       </Col>
