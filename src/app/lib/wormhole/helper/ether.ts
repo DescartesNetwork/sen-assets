@@ -119,7 +119,7 @@ export const createTransferState = async (
 
   const context = createEtherSolContext(tokenInfo)
   const block = await web3Http.eth.getBlock(trans.blockNumber)
-  context.time = new Date(block.timestamp).getTime()
+  context.time = new Date(block.timestamp * 1000).getTime()
   const transferData: TransferData = {
     nextStep: StepTransfer.Unknown,
     amount: utils.undecimalize(BigInt(params.amount), tokenInfo.decimals),

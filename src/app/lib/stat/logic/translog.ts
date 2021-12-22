@@ -30,15 +30,29 @@ export class TransLogService {
   async collect(
     programId: string,
     configs: OptionsFetchSignature,
+    funcFilter?: (transLog: TransLog) => boolean,
   ): Promise<TransLog[]> {
-    const confirmedTrans = await this.solana.fetchTransactions(
-      programId,
-      configs,
-    )
-    const transLogs: Array<TransLog> = []
-    for (const trans of confirmedTrans) {
-      const log = this.parseTransLog(trans)
-      if (log) transLogs.push(log)
+    let { lastSignature, limit } = configs
+    const solana = new Solana()
+    let transLogs: Array<TransLog> = []
+    let lastSignatureTmp = lastSignature
+
+    while (true) {
+      const confirmedTrans: ParsedConfirmedTransaction[] =
+        await solana.fetchTransactions(programId, {
+          ...configs,
+          lastSignature: lastSignatureTmp,
+        })
+
+      for (const trans of confirmedTrans) {
+        lastSignatureTmp = trans.transaction.signatures[0]
+        const log = this.parseTransLog(trans)
+        if (log) transLogs.push(log)
+      }
+
+      if (funcFilter) transLogs = transLogs.filter((trans) => funcFilter(trans))
+      if (!confirmedTrans.length) break
+      if (limit && transLogs.length >= limit) break
     }
     return transLogs
   }

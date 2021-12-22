@@ -2,7 +2,7 @@ import { Button, Space, Typography } from 'antd'
 import StatusTag from '../statusTags'
 import IonIcon from 'shared/antd/ionicon'
 
-import { explorer, shortenAddress } from 'shared/util'
+import { explorer, numeric, shortenAddress } from 'shared/util'
 import { MintSymbol } from 'app/shared/components/mint'
 
 export const TRANSACTION_COLUMNS = [
@@ -52,16 +52,19 @@ export const TRANSACTION_COLUMNS = [
     title: 'AMOUNT',
     key: 'amount',
     dataIndex: 'amount',
-    render: (text: string, record: any) => (
-      <Typography.Text
-        style={{ color: record.isReceive ? '#14E041' : '#D72311' }}
-      >
-        <Space size={4}>
-          {record.isReceive ? `+${text}` : `-${text}`}{' '}
-          <MintSymbol mintAddress={record.mint} />
-        </Space>
-      </Typography.Text>
-    ),
+    render: (text: string, record: any) => {
+      const amountUi = numeric(text).format('0,0.[0000]')
+      return (
+        <Typography.Text
+          style={{ color: record.isReceive ? '#14E041' : '#D72311' }}
+        >
+          <Space size={4}>
+            {record.isReceive ? `+${amountUi}` : `-${amountUi}`}{' '}
+            <MintSymbol mintAddress={record.mint} />
+          </Space>
+        </Typography.Text>
+      )
+    },
   },
   {
     title: 'STATUS',

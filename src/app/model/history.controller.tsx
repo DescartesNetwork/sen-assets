@@ -28,7 +28,7 @@ const initialState: State = {
 }
 
 export const fetchTransactionHistory = createAsyncThunk<
-  { transaction: TransactionTransferHistoryData[] },
+  State,
   { accountAddress: string; lastSignature?: string; isLoadMore: boolean },
   { state: { history: State } }
 >(
