@@ -141,7 +141,7 @@ const Wrap = () => {
   }
 
   return (
-    <Row gutter={[24, 24]}>
+    <Row gutter={[18, 18]}>
       <Col span={24}>
         <Row gutter={[8, 8]}>
           <Col flex="auto">

@@ -4,7 +4,11 @@ import Body from './body'
 
 const Balance = () => {
   return (
-    <Card className="card-page" bodyStyle={{ padding: 0 }}>
+    <Card
+      className="card-page"
+      bodyStyle={{ padding: 0 }}
+      style={{ overflow: 'hidden' }}
+    >
       <Row>
         <Col span={24}>
           <Header />

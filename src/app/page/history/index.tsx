@@ -10,11 +10,11 @@ const History = () => {
       <Row gutter={[24, 24]}>
         <Col span={24}>
           <Tabs>
-            <Tabs.TabPane tab="Wormhole Bridge History" key="Wormhole">
-              <Bridge />
-            </Tabs.TabPane>
             <Tabs.TabPane tab="Transaction History" key="Transaction">
               <Transaction />
+            </Tabs.TabPane>
+            <Tabs.TabPane tab="Wormhole Bridge History" key="Wormhole">
+              <Bridge />
             </Tabs.TabPane>
           </Tabs>
         </Col>
