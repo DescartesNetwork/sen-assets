@@ -22,37 +22,48 @@ import { SOL_ADDRESS, SOL_DECIMALS } from '../constants/sol'
 type InstructionData = ParsedInstruction | PartiallyDecodedInstruction
 
 export class TransLogService {
-  solana: Solana
-  constructor() {
-    this.solana = new Solana()
+  protected parseAction = (transLog: TransLog) => {
+    return ''
   }
 
   async collect(
     programId: string,
     configs: OptionsFetchSignature,
-    funcFilter?: (transLog: TransLog) => boolean,
+    filterTransLog?: (transLog: TransLog) => Promise<boolean>,
   ): Promise<TransLog[]> {
     let { lastSignature, limit } = configs
     const solana = new Solana()
     let transLogs: Array<TransLog> = []
     let lastSignatureTmp = lastSignature
-
-    while (true) {
+    let isStop = false
+    let smartLimit = 100
+    while (!isStop) {
       const confirmedTrans: ParsedConfirmedTransaction[] =
         await solana.fetchTransactions(programId, {
           ...configs,
           lastSignature: lastSignatureTmp,
+          limit: smartLimit,
         })
 
       for (const trans of confirmedTrans) {
         lastSignatureTmp = trans.transaction.signatures[0]
         const log = this.parseTransLog(trans)
-        if (log) transLogs.push(log)
-      }
+        if (!log) continue
+        // filter
+        if (filterTransLog) {
+          const checked = await filterTransLog(log)
+          if (!checked) continue
+        }
+        transLogs.push(log)
 
-      if (funcFilter) transLogs = transLogs.filter((trans) => funcFilter(trans))
+        if (limit && transLogs.length >= limit) {
+          isStop = true
+          break
+        }
+      }
+      if (limit) smartLimit = (smartLimit * limit) / (transLogs.length || 1)
       if (!confirmedTrans.length) break
-      if (limit && transLogs.length >= limit) break
+      if (isStop) break
     }
     return transLogs
   }
@@ -62,15 +73,9 @@ export class TransLogService {
   ): TransLog | undefined {
     const { blockTime, meta, transaction } = confirmedTrans
     if (!blockTime || !meta) return
-    const {
-      postTokenBalances,
-      preTokenBalances,
-      err,
-      postBalances,
-      preBalances,
-    } = meta
+    const { postTokenBalances, preTokenBalances, postBalances, preBalances } =
+      meta
     const { signatures, message } = transaction
-    if (err !== null) return
 
     const innerInstructionData = meta.innerInstructions?.[0]?.instructions || []
     const instructionData = message.instructions[0] || []
@@ -90,11 +95,14 @@ export class TransLogService {
     )
     // system program transaction
     if (this.isParsedInstruction(instructionData)) {
-      transLog.programTransfer = this.parseAction([instructionData], mapAccount)
+      transLog.programTransfer = this.parseListActionTransfer(
+        [instructionData],
+        mapAccount,
+      )
       return transLog
     }
     // smart contract transaction
-    transLog.actionTransfers = this.parseAction(
+    transLog.actionTransfers = this.parseListActionTransfer(
       innerInstructionData,
       mapAccount,
     )
@@ -102,6 +110,9 @@ export class TransLogService {
       programId: instructionData.programId.toString(),
       data: (instructionData as PartiallyDecodedInstruction).data,
     }
+    transLog.actionType = ''
+    transLog.actionType = this.parseAction(transLog)
+
     return transLog
   }
 
@@ -109,7 +120,7 @@ export class TransLogService {
     return (instructionData as ParsedInstruction).parsed !== undefined
   }
 
-  private parseAction(
+  private parseListActionTransfer(
     actions: InstructionData[],
     mapAccount: Map<string, ActionInfo>,
   ) {
