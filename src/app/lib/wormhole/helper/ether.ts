@@ -178,7 +178,10 @@ export const restoreEther = async (
 }
 
 const getSolReceipient = async (tokenEtherAddr: string) => {
-  const wrapTokenAddr = await getWrappedMintAddress(tokenEtherAddr)
+  const wrapTokenAddr = await DataLoader.load(
+    'getWrappedMintAddress' + tokenEtherAddr,
+    () => getWrappedMintAddress(tokenEtherAddr),
+  )
   const solWallet = window.sentre.wallet
   if (!wrapTokenAddr || !solWallet) return null
   const walletAddress = await solWallet.getAddress()
