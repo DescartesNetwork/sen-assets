@@ -54,7 +54,7 @@ const parseTransLog = async (accountAddress: string, transLog: TransLog) => {
   if (source.address !== associatedAddr && dst.address !== associatedAddr)
     return
   const historyItem: TransactionTransferHistoryData = {
-    time: moment(transLog.blockTime * 1000).format('DD MMM, YYYY HH:mm'),
+    time: moment(transLog.blockTime * 1000).format('MMM DD, YYYY HH:mm'),
     key: transLog.signature,
     transactionId: transLog.signature,
     amount: Number(
