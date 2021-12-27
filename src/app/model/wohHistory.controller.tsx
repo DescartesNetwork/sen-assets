@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
-import { TransferState } from 'app/constant/types/wormhole'
+import { RawEtherTransaction, TransferState } from 'app/constant/types/wormhole'
 import {
   fetchEtherSolHistory,
   restoreEther,
@@ -12,6 +12,13 @@ import {
 
 export type State = Record<string, TransferState>
 
+export type FetchWormholeParams = {
+  historyState: State
+  leftTransaction: RawEtherTransaction[]
+  fromBlock: number
+  count: number
+}
+
 const NAME = 'wohHistory'
 const initialState: State = {}
 
@@ -19,18 +26,32 @@ const initialState: State = {}
  * Store constructor
  */
 
-export const fetchWohHistory = createAsyncThunk<State, { address: string }>(
+export const fetchWohHistory = createAsyncThunk<
+  FetchWormholeParams,
+  {
+    address: string
+    leftTrx?: RawEtherTransaction[]
+    fromBLK?: number
+    fetchedDays?: number
+  }
+>(
   `${NAME}/fetchWohHistory`,
-  async ({ address }) => {
-    let etherHistory = await fetchEtherSolHistory(address)
-    etherHistory = etherHistory.sort(function (a, b) {
+  async ({
+    address,
+    leftTrx,
+    fromBLK,
+    fetchedDays,
+  }): Promise<FetchWormholeParams> => {
+    let { history, fromBlock, leftTransaction, count } =
+      await fetchEtherSolHistory(address, leftTrx, fromBLK, fetchedDays)
+    history = history.sort(function (a, b) {
       return b.context.time - a.context.time
     })
-    const history: State = {}
-    for (const data of etherHistory) {
-      history[data.context.id] = data
+    const historyState: State = {}
+    for (const data of history) {
+      historyState[data.context.id] = data
     }
-    return history
+    return { historyState, fromBlock, leftTransaction, count }
   },
 )
 
@@ -70,7 +91,7 @@ const slice = createSlice({
       )
       .addCase(
         fetchWohHistory.fulfilled,
-        (state, { payload }) => void Object.assign(state, payload),
+        (state, { payload }) => void Object.assign(state, payload.historyState),
       )
       .addCase(
         restoreWohHistory.fulfilled,

@@ -38,7 +38,7 @@ const ColumnStatus = ({ data }: { data: TransferState }) => {
         }}
         color="processing"
       >
-        checking
+        Checking
       </Tag>
     )
   return <StatusTag tag={status} />
