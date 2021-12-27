@@ -16,7 +16,7 @@ export const WORMHOLE_COLUMNS = [
     render: (context: WormholeContext) => {
       return (
         <Typography.Text>
-          {moment(context.time).format('DD MMM, YYYY hh:mm')}
+          {moment(context.time).format('DD MMM, YYYY HH:mm')}
         </Typography.Text>
       )
     },
