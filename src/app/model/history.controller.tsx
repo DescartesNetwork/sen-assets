@@ -13,7 +13,7 @@ import { TransLog } from 'app/lib/stat/entities/trans-log'
  * Interface & Utility
  */
 
-const LIMIT_TRANSACTION = 15
+const LIMIT_TRANSACTION = 9
 
 /**
  * Store constructor

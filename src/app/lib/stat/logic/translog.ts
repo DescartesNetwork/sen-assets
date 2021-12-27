@@ -36,7 +36,7 @@ export class TransLogService {
     let transLogs: Array<TransLog> = []
     let lastSignatureTmp = lastSignature
     let isStop = false
-    let smartLimit = 100
+    let smartLimit = 200
     while (!isStop) {
       const confirmedTrans: ParsedConfirmedTransaction[] =
         await solana.fetchTransactions(programId, {
@@ -61,7 +61,6 @@ export class TransLogService {
           break
         }
       }
-      if (limit) smartLimit = (smartLimit * limit) / (transLogs.length || 1)
       if (!confirmedTrans.length) break
       if (isStop) break
     }
