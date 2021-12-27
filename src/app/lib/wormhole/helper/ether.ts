@@ -251,7 +251,7 @@ export const fetchTransactionEtherAddress = async (
   let toBlock: string | number = 'latest'
   let count: number = fetchedDays ? fetchedDays : 0
 
-  if (leftTrx && leftTrx?.length !== 0) {
+  if (leftTrx?.length) {
     let isStop = false
     await Promise.all(
       leftTrx.map(async (tempTransaction) => {
