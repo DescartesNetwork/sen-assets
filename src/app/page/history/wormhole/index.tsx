@@ -8,6 +8,7 @@ import { WORMHOLE_COLUMNS } from './column'
 import { AppDispatch, AppState } from 'app/model'
 import { fetchWohHistory } from 'app/model/wohHistory.controller'
 import { notifyError } from 'app/helper'
+import { RawEtherTransaction } from 'app/constant/types/wormhole'
 
 const ROW_PER_PAGE = 4
 
@@ -20,12 +21,20 @@ const WormholeHistory = () => {
   } = useSelector((state: AppState) => state)
 
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
+  const [fromBlk, setFromBlk] = useState<number>()
+  const [leftTrxInBlk, setLeftTrxInBlk] = useState<RawEtherTransaction[]>()
+  const [fetchedDays, setFetchedDays] = useState<number>(0)
 
   const fetchBridgeHistory = useCallback(async () => {
     if (!sourceWalletAddress) return
     try {
       setIsLoading(true)
-      await dispatch(fetchWohHistory({ address: sourceWalletAddress })).unwrap()
+      const { fromBlock, leftTransaction, count } = await dispatch(
+        fetchWohHistory({ address: sourceWalletAddress }),
+      ).unwrap()
+      setFromBlk(fromBlock)
+      setLeftTrxInBlk(leftTransaction)
+      setFetchedDays(count)
     } catch (er) {
       notifyError(er)
     } finally {
@@ -37,7 +46,27 @@ const WormholeHistory = () => {
     fetchBridgeHistory()
   }, [fetchBridgeHistory])
 
-  const onHandleViewMore = () => setAmountRow(amountRow + ROW_PER_PAGE)
+  const onHandleViewMore = async () => {
+    setAmountRow(amountRow + ROW_PER_PAGE)
+    try {
+      // setIsLoading(true)
+      const { fromBlock, leftTransaction, count } = await dispatch(
+        fetchWohHistory({
+          address: sourceWalletAddress,
+          fromBLK: fromBlk,
+          leftTrx: leftTrxInBlk,
+          fetchedDays: fetchedDays,
+        }),
+      ).unwrap()
+      setFromBlk(fromBlock)
+      setLeftTrxInBlk(leftTransaction)
+      setFetchedDays(count)
+    } catch (er) {
+      notifyError(er)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <Row gutter={[16, 16]} justify="center">
@@ -54,7 +83,7 @@ const WormholeHistory = () => {
       </Col>
       <Col>
         <Button
-          disabled={amountRow >= Object.keys(wohHistory).length}
+          disabled={fetchedDays >= 30 || isLoading === true}
           onClick={onHandleViewMore}
           type="text"
           icon={<IonIcon name="chevron-down-outline" />}

@@ -46,7 +46,7 @@ export type RawEtherTransaction = {
   logIndex: string
   raw: RawLog
   removed: string
-  returnValues: LogDetail
+  returnValues?: LogDetail
   signature: string
   transactionHash: string
   transactionIndex: string
