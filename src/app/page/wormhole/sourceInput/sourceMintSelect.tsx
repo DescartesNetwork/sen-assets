@@ -2,7 +2,7 @@ import { Space, Select, Divider, Typography, Avatar } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { AppState } from 'app/model'
-import { randomColor } from 'shared/helper'
+import { randomColor } from 'shared/util'
 import { setSourceToken } from 'app/model/wormhole.controller'
 
 const SourceMintSelect = () => {
