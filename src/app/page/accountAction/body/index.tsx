@@ -8,7 +8,7 @@ import Wrap from 'app/page/accountAction/body/wrap'
 import Close from './close'
 
 import { AppState } from 'app/model'
-import { useMintAccount } from 'app/shared/hooks/useMintAccount'
+import { useMintAccount } from 'app/hooks/useMintAccount'
 import { SOL_ADDRESS, WSOL_ADDRESS } from 'app/constant/sol'
 
 const Body = () => {

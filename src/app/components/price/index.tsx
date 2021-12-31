@@ -1,5 +1,5 @@
 import { numeric } from 'shared/util'
-import useMintCgk from 'app/shared/hooks/useMintCgk'
+import useMintCgk from 'app/hooks/useMintCgk'
 import { parseColor, PriceColor } from './parseColor'
 
 const Price = ({

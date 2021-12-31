@@ -3,12 +3,12 @@ import { useDispatch } from 'react-redux'
 import { DEFAULT_WSOL, utils } from '@senswap/sen-js'
 
 import { Button, Col, Row, Space, Typography } from 'antd'
-import { MintSymbol } from 'app/shared/components/mint'
+import { MintSymbol } from 'app/components/mint'
+import NumericInput from 'shared/antd/numericInput'
 
 import { useWallet } from 'senhub/providers'
-import NumericInput from 'shared/antd/numericInput'
 import { notifyError, notifySuccess } from 'app/helper'
-import { useMintAccount } from 'app/shared/hooks/useMintAccount'
+import { useMintAccount } from 'app/hooks/useMintAccount'
 import { selectAccount } from 'app/model/account.controller'
 import { SOL_DECIMALS } from 'app/constant/sol'
 

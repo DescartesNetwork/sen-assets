@@ -1,5 +1,5 @@
 import { Card, Col, Row, Space, Typography } from 'antd'
-import { MintAvatar, MintName, MintSymbol } from 'app/shared/components/mint'
+import { MintAvatar, MintName, MintSymbol } from 'app/components/mint'
 import Balance from 'app/components/balance'
 import IonIcon from 'shared/antd/ionicon'
 

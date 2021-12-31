@@ -1,7 +1,7 @@
 import IonIcon from 'shared/antd/ionicon'
 
 import { parseColor, PriceColor } from './parseColor'
-import useMintCgk from 'app/shared/hooks/useMintCgk'
+import useMintCgk from 'app/hooks/useMintCgk'
 
 const PriceIndicator = ({
   mintAddress,

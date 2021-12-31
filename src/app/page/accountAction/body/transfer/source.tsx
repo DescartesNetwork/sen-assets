@@ -1,8 +1,8 @@
 import { Row, Col, Typography, Button } from 'antd'
-import { MintSymbol } from 'app/shared/components/mint'
+import { MintSymbol } from 'app/components/mint'
 import NumericInput from 'shared/antd/numericInput'
 
-import { useMintAccount } from 'app/shared/hooks/useMintAccount'
+import { useMintAccount } from 'app/hooks/useMintAccount'
 
 const Source = ({
   accountAddr,

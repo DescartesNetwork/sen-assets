@@ -3,7 +3,7 @@ import StatusTag from '../statusTags'
 import IonIcon from 'shared/antd/ionicon'
 
 import { explorer, numeric, shortenAddress } from 'shared/util'
-import { MintSymbol } from 'app/shared/components/mint'
+import { MintSymbol } from 'app/components/mint'
 
 export const TRANSACTION_COLUMNS = [
   {

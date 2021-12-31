@@ -1,15 +1,15 @@
 import { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useHistory } from 'react-router-dom'
+import { AccountData } from '@senswap/sen-js'
+import LazyLoad from '@senswap/react-lazyload'
 
 import { Col, Row } from 'antd'
 import AccountItem from './accountItem'
 import Search from 'app/page/walletAccounts/search/search'
-import LazyLoad from 'react-lazyload'
 import Sol from 'app/page/walletAccounts/listAccount/solCard'
 
 import { useMint } from 'senhub/providers'
-import { AccountData } from '@senswap/sen-js'
 import { selectAccount } from 'app/model/account.controller'
 import configs from 'app/configs'
 

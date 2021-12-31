@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 import { Avatar } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
-import useTokenProvider from '../../hooks/useTokenProvider'
+import useTokenProvider from 'app/hooks/useTokenProvider'
 
 const MintAvatar = ({
   mintAddress,

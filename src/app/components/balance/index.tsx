@@ -2,8 +2,8 @@ import { useMemo } from 'react'
 import { utils } from '@senswap/sen-js'
 
 import { numeric } from 'shared/util'
-import useMintCgk from 'app/shared/hooks/useMintCgk'
-import { useMintAccount } from 'app/shared/hooks/useMintAccount'
+import useMintCgk from 'app/hooks/useMintCgk'
+import { useMintAccount } from 'app/hooks/useMintAccount'
 
 const Balance = ({
   accountAddr,

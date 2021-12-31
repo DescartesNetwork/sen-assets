@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import LazyLoad from 'react-lazyload'
+import LazyLoad from '@senswap/react-lazyload'
 import { account } from '@senswap/sen-js'
 import { TokenInfo } from '@solana/spl-token-registry'
 

@@ -1,8 +1,9 @@
+import { utils } from '@senswap/sen-js'
+
 import { Row, Col, Card, Tooltip, Divider, Space, Typography } from 'antd'
 import Balance from 'app/components/balance'
-import { MintAvatar } from 'app/shared/components/mint'
+import { MintAvatar } from 'app/components/mint'
 
-import { utils } from '@senswap/sen-js'
 import { useWallet } from 'senhub/providers'
 import { SOL_ADDRESS } from 'app/constant/sol'
 

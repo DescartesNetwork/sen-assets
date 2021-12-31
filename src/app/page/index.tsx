@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { forceCheck } from 'react-lazyload'
+import { forceCheck } from '@senswap/react-lazyload'
 
 import { Row, Col } from 'antd'
 import SenAssets from './walletAccounts'
