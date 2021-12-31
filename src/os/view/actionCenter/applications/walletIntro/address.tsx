@@ -5,7 +5,7 @@ import { Tooltip, Space, Typography, Popover } from 'antd'
 import QRCode from 'qrcode.react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 
-import { explorer, shortenAddress } from 'shared/util'
+import { solExplorer, shortenAddress } from 'shared/util'
 import { RootState } from 'os/store'
 import IconButton from './iconButton'
 
@@ -46,7 +46,7 @@ const Address = () => {
     <Space size={10}>
       <Typography.Text
         style={{ color: '#E9E9EB', cursor: 'pointer' }}
-        onClick={() => window.open(explorer(address), '_blank')}
+        onClick={() => window.open(solExplorer(address), '_blank')}
       >
         {shortenAddress(address, 3, '...')}
       </Typography.Text>
