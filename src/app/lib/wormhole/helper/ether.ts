@@ -27,6 +27,8 @@ import { ABI_TOKEN_IMPLEMENTATION } from 'app/lib/wormhole/constant/abis'
 import { Moralis } from './moralis'
 import { DataLoader } from 'shared/dataloader'
 import { web3Http, web3WormholeContract } from 'app/lib/etherWallet/web3Config'
+import { WETH_ADDRESS } from '../constant/ethConfig'
+import { getEtherNetwork } from './utils'
 
 const abiDecoder = require('abi-decoder')
 
@@ -50,7 +52,18 @@ export const fetchTokenEther = async (
     token.address = token.token_address
     tokens.push(token)
   }
-  return tokens
+  const weth: any = {
+    balance: BigInt(1000000000000000000),
+    decimals: 18,
+    logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs/logo.png',
+    name: 'Ethereum',
+    symbol: 'ETH',
+    token_address: WETH_ADDRESS[getEtherNetwork()],
+    address: WETH_ADDRESS[getEtherNetwork()],
+    amount: '1',
+  }
+  console.log('[weth, ...tokens]', [weth, ...tokens])
+  return [weth, ...tokens]
 }
 
 export const fetchEtherTokenInfo = async (

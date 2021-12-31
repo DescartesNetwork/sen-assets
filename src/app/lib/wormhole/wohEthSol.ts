@@ -12,10 +12,15 @@ import {
   postVaaSolana,
   redeemOnSolana,
   transferFromEth,
+  transferFromEthNative,
 } from '@certusone/wormhole-sdk'
 import { account, utils, WalletInterface } from '@senswap/sen-js'
 
-import { getAssociatedAddress, sendTransaction } from './helper/utils'
+import {
+  getAssociatedAddress,
+  getEtherNetwork,
+  sendTransaction,
+} from './helper/utils'
 import { WormholeProvider } from './provider'
 import { IEtherWallet } from '../etherWallet/walletInterface'
 import {
@@ -24,6 +29,7 @@ import {
   TransferData,
 } from 'app/constant/types/wormhole'
 import { createEtherSolContext } from './context'
+import { WETH_ADDRESS } from './constant/ethConfig'
 
 class WohEthSol extends WormholeProvider {
   private srcWallet: IEtherWallet
@@ -36,7 +42,12 @@ class WohEthSol extends WormholeProvider {
     super()
     this.srcWallet = sourceWallet
     this.targetWallet = targetWallet
-    this.context = createEtherSolContext(tokenInfo)
+    const cloneTokenInfo: WohTokenInfo = JSON.parse(JSON.stringify(tokenInfo))
+    this.context = createEtherSolContext(cloneTokenInfo)
+  }
+
+  private isNative = () => {
+    return this.context?.tokenInfo.address === WETH_ADDRESS[getEtherNetwork()]
   }
 
   protected isAttested = async (): Promise<{
@@ -105,14 +116,23 @@ class WohEthSol extends WormholeProvider {
       wrappedMintAddress,
       this.targetWallet,
     )
-    const transferReceipt = await transferFromEth(
-      context.srcTokenBridgeAddress,
-      signer,
-      context.tokenInfo.address,
-      amountTransfer,
-      CHAIN_ID_SOLANA,
-      account.fromAddress(dstAddress).toBuffer(),
-    )
+
+    const transferReceipt = this.isNative()
+      ? await transferFromEthNative(
+          context.srcTokenBridgeAddress,
+          signer,
+          amountTransfer,
+          CHAIN_ID_SOLANA,
+          account.fromAddress(dstAddress).toBuffer(),
+        )
+      : await transferFromEth(
+          context.srcTokenBridgeAddress,
+          signer,
+          context.tokenInfo.address,
+          amountTransfer,
+          CHAIN_ID_SOLANA,
+          account.fromAddress(dstAddress).toBuffer(),
+        )
     const sequence = parseSequenceFromLogEth(
       transferReceipt,
       context.srcBridgeAddress,
