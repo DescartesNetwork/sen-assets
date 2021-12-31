@@ -2,7 +2,7 @@ import { Row, Col, Card, Typography, Button, Space } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import { useAccount } from 'senhub/providers'
-import { explorer, shortenAddress } from 'shared/util'
+import { solExplorer, shortenAddress } from 'shared/util'
 import { selectAccount } from 'app/model/account.controller'
 import { DEFAULT_EMPTY_ADDRESS } from '@senswap/sen-js'
 import { useDispatch } from 'react-redux'
@@ -22,7 +22,7 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
         description: `Close ${shortenAddress(
           accountAddr,
         )} successfully. Click to view details.`,
-        onClick: () => window.open(explorer(txId), '_blank'),
+        onClick: () => window.open(solExplorer(txId), '_blank'),
       })
       dispatch(selectAccount({ account: DEFAULT_EMPTY_ADDRESS }))
     } catch (er) {

@@ -1,4 +1,5 @@
 import { account, utils } from '@senswap/sen-js'
+import { getEtherNetwork } from 'app/lib/wormhole/helper/utils'
 import numbro from 'numbro'
 
 import { net } from 'shared/runtime'
@@ -33,11 +34,23 @@ export const shortenAddress = (address: string, num = 4, delimiter = '...') => {
  * @param addressOrTxId - Address or TxId
  * @returns
  */
-export const explorer = (addressOrTxId: string): string => {
+export const solExplorer = (addressOrTxId: string): string => {
   if (account.isAddress(addressOrTxId)) {
     return `https://explorer.solana.com/address/${addressOrTxId}?cluster=${net}`
   }
   return `https://explorer.solana.com/tx/${addressOrTxId}?cluster=${net}`
+}
+
+/**
+ * Return a url to go to transaction explorer
+ * @param txHash - Address or TxId
+ * @returns
+ */
+export const ethExplorer = (txHash: string): string => {
+  if (getEtherNetwork() === 'goerli') {
+    return `https://goerli.etherscan.io/tx/${txHash}`
+  }
+  return `https://etherscan.io/tx/${txHash}`
 }
 
 /**
