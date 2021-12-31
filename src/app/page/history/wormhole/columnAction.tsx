@@ -12,7 +12,7 @@ import {
   setProcess,
   setVisibleProcess,
 } from 'app/model/wormhole.controller'
-import { asyncWait, explorer } from 'shared/util'
+import { asyncWait, ethExplorer } from 'shared/util'
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
 import {
@@ -75,17 +75,18 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   }
 
   // action button success
-  if (status === 'success')
+  if (status === 'success') {
     return (
       <Button
         size="small"
         type="text"
         onClick={() =>
-          window.open(explorer(transferState.transferData.txId), '_blank')
+          window.open(ethExplorer(transferState.transferData.txHash), '_blank')
         }
         icon={<IonIcon name="open-outline" />}
       />
     )
+  }
 
   // action button retry
   if (status === 'failed')

@@ -60,5 +60,11 @@ export const INFURA_API_WSS_URL: EtherConfigSet = {
   ropsten: `wss://ropsten.infura.io/ws/v3/${INFURA_API_KEY}`,
 }
 
+export const WETH_ADDRESS: EthAddressConfig = {
+  mainnet: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+  goerli: '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6',
+  ropsten: '0xc778417e063141139fce010982780140aa0cd5ab',
+}
+
 export const MAINNET_ETHER_ADDRESS_PREFIX = '0x1'
 export const GOERLI_ETHER_ADDRESS_PREFIX = '0x5'
