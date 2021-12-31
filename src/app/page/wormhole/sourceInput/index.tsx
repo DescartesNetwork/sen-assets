@@ -6,6 +6,7 @@ import NumericInput from 'shared/antd/numericInput'
 
 import { AppState } from 'app/model'
 import { setSourceToken } from 'app/model/wormhole.controller'
+import { numeric } from 'shared/util'
 
 const SelectMintInput = () => {
   const dispatch = useDispatch()
@@ -23,7 +24,7 @@ const SelectMintInput = () => {
       </Col>
       <Col>
         <Typography.Text>
-          Available: {maxAmount || 0} {symbol}
+          Available: {numeric(maxAmount).format('0,0.[0000]') || 0} {symbol}
         </Typography.Text>
       </Col>
       <Col span={24}>

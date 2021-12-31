@@ -52,17 +52,22 @@ export const fetchTokenEther = async (
     token.address = token.token_address
     tokens.push(token)
   }
+
+  const ethAddress = await window.wormhole.sourceWallet.ether?.getAddress()
+  let ethBalance = BigInt(0)
+  if (ethAddress) ethBalance = await web3Http.eth.getBalance(ethAddress)
+
+  const ethDecimals = 18
   const weth: any = {
-    balance: BigInt(1000000000000000000),
-    decimals: 18,
+    balance: ethBalance,
+    decimals: ethDecimals,
     logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs/logo.png',
     name: 'Ethereum',
     symbol: 'ETH',
     token_address: WETH_ADDRESS[getEtherNetwork()],
     address: WETH_ADDRESS[getEtherNetwork()],
-    amount: '1',
+    amount: utils.undecimalize(ethBalance, ethDecimals),
   }
-  console.log('[weth, ...tokens]', [weth, ...tokens])
   return [weth, ...tokens]
 }
 

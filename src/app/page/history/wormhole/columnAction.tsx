@@ -76,7 +76,6 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
 
   // action button success
   if (status === 'success') {
-    console.log(transferState.transferData)
     return (
       <Button
         size="small"
