@@ -57,6 +57,7 @@ const Transaction = () => {
     <Row gutter={[16, 16]} justify="center">
       <Col span={24}>
         <Table
+          className="scrollbar"
           columns={TRANSACTION_COLUMNS}
           dataSource={transaction.slice(0, amountRow)}
           rowClassName={(record, index) => (index % 2 ? 'odd-row' : 'even-row')}

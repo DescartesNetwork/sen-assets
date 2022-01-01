@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import LazyLoad from '@senswap/react-lazyload'
 import { account } from '@senswap/sen-js'
 import { TokenInfo } from '@solana/spl-token-registry'
@@ -15,7 +15,6 @@ import {
   Avatar,
 } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
-import PoweredBy from 'os/components/poweredBy'
 
 import { useAccount, useMint, useWallet } from 'senhub/providers'
 import { notifyError, notifySuccess } from 'app/helper'
@@ -28,22 +27,20 @@ const KEY_SIZE = 3
  */
 const MintCard = ({ mint }: { mint: TokenInfo }) => {
   const { logoURI, symbol, name, address: mintAddress } = mint
-  const [isInitialized, setIsInitialized] = useState(false)
+  const [initialized, setInitialized] = useState(false)
   const {
     wallet: { address: walletAddress },
   } = useWallet()
   const { accounts } = useAccount()
 
   const initializeAccount = async () => {
-    const { splt, wallet } = window.sentre
-    if (
-      isInitialized ||
-      !account.isAddress(walletAddress) ||
-      !account.isAddress(mintAddress) ||
-      !wallet
-    )
-      return
     try {
+      const { splt, wallet } = window.sentre
+      if (!account.isAddress(walletAddress) || !wallet)
+        throw new Error('Wallet is not connected')
+      if (initialized) throw new Error('The token had been imported')
+      if (!account.isAddress(mintAddress))
+        throw new Error('Please select the token first')
       const { txId } = await splt.initializeAccount(
         mintAddress,
         walletAddress,
@@ -62,7 +59,7 @@ const MintCard = ({ mint }: { mint: TokenInfo }) => {
         walletAddress,
         mintAddress,
       )
-      return setIsInitialized(Object.keys(accounts).includes(accountAddress))
+      return setInitialized(Object.keys(accounts).includes(accountAddress))
     })()
   }, [accounts, mintAddress, walletAddress])
 
@@ -79,10 +76,10 @@ const MintCard = ({ mint }: { mint: TokenInfo }) => {
         <Col>
           <Button
             type="text"
-            style={{ color: isInitialized ? '#3DBA4E' : 'inherit' }}
+            style={{ color: initialized ? '#3DBA4E' : 'inherit' }}
             icon={
               <IonIcon
-                name={isInitialized ? 'checkmark-outline' : 'add-outline'}
+                name={initialized ? 'checkmark-outline' : 'add-outline'}
               />
             }
             onClick={initializeAccount}
@@ -97,21 +94,30 @@ const MintCard = ({ mint }: { mint: TokenInfo }) => {
  * Search bar
  */
 
+let timeoutId: ReturnType<typeof setTimeout> | undefined
 const Search = ({
   onChange,
 }: {
   onChange: (data: TokenInfo[] | null) => void
 }) => {
+  const [loading, setLoading] = useState(false)
   const [keyword, setKeyword] = useState('')
   const { tokenProvider } = useMint()
 
-  useEffect(() => {
-    ;(async () => {
-      if (!keyword || keyword.length < KEY_SIZE) return onChange(null)
+  const search = useCallback(async () => {
+    if (!keyword || keyword.length < KEY_SIZE) return onChange(null)
+    if (timeoutId) clearTimeout(timeoutId)
+    timeoutId = setTimeout(async () => {
+      await setLoading(true)
       const data = await tokenProvider.find(keyword)
+      await setLoading(false)
       return onChange(data)
-    })()
+    }, 500)
   }, [keyword, onChange, tokenProvider])
+
+  useEffect(() => {
+    search()
+  }, [search])
 
   return (
     <Card bodyStyle={{ padding: 8 }} bordered={false}>
@@ -129,15 +135,18 @@ const Search = ({
             icon={
               <IonIcon name={keyword ? 'close-outline' : 'search-outline'} />
             }
+            loading={loading}
           />
         }
-        suffix={<PoweredBy />}
         onChange={(e) => setKeyword(e.target.value)}
       />
     </Card>
   )
 }
 
+/**
+ * Main
+ */
 const ImportToken = () => {
   const [visible, setVisible] = useState(false)
   const [mints, setMints] = useState<TokenInfo[]>()
@@ -173,13 +182,17 @@ const ImportToken = () => {
       >
         <Row gutter={[16, 16]}>
           <Col span={24}>
-            <Typography.Title level={5}>Token Selection</Typography.Title>
+            <Typography.Title level={5}>Import Tokens</Typography.Title>
           </Col>
           <Col span={24}>
             <Search onChange={setSearchedMints} />
           </Col>
           <Col span={24}>
-            <Row gutter={[16, 16]} style={{ height: 300, overflow: 'auto' }}>
+            <Row
+              gutter={[16, 16]}
+              style={{ maxHeight: 300 }}
+              className="scrollbar"
+            >
               {(searchedMints || mints || []).map((mint, i) => {
                 return (
                   <Col span={24} key={i}>

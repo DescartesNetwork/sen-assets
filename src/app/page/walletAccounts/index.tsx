@@ -1,10 +1,10 @@
 import { Card, Col, Row, Typography } from 'antd'
 import ListAccount from 'app/page/walletAccounts/listAccount'
-import Settings from 'app/page/walletAccounts/settings/settings'
+import Settings from 'app/page/walletAccounts/settings'
 
 const SenAssets = () => {
   return (
-    <Card className="card-page card-sen-assets">
+    <Card className="card-page card-sen-assets scrollbar">
       <Row gutter={[24, 24]} align="middle">
         {/* Header */}
         <Col flex="auto">

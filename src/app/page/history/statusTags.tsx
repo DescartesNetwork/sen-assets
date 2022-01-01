@@ -10,7 +10,7 @@ const STATUS_COLOR: Record<string, number[]> = {
 const StatusTag = ({ tag }: { tag: string }) => {
   const setColorTag = (opacity?: number) => {
     let color = STATUS_COLOR[tag]
-    return `rgba(${color[0]},  ${color[1]}, ${color[2]},${opacity || 1})`
+    return `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${opacity || 1})`
   }
 
   return (

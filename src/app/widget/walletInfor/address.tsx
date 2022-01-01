@@ -3,8 +3,8 @@ import { useState } from 'react'
 import { Tooltip, Space, Popover } from 'antd'
 import QRCode from 'qrcode.react'
 import CopyToClipboard from 'react-copy-to-clipboard'
-import IconButton from '../../page/accountAction/header/walletAddress/iconButton'
-import Settings from 'app/page/walletAccounts/settings/settings'
+import IconButton from 'app/page/accountAction/header/walletAddress/iconButton'
+import Settings from 'app/page/walletAccounts/settings'
 
 import { useWallet } from 'senhub/providers'
 
