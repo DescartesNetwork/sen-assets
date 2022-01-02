@@ -4,15 +4,15 @@ import { Row, Col, Typography, Button } from 'antd'
 import SourceMintSelect from './sourceMintSelect'
 import NumericInput from 'shared/antd/numericInput'
 
-import { AppState } from 'app/model'
+import { AppDispatch, AppState } from 'app/model'
 import { setSourceToken } from 'app/model/wormhole.controller'
 import { numeric } from 'shared/util'
 
 const SelectMintInput = () => {
-  const dispatch = useDispatch()
-  const { sourceTokens, tokenAddress, amount, processId } = useSelector(
-    (state: AppState) => state.wormhole,
-  )
+  const dispatch = useDispatch<AppDispatch>()
+  const {
+    wormhole: { sourceTokens, tokenAddress, amount, processId },
+  } = useSelector((state: AppState) => state)
 
   const { amount: maxAmount, symbol } = sourceTokens[tokenAddress] || {}
   const onChange = (amount: string) => dispatch(setSourceToken({ amount }))

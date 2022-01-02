@@ -4,16 +4,17 @@ import { Row, Col, Space, Popover, Typography, Switch } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 import ImportToken from './importToken'
 
-import { AppState } from 'app/model'
+import { AppDispatch, AppState } from 'app/model'
 import {
   setHiddenUnknownTokens,
   setHiddenZeros,
 } from 'app/model/settings.controller'
 
 const Settings = () => {
-  const dispatch = useDispatch()
-  const settings = useSelector((state: AppState) => state.settings)
-  const { hiddenZeros, hiddenUnknownTokens } = settings
+  const dispatch = useDispatch<AppDispatch>()
+  const {
+    settings: { hiddenZeros, hiddenUnknownTokens },
+  } = useSelector((state: AppState) => state)
 
   return (
     <Popover

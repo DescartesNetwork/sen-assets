@@ -10,10 +10,10 @@ import Sol from './solCard'
 
 import { useMint, useWallet } from 'senhub/providers'
 import { selectAccount } from 'app/model/account.controller'
-import { AppState } from 'app/model'
+import { AppDispatch, AppState } from 'app/model'
 
 const ListAccount = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { accountSelected } = useSelector((state: AppState) => state.account)
   const { tokenProvider } = useMint()
   const { wallet } = useWallet()

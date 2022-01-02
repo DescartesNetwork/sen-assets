@@ -11,13 +11,14 @@ import { notifyError, notifySuccess } from 'app/helper'
 import { useMintAccount } from 'app/hooks/useMintAccount'
 import { selectAccount } from 'app/model/account.controller'
 import { SOL_DECIMALS } from 'app/constant/sol'
+import { AppDispatch } from 'app/model'
 
 const TRANSACTION_FEE = 0.00001
 const COMPENSATION = BigInt(2039280)
 const DEFAULT_DECIMAL = 9
 
 const Wrap = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const [value, setValue] = useState('')
   const [loading, setLoading] = useState(false)
   const [wsolAddress, setWSolAddress] = useState('')

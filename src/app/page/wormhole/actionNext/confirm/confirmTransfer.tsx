@@ -23,9 +23,9 @@ const ConfirmAction = ({
   onClose?: (visible: boolean) => void
 }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const { sourceTokens, tokenAddress, amount, processId } = useSelector(
-    (state: AppState) => state.wormhole,
-  )
+  const {
+    wormhole: { sourceTokens, tokenAddress, amount, processId },
+  } = useSelector((state: AppState) => state)
   const [acceptable, setAcceptable] = useState(false)
   const [waiting, setWaiting] = useState(false)
   const loading = waiting || !!processId

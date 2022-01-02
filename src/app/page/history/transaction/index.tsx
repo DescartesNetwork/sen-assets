@@ -12,12 +12,13 @@ const ROW_PER_PAGE = 4
 const LIMIT_IN_STORE = 9
 
 const Transaction = () => {
+  const dispatch = useDispatch<AppDispatch>()
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
   const [isLoading, setIsLoading] = useState(true)
-
-  const dispatch = useDispatch<AppDispatch>()
-  const { transaction } = useSelector((state: AppState) => state.history)
-  const { accountSelected } = useSelector((state: AppState) => state.account)
+  const {
+    history: { transaction },
+    account: { accountSelected },
+  } = useSelector((state: AppState) => state)
 
   const fetchHistory = useCallback(async () => {
     if (!accountSelected) return

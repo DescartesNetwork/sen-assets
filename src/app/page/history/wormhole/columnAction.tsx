@@ -25,7 +25,9 @@ import { fetchEtherTokenInfo } from 'app/lib/wormhole/helper/ether'
 
 const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const { processId } = useSelector((state: AppState) => state.wormhole)
+  const {
+    wormhole: { processId },
+  } = useSelector((state: AppState) => state)
   const { context, transferData } = transferState
 
   const status = useMemo((): WormholeStatus => {

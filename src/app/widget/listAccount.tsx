@@ -12,13 +12,14 @@ import Sol from 'app/page/walletAccounts/listAccount/solCard'
 import { useMint } from 'senhub/providers'
 import { selectAccount } from 'app/model/account.controller'
 import configs from 'app/configs'
+import { AppDispatch } from 'app/model'
 
 const {
   manifest: { appId },
 } = configs
 
 const ListAccount = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const history = useHistory()
   const { tokenProvider } = useMint()
   const [listAccount, setListAccount] = useState<string[]>([])

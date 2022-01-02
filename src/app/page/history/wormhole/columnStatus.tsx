@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { Tag } from 'antd'
 import StatusTag from '../statusTags'
 
 import { AppDispatch, AppState } from 'app/model'
@@ -9,12 +10,13 @@ import {
   TransferState,
   WormholeStatus,
 } from 'app/constant/types/wormhole'
-import { Tag } from 'antd'
 import { restoreWohHistory } from 'app/model/wohHistory.controller'
 
 const ColumnStatus = ({ data }: { data: TransferState }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const { processId } = useSelector((state: AppState) => state.wormhole)
+  const {
+    wormhole: { processId },
+  } = useSelector((state: AppState) => state)
 
   const nextStep = data.transferData.nextStep
 

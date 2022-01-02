@@ -3,14 +3,14 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Button, Col, Row, Tooltip } from 'antd'
 import ConfirmBridge from './confirm'
 
-import { AppState } from 'app/model'
+import { AppDispatch, AppState } from 'app/model'
 import { setVisibleProcess } from 'app/model/wormhole.controller'
 
 const WormAction = () => {
-  const dispatch = useDispatch()
-  const { amount, processId, visible } = useSelector(
-    (state: AppState) => state.wormhole,
-  )
+  const dispatch = useDispatch<AppDispatch>()
+  const {
+    wormhole: { amount, processId, visible },
+  } = useSelector((state: AppState) => state)
 
   const setVisible = (visible: boolean) =>
     dispatch(setVisibleProcess({ visible }))

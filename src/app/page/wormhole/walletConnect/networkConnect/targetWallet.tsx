@@ -1,25 +1,28 @@
-import { Col, Row, Tag } from 'antd'
-import { AppState } from 'app/model'
-import { connectTargetWallet } from 'app/model/wormhole.controller'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useWallet } from 'senhub/providers'
+
+import { Col, Row, Tag } from 'antd'
 import Network from './network'
 
+import { AppDispatch, AppState } from 'app/model'
+import { connectTargetWallet } from 'app/model/wormhole.controller'
+import { useWallet } from 'senhub/providers'
+import { account } from '@senswap/sen-js'
+
 const TargetWallet = () => {
-  const dispatch = useDispatch()
-  const { targetWalletAddress, targetChain } = useSelector(
-    (state: AppState) => state.wormhole,
-  )
+  const dispatch = useDispatch<AppDispatch>()
   const {
-    wallet: { address },
+    wormhole: { targetWalletAddress, targetChain },
+  } = useSelector((state: AppState) => state)
+  const {
+    wallet: { address: walletAddress },
   } = useWallet()
 
   useEffect(() => {
     const wallet = window.sentre.wallet
-    if (!wallet || !address) return
+    if (!wallet || !account.isAddress(walletAddress)) return
     dispatch(connectTargetWallet({ wallet }))
-  }, [address, dispatch])
+  }, [walletAddress, dispatch])
 
   return (
     <Row gutter={[16, 16]} align="middle">

@@ -19,9 +19,9 @@ import { notifyError } from 'app/helper'
 
 const SourceWallet = () => {
   const dispatch = useDispatch<AppDispatch>()
-  const { sourceWalletAddress, sourceChain } = useSelector(
-    (state: AppState) => state.wormhole,
-  )
+  const {
+    wormhole: { sourceWalletAddress, sourceChain },
+  } = useSelector((state: AppState) => state)
   const [hasProvider, setHasProvider] = useState(false)
 
   const getSourceWallet = useCallback((fallback: string = '') => {

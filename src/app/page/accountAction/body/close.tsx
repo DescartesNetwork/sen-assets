@@ -1,3 +1,5 @@
+import { useDispatch } from 'react-redux'
+
 import { Row, Col, Card, Typography, Button, Space } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
@@ -5,10 +7,11 @@ import { useAccount } from 'senhub/providers'
 import { solExplorer, shortenAddress } from 'shared/util'
 import { selectAccount } from 'app/model/account.controller'
 import { DEFAULT_EMPTY_ADDRESS } from '@senswap/sen-js'
-import { useDispatch } from 'react-redux'
+
+import { AppDispatch } from 'app/model'
 
 const Close = ({ accountAddr }: { accountAddr: string }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { accounts } = useAccount()
   const account = accounts[accountAddr] || {}
 
