@@ -5,14 +5,47 @@ import {
   Row,
   Select,
   Space,
-  Tooltip,
   Typography,
+  Popover,
+  Card,
 } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
 import { WORMHOLE_NETWORK } from 'app/lib/wormhole/constant/wormhole'
 import { shortenAddress } from 'shared/util'
 import { ChainId } from '@certusone/wormhole-sdk'
+import METAMASK from 'app/static/images/metamask.png'
+import COIN98 from 'app/static/images/coin98.png'
+import MetamaskWallet from 'app/lib/etherWallet/metamask'
+import Coin98Wallet from 'app/lib/etherWallet/coin98'
+
+export type WalletOptionProps = {
+  onClick?: () => void
+  src: string
+  title: string
+}
+
+export const WalletOption = ({
+  onClick = () => {},
+  src,
+  title,
+}: WalletOptionProps) => {
+  return (
+    <Card bodyStyle={{ padding: 16, cursor: 'pointer' }} onClick={onClick}>
+      <Row gutter={[16, 16]} wrap={false} align="middle">
+        <Col>
+          <Avatar src={src} />
+        </Col>
+        <Col flex="auto">
+          <Typography.Text>{title}</Typography.Text>
+        </Col>
+        <Col>
+          <Button type="text" icon={<IonIcon name="arrow-forward-outline" />} />
+        </Col>
+      </Row>
+    </Card>
+  )
+}
 
 export const NetworkConnect = ({
   connected,
@@ -22,7 +55,7 @@ export const NetworkConnect = ({
 }: {
   connected: boolean
   installed: boolean
-  onConnect?: () => void
+  onConnect?: (type?: string) => void
   onDisconnect?: () => void
 }) => {
   if (connected)
@@ -33,16 +66,34 @@ export const NetworkConnect = ({
     )
 
   return (
-    <Tooltip title={installed ? '' : 'Install Metamask please'}>
-      <Button
-        size="small"
-        onClick={onConnect}
-        type="primary"
-        disabled={!installed}
-      >
+    <Popover
+      content={
+        <Row gutter={[16, 16]} style={{ maxWidth: 256 }}>
+          <Col span={24}>
+            <Typography.Title level={5}>Wallet Connection</Typography.Title>
+          </Col>
+          <Col span={24}>
+            <WalletOption
+              onClick={() => onConnect(MetamaskWallet.walletType)}
+              src={METAMASK}
+              title="Metamask"
+            />
+          </Col>
+          <Col span={24}>
+            <WalletOption
+              onClick={() => onConnect(Coin98Wallet.walletType)}
+              src={COIN98}
+              title="Coin98"
+            />
+          </Col>
+        </Row>
+      }
+      trigger="click"
+    >
+      <Button size="small" type="primary" disabled={!installed}>
         Connect
       </Button>
-    </Tooltip>
+    </Popover>
   )
 }
 

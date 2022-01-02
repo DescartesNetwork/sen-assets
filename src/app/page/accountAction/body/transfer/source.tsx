@@ -1,5 +1,5 @@
 import { Row, Col, Typography, Button } from 'antd'
-import { MintSymbol } from 'app/components/mint'
+import { MintSymbol } from 'shared/antd/mint'
 import NumericInput from 'shared/antd/numericInput'
 
 import { useMintAccount } from 'app/hooks/useMintAccount'

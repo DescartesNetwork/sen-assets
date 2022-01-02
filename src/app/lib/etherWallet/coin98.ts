@@ -5,32 +5,26 @@ import session from 'shared/session'
 import { IEtherWallet } from './walletInterface'
 import { WOH_WALLET } from '../wormhole/constant/wormhole'
 import { getEtherNetwork } from '../wormhole/helper/utils'
-import {
-  GOERLI_ETHER_ADDRESS_PREFIX,
-  MAINNET_ETHER_ADDRESS_PREFIX,
-} from '../wormhole/constant/ethConfig'
+import { CHAIN_ID_ETH } from '../wormhole/constant/ethConfig'
 
-class MetamaskWallet implements IEtherWallet {
-  static walletType = 'MetaMask'
+class Coin98Wallet implements IEtherWallet {
+  static walletType = 'Coin98'
 
   getProvider = async () => {
     const detectedProvider: any = await detectEthereumProvider()
-    if (!detectedProvider || !detectedProvider.isMetamask)
-      throw new Error('Cannot find MetaMask extension')
+    if (!detectedProvider || !detectedProvider.isCoin98)
+      throw new Error('Cannot find Coin98 extension')
     const provider = new ethers.providers.Web3Provider(detectedProvider, 'any')
 
-    const chainId =
-      getEtherNetwork() === 'goerli'
-        ? GOERLI_ETHER_ADDRESS_PREFIX
-        : MAINNET_ETHER_ADDRESS_PREFIX
-    await detectedProvider.request({
-      method: 'wallet_switchEthereumChain',
-      params: [
-        {
-          chainId,
-        },
-      ],
+    const expectedChainId =
+      CHAIN_ID_ETH[getEtherNetwork()] || CHAIN_ID_ETH.mainnet
+    const currentChainId = await detectedProvider.request({
+      method: 'net_version',
     })
+    if (Number(currentChainId) !== expectedChainId)
+      throw new Error(
+        `Incorrect network configs. Please change the network to ${getEtherNetwork()}.`,
+      )
 
     return provider
   }
@@ -43,7 +37,7 @@ class MetamaskWallet implements IEtherWallet {
   }
 
   connect = async (): Promise<void> => {
-    session.set(WOH_WALLET, MetamaskWallet.walletType)
+    session.set(WOH_WALLET, Coin98Wallet.walletType)
   }
 
   disconnect = async (): Promise<void> => {
@@ -51,4 +45,4 @@ class MetamaskWallet implements IEtherWallet {
   }
 }
 
-export default MetamaskWallet
+export default Coin98Wallet

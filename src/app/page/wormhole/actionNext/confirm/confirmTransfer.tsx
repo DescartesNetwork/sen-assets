@@ -75,8 +75,8 @@ const ConfirmAction = ({
           </Typography.Text>
           <Typography.Text style={{ color: '#D72311', fontSize: 12 }}>
             You should wait until the process is complete or you can minimize
-            this dialog. However, the process will fail if you exit the Sen
-            Assets.
+            this dialog. However, the process will be failed if you exit the Sen
+            Assets, or change the network.
           </Typography.Text>
         </Space>
       </Col>
@@ -89,7 +89,7 @@ const ConfirmAction = ({
             onChange={() => setAcceptable(!acceptable)}
             disabled={loading}
           >
-            I have read and understood
+            I have read and aggreed!
           </Checkbox>
         )}
       </Col>

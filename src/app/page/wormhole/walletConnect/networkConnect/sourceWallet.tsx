@@ -7,25 +7,30 @@ import { Col, Row } from 'antd'
 import Network, { NetworkConnect } from './network'
 
 import MetamaskWallet from 'app/lib/etherWallet/metamask'
-import { AppState } from 'app/model'
+import Coin98Wallet from 'app/lib/etherWallet/coin98'
+import { AppDispatch, AppState } from 'app/model'
 import {
   connectSourceWallet,
   disconnectSourceWallet,
 } from 'app/model/wormhole.controller'
 import session from 'shared/session'
 import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
+import { notifyError } from 'app/helper'
 
 const SourceWallet = () => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>()
   const { sourceWalletAddress, sourceChain } = useSelector(
     (state: AppState) => state.wormhole,
   )
   const [hasProvider, setHasProvider] = useState(false)
 
-  const getSourceWallet = useCallback(() => {
-    const walletType = session.get(WOH_WALLET)
+  const getSourceWallet = useCallback((fallback: string = '') => {
+    const walletType = session.get(WOH_WALLET) || fallback
     if (walletType === MetamaskWallet.walletType) return new MetamaskWallet()
-    throw new Error('Login wallet fist')
+    if (walletType === Coin98Wallet.walletType) return new Coin98Wallet()
+    throw new Error(
+      'The application now supports Metamask, and Coin98 Wallet only.',
+    )
   }, [])
 
   // check provider
@@ -41,21 +46,29 @@ const SourceWallet = () => {
   }, [checkProvider])
 
   // connect source wallet
-  const onConnect = useCallback(async () => {
-    const wallet = new MetamaskWallet()
-    try {
-      dispatch(connectSourceWallet({ wallet }))
-      wallet.connect()
-    } catch (error) {
-      wallet.disconnect()
-    }
-  }, [dispatch])
+  const onConnect = useCallback(
+    async (type: string = '') => {
+      const wallet = getSourceWallet(type)
+      try {
+        await dispatch(connectSourceWallet({ wallet })).unwrap()
+        return wallet.connect()
+      } catch (er) {
+        notifyError(er)
+        return wallet.disconnect()
+      }
+    },
+    [dispatch, getSourceWallet],
+  )
 
-  const onDisconnect = () => {
-    const wallet = getSourceWallet()
-    dispatch(disconnectSourceWallet())
-    wallet.disconnect()
-  }
+  const onDisconnect = useCallback(async () => {
+    try {
+      const wallet = getSourceWallet()
+      await dispatch(disconnectSourceWallet())
+      return wallet.disconnect()
+    } catch (er) {
+      return notifyError(er)
+    }
+  }, [getSourceWallet, dispatch])
 
   // reconnect source wallet
   useEffect(() => {

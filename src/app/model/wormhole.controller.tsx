@@ -51,9 +51,7 @@ export const connectSourceWallet = createAsyncThunk<
   // fetch wallet's tokens
   const tokenList = await fetchTokenEther(address)
   const tokens: Record<string, WohTokenInfo> = {}
-  for (const token of tokenList) {
-    tokens[token.address] = token
-  }
+  for (const token of tokenList) tokens[token.address] = token
   // select fist token
   const tokenAddress = tokenList[0]?.address || ''
   return {
@@ -83,7 +81,7 @@ export const fetchEtherTokens = createAsyncThunk<{
 export const disconnectSourceWallet = createAsyncThunk<
   State,
   void,
-  { state: { wormhole: State } }
+  { state: any }
 >(`${NAME}/disconnectSourceWallet`, async (_, { getState }) => {
   const state = getState().wormhole
   return {
