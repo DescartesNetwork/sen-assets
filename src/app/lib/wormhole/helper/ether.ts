@@ -142,7 +142,7 @@ export const createTransferState = async (
     () => fetchEtherTokenInfo(params.token),
   )
   const solWallet = await window.sentre.wallet?.getAddress()
-  if (!solWallet) throw new Error('Login fist')
+  if (!solWallet) throw new Error('Wallet is not connected')
 
   const context = createEtherSolContext(tokenInfo)
   const block = await web3Http.eth.getBlock(trans.blockNumber)
@@ -222,7 +222,7 @@ const getSolReceipient = async (tokenEtherAddr: string) => {
 
 const getWrappedMintAddress = async (tokenEtherAddr: string) => {
   const etherWallet = window.wormhole.sourceWallet.ether
-  if (!etherWallet) throw new Error('Login fist')
+  if (!etherWallet) throw new Error('Wallet is not connected')
   const provider = await etherWallet.getProvider()
   const etherContext = getEtherContext()
   const originAsset = await getOriginalAssetEth(

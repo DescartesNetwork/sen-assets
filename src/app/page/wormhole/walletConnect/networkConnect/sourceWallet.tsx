@@ -90,7 +90,6 @@ const SourceWallet = () => {
       <Col>
         <NetworkConnect
           connected={!!sourceWalletAddress}
-          installed={hasProvider}
           onConnect={onConnect}
           onDisconnect={onDisconnect}
         />

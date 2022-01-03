@@ -55,7 +55,7 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
         transferState.context.tokenInfo.address,
       )
       if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
-        throw new Error('Login fist')
+        throw new Error('Wallet is not connected')
 
       const wormholeTransfer = new WohEthSol(
         sourceWallet.ether,

@@ -30,7 +30,7 @@ const initialState: State = {
 
 const getWalletAddr = async () => {
   const walletAddress = await window.sentre.wallet?.getAddress()
-  if (!walletAddress) throw new Error('Login fist')
+  if (!walletAddress) throw new Error('Wallet is not connected')
   return walletAddress
 }
 
@@ -85,7 +85,7 @@ export const fetchTransactionHistory = createAsyncThunk<
       limit,
     }
     const walletAddress = await window.sentre.wallet?.getAddress()
-    if (!walletAddress) throw new Error('Login fist')
+    if (!walletAddress) throw new Error('Wallet is not connected')
 
     const transLogService = new TransLogService()
     const transLogData = await transLogService.collect(

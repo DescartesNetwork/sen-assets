@@ -49,12 +49,10 @@ export const WalletOption = ({
 
 export const NetworkConnect = ({
   connected,
-  installed,
   onConnect = () => {},
   onDisconnect = () => {},
 }: {
   connected: boolean
-  installed: boolean
   onConnect?: (type?: string) => void
   onDisconnect?: () => void
 }) => {
@@ -90,7 +88,7 @@ export const NetworkConnect = ({
       }
       trigger="click"
     >
-      <Button size="small" type="primary" disabled={!installed}>
+      <Button size="small" type="primary">
         Connect
       </Button>
     </Popover>

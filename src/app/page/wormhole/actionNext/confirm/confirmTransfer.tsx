@@ -46,7 +46,7 @@ const ConfirmAction = ({
       const { sourceWallet, targetWallet } = window.wormhole
       const tokenTransfer = sourceTokens[tokenAddress]
       if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
-        throw new Error('Login fist')
+        throw new Error('Wallet is not connected')
 
       let wormholeTransfer = new WohEthSol(
         sourceWallet.ether,

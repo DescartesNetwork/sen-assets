@@ -65,7 +65,7 @@ export const fetchEtherTokens = createAsyncThunk<{
   sourceTokens: Record<string, WohTokenInfo>
 }>(`${NAME}/fetchSourceTokens`, async () => {
   const wallet = window.wormhole.sourceWallet.ether
-  if (!wallet) throw new Error('Login fist')
+  if (!wallet) throw new Error('Wallet is not connected')
   const address = await wallet.getAddress()
   // fetch wallet's tokens
   const tokenList = await fetchTokenEther(address)
@@ -130,7 +130,7 @@ export const restoreTransfer = createAsyncThunk<
   { state: { wormhole: State } }
 >(`${NAME}/restoreTransfer`, async ({ transferState }, { getState }) => {
   const { sourceWallet } = window.wormhole
-  if (!sourceWallet.ether) throw new Error('Login fist')
+  if (!sourceWallet.ether) throw new Error('Wallet is not connected')
   const { wormhole } = getState()
   const {
     context: { id, tokenInfo },

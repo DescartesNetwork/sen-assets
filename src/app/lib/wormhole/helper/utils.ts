@@ -96,21 +96,21 @@ export const getAssociatedAddress = async (
 
 export const getWormholeDb = async <T>(key: WormholeStoreKey) => {
   const address = await window.sentre.wallet?.getAddress()
-  if (!address) throw new Error('Login fist')
+  if (!address) throw new Error('Wallet is not connected')
   const db = new PDB(address).createInstance('wormhole')
   const data = db.getItem<T>(key)
   return data
 }
 export const setWormholeDb = async (key: WormholeStoreKey, data: any) => {
   const address = await window.sentre.wallet?.getAddress()
-  if (!address) throw new Error('Login fist')
+  if (!address) throw new Error('Wallet is not connected')
   const db = new PDB(address).createInstance('wormhole')
   return db.setItem(key, data)
 }
 
 export const clearWormholeDb = async () => {
   const address = await window.sentre.wallet?.getAddress()
-  if (!address) throw new Error('Login fist')
+  if (!address) throw new Error('Wallet is not connected')
   const db = new PDB(address).dropInstance('wormhole')
   return db
 }

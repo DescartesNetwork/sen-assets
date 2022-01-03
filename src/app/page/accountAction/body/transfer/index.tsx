@@ -17,7 +17,7 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
 
   const getDstAssociatedAddr = async (): Promise<string | undefined> => {
     const { splt, wallet } = window.sentre
-    if (!wallet) throw new Error('Login first')
+    if (!wallet) throw new Error('Wallet is not connected')
     let associatedAddr = dstAddress
     if (!account.isAssociatedAddress(associatedAddr))
       associatedAddr = await splt.deriveAssociatedAddress(dstAddress, mint)
