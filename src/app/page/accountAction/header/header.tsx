@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux'
 
 import { Col, Row, Space, Typography } from 'antd'
-import WalletAddress from './walletAddress/walletAddress'
+import WalletAddress from './walletAddress'
 import Balance from 'app/components/balance'
 import { TokenPrice } from './tokenPrice'
 

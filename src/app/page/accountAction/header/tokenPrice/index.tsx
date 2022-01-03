@@ -1,6 +1,7 @@
-import { Col, Divider, Row, Space, Typography } from 'antd'
+import { Col, Divider, Row, Space, Tooltip, Typography } from 'antd'
 import { MintAvatar, MintSymbol } from 'shared/antd/mint'
 import Price, { PriceChange, PriceIndicator } from 'app/components/price'
+import IconButton from 'app/components/iconButton'
 
 export const TokenPrice = ({ mintAddress }: { mintAddress: string }) => {
   return (
@@ -11,6 +12,9 @@ export const TokenPrice = ({ mintAddress }: { mintAddress: string }) => {
           <Typography.Title className="title-color" level={5}>
             <MintSymbol mintAddress={mintAddress} />
           </Typography.Title>
+          <Tooltip title={`Mint Address: ${mintAddress}`}>
+            <IconButton name="information-circle-outline" />
+          </Tooltip>
         </Space>
       </Col>
       <Col>
@@ -18,7 +22,6 @@ export const TokenPrice = ({ mintAddress }: { mintAddress: string }) => {
           <PriceIndicator mintAddress={mintAddress} colorized />
           <PriceChange mintAddress={mintAddress} colorized />
           <Divider
-            // className="text-secondary"
             type="vertical"
             style={{ padding: 0, borderLeft: '1px solid #BEC4EC' }}
           />

@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Tooltip, Space, Typography, Popover } from 'antd'
 import QRCode from 'qrcode.react'
 import CopyToClipboard from 'react-copy-to-clipboard'
-import IconButton from './iconButton'
+import IconButton from 'app/components/iconButton'
 
 import { solExplorer, shortenAddress } from 'shared/util'
 import { useWallet } from 'senhub/providers'
