@@ -15,7 +15,6 @@ class MetamaskWallet implements IEtherWallet {
 
   getProvider = async () => {
     const detectedProvider: any = await detectEthereumProvider()
-    console.log(detectedProvider, detectedProvider.isMetaMask)
     if (!detectedProvider || !detectedProvider.isMetaMask)
       throw new Error('Cannot find MetaMask extension')
     const provider = new ethers.providers.Web3Provider(detectedProvider, 'any')
