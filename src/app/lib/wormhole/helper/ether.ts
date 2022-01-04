@@ -35,7 +35,7 @@ const abiDecoder = require('abi-decoder')
 type ParsedTransaction = {
   targetChain: number
   amount: string
-  token: string
+  token?: string
 }
 type TransParam = { name: string; type: string; value: string }
 
@@ -116,14 +116,24 @@ const parseTransParam = async (
   trans: TransactionEtherInfo,
 ): Promise<ParsedTransaction | undefined> => {
   abiDecoder.addABI(ABI_TOKEN_IMPLEMENTATION)
-  const transParams: TransParam[] = abiDecoder.decodeMethod(trans.input)?.params
-  if (!transParams) return
+  const { name, params: transParams }: { name: string; params: TransParam[] } =
+    abiDecoder.decodeMethod(trans.input)
+
+  if (!transParams || !name) return
   // parse token
-  const tokenAddr = transParams[0]?.value
-  if (!tokenAddr) return
-  const amount = transParams[1]?.value
-  const targetChainInput = transParams[2]?.value
-  if (!amount || !targetChainInput) return
+  const tokenAddr = transParams.find((item) => item.name === 'token')?.value
+  const amount = transParams.find((item) => item.name === 'amount')?.value
+  const targetChainInput = transParams.find(
+    (item) => item.name === 'recipientChain',
+  )?.value
+
+  if (!targetChainInput) return
+  if (name === 'wrapAndTransferETH' || !amount) {
+    return {
+      amount: trans.value,
+      targetChain: Number(targetChainInput),
+    }
+  }
   return {
     amount,
     token: tokenAddr,
@@ -137,10 +147,25 @@ export const createTransferState = async (
   const params = await parseTransParam(trans)
   if (!params || params.targetChain !== CHAIN_ID_SOLANA) return
 
-  const tokenInfo = await DataLoader.load(
-    'fetchEtherTokenInfo' + params.token,
-    () => fetchEtherTokenInfo(params.token),
-  )
+  let tokenInfo: WohTokenInfo
+  const token = params.token
+  if (!token) {
+    tokenInfo = {
+      balance: params.amount,
+      decimals: 18,
+      logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs/logo.png',
+      name: 'Ethereum',
+      symbol: 'ETH',
+      address: 'string',
+      amount: Number(params.amount),
+    }
+  } else {
+    tokenInfo = await DataLoader.load(
+      'fetchEtherTokenInfo' + params.token,
+      () => fetchEtherTokenInfo(token),
+    )
+  }
+
   const solWallet = await window.sentre.wallet?.getAddress()
   if (!solWallet) throw new Error('Login fist')
 
