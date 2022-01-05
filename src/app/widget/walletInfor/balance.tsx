@@ -24,17 +24,21 @@ const Balance = ({ hidden = false }: { hidden?: boolean }) => {
 
     // Calculate mints
     for (const accountAddress of Object.keys(accounts)) {
-      const { mint: mintAddress, amount } = accounts[accountAddress] || {}
-      const tokenInfor = await tokenProvider.findByAddress(mintAddress)
-      if (!tokenInfor) continue
-      const { extensions, decimals } = tokenInfor
-      const ticket = extensions?.coingeckoId
-      if (!ticket) continue
-      const cgkData = await fetchCGK(ticket)
-      const { price } = cgkData
-      const accountBalance =
-        Number(utils.undecimalize(amount, decimals)) * price
-      usd += accountBalance
+      try {
+        const { mint: mintAddress, amount } = accounts[accountAddress] || {}
+        const tokenInfor = await tokenProvider.findByAddress(mintAddress)
+        if (!tokenInfor) continue
+        const { extensions, decimals } = tokenInfor
+        const ticket = extensions?.coingeckoId
+        if (!ticket) continue
+        const cgkData = await fetchCGK(ticket)
+        const { price } = cgkData
+        const accountBalance =
+          Number(utils.undecimalize(amount, decimals)) * price
+        usd += accountBalance
+      } catch (er) {
+        console.log(er)
+      }
     }
     return setUsd(usd)
   }, [lamports, accounts, tokenProvider])
