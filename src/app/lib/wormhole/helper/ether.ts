@@ -147,19 +147,17 @@ export const createTransferState = async (
   const params = await parseTransParam(trans)
   if (!params || params.targetChain !== CHAIN_ID_SOLANA) return
 
-  let tokenInfo: WohTokenInfo
+  let tokenInfo: WohTokenInfo = {
+    balance: params.amount,
+    decimals: 18,
+    logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs/logo.png',
+    name: 'Ethereum',
+    symbol: 'ETH',
+    address: 'string',
+    amount: Number(params.amount),
+  }
   const token = params.token
-  if (!token) {
-    tokenInfo = {
-      balance: params.amount,
-      decimals: 18,
-      logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs/logo.png',
-      name: 'Ethereum',
-      symbol: 'ETH',
-      address: 'string',
-      amount: Number(params.amount),
-    }
-  } else {
+  if (token) {
     tokenInfo = await DataLoader.load(
       'fetchEtherTokenInfo' + params.token,
       () => fetchEtherTokenInfo(token),
