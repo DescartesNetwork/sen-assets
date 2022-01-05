@@ -83,7 +83,9 @@ const WormholeHistory = () => {
       </Col>
       <Col>
         <Button
-          disabled={fetchedDays >= 30 || isLoading === true}
+          disabled={
+            fetchedDays >= 30 || isLoading === true || !sourceWalletAddress
+          }
           onClick={onHandleViewMore}
           type="text"
           icon={<IonIcon name="chevron-down-outline" />}
