@@ -9,12 +9,11 @@ import { fetchTransactionHistory } from 'app/model/history.controller'
 import { TRANSACTION_COLUMNS } from './column'
 
 const ROW_PER_PAGE = 4
-const LIMIT_IN_STORE = 9
 
 const Transaction = () => {
   const dispatch = useDispatch<AppDispatch>()
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(false)
   const {
     history: { transaction },
     account: { accountSelected },
@@ -22,35 +21,25 @@ const Transaction = () => {
 
   const fetchHistory = useCallback(async () => {
     if (!accountSelected) return
-    await dispatch(
-      fetchTransactionHistory({
-        accountAddress: accountSelected,
-        isLoadMore: false,
-      }),
-    ).unwrap()
-    setIsLoading(false)
+    try {
+      setIsLoading(true)
+      await dispatch(
+        fetchTransactionHistory({
+          accountAddress: accountSelected,
+        }),
+      )
+    } catch (er) {
+      console.error(er)
+    } finally {
+      setIsLoading(false)
+    }
   }, [dispatch, accountSelected])
 
   useEffect(() => {
     fetchHistory()
-    return () => {
-      setIsLoading(true)
-      setAmountRow(ROW_PER_PAGE)
-    }
   }, [fetchHistory])
 
   const onHandleViewMore = () => {
-    const currentTransactionDataLength = transaction.slice(0, amountRow).length
-    if (transaction.length - currentTransactionDataLength <= LIMIT_IN_STORE) {
-      const lastSignature = transaction[transaction.length - 1].transactionId
-      dispatch(
-        fetchTransactionHistory({
-          accountAddress: accountSelected,
-          lastSignature,
-          isLoadMore: true,
-        }),
-      )
-    }
     setAmountRow(amountRow + ROW_PER_PAGE)
   }
 
