@@ -29,40 +29,16 @@ export class TransLogService {
   async collect(
     programId: string,
     configs: OptionsFetchSignature,
-    filterTransLog?: (transLog: TransLog) => Promise<boolean>,
   ): Promise<TransLog[]> {
-    let { lastSignature, limit } = configs
     const solana = new Solana()
     let transLogs: Array<TransLog> = []
-    let lastSignatureTmp = lastSignature
-    let isStop = false
-    let smartLimit = 200
-    while (!isStop) {
-      const confirmedTrans: ParsedConfirmedTransaction[] =
-        await solana.fetchTransactions(programId, {
-          ...configs,
-          lastSignature: lastSignatureTmp,
-          limit: smartLimit,
-        })
+    const confirmedTrans: ParsedConfirmedTransaction[] =
+      await solana.fetchTransactions(programId, configs)
 
-      for (const trans of confirmedTrans) {
-        lastSignatureTmp = trans.transaction.signatures[0]
-        const log = this.parseTransLog(trans)
-        if (!log) continue
-        // filter
-        if (filterTransLog) {
-          const checked = await filterTransLog(log)
-          if (!checked) continue
-        }
-        transLogs.push(log)
-
-        if (limit && transLogs.length >= limit) {
-          isStop = true
-          break
-        }
-      }
-      if (!confirmedTrans.length) break
-      if (isStop) break
+    for (const trans of confirmedTrans) {
+      const log = this.parseTransLog(trans)
+      if (!log) continue
+      transLogs.push(log)
     }
     return transLogs
   }
@@ -109,7 +85,6 @@ export class TransLogService {
       programId: instructionData.programId.toString(),
       data: (instructionData as PartiallyDecodedInstruction).data,
     }
-    transLog.actionType = ''
     transLog.actionType = this.parseAction(transLog)
 
     return transLog
