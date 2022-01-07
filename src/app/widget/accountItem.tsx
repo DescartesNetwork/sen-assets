@@ -27,7 +27,7 @@ const AccountItem = ({
       hoverable
       onClick={() => onClick(accountAddr)}
     >
-      <Row>
+      <Row gutter={[8, 8]} wrap={false} align="middle">
         <Col flex="auto">
           {/* Token Info */}
           <Space>

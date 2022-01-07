@@ -2,18 +2,15 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import moment from 'moment'
 import { utils } from '@senswap/sen-js'
 
-import { TransLogService } from 'app/lib/stat/logic/translog'
-
-import { OptionsFetchSignature } from 'app/lib/stat/constants/transaction'
 import { SOL_ADDRESS } from 'app/constant/sol'
 import { TransactionTransferHistoryData } from 'app/constant/types/history'
 import { TransLog } from 'app/lib/stat/entities/trans-log'
+import AssetsService from 'app/lib/stat/logic/assets/assets'
+import { DataLoader } from 'shared/dataloader'
 
 /**
  * Interface & Utility
  */
-
-const LIMIT_TRANSACTION = 9
 
 /**
  * Store constructor
@@ -35,7 +32,7 @@ const getWalletAddr = async () => {
 }
 
 const parseTransLog = async (accountAddress: string, transLog: TransLog) => {
-  const walletAddress = await getWalletAddr()
+  const walletAddress = await DataLoader.load('getWalletAddress', getWalletAddr)
   const actionTransfer = transLog.programTransfer[0]
   if (!actionTransfer) return
   // validate action transfeer
@@ -70,44 +67,24 @@ const parseTransLog = async (accountAddress: string, transLog: TransLog) => {
 
 export const fetchTransactionHistory = createAsyncThunk<
   State,
-  { accountAddress: string; lastSignature?: string; isLoadMore: boolean },
-  { state: { history: State } }
->(
-  `${NAME}/fetchTransactionHistory`,
-  async ({ accountAddress, lastSignature, isLoadMore }, { getState }) => {
-    const limit = LIMIT_TRANSACTION
-    const {
-      history: { transaction },
-    } = getState()
+  { accountAddress: string }
+>(`${NAME}/fetchTransactionHistory`, async ({ accountAddress }) => {
+  const walletAddress = await window.sentre.wallet?.getAddress()
+  if (!walletAddress) throw new Error('Wallet is not connected')
 
-    const option: OptionsFetchSignature = {
-      lastSignature,
-      limit,
-    }
-    const walletAddress = await window.sentre.wallet?.getAddress()
-    if (!walletAddress) throw new Error('Wallet is not connected')
+  const transLogService = new AssetsService(accountAddress)
+  const transLogData = await transLogService.fetchHistory()
 
-    const transLogService = new TransLogService()
-    const transLogData = await transLogService.collect(
-      accountAddress,
-      option,
-      async (transLog) => {
-        const data = await parseTransLog(accountAddress, transLog)
-        return !!data
-      },
-    )
+  let newHistory: TransactionTransferHistoryData[] = []
 
-    let history: TransactionTransferHistoryData[] = []
-    if (isLoadMore) history = [...transaction]
-
-    for (const transLogItem of transLogData) {
+  await Promise.all(
+    transLogData.map(async (transLogItem) => {
       const historyItem = await parseTransLog(accountAddress, transLogItem)
-      if (!historyItem) continue
-      history.push(historyItem)
-    }
-    return { transaction: history }
-  },
-)
+      if (historyItem) newHistory.push(historyItem)
+    }),
+  )
+  return { transaction: newHistory }
+})
 
 /**
  * Usual procedure
