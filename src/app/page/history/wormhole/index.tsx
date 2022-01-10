@@ -8,7 +8,7 @@ import { WORMHOLE_COLUMNS } from './column'
 import { AppDispatch, AppState } from 'app/model'
 import { fetchWohHistory } from 'app/model/wohHistory.controller'
 import { notifyError } from 'app/helper'
-import { RawEtherTransaction } from 'app/constant/types/wormhole'
+import { RawEtherTransaction, TransferState } from 'app/constant/types/wormhole'
 
 const ROW_PER_PAGE = 4
 
@@ -24,6 +24,7 @@ const WormholeHistory = () => {
   const [fromBlk, setFromBlk] = useState<number>()
   const [leftTrxInBlk, setLeftTrxInBlk] = useState<RawEtherTransaction[]>()
   const [fetchedDays, setFetchedDays] = useState<number>(0)
+  const [sortedHistory, setSortedHistory] = useState<TransferState[]>()
 
   /* toLowerCase sourceWalletAddress to avoid unnecessary rerenders caused by sensitive case */
   const nomalizeSourceAddr = useMemo(() => {
@@ -73,12 +74,19 @@ const WormholeHistory = () => {
     }
   }
 
+  useEffect(() => {
+    const sortedHistory = Object.values(wohHistory).sort(function (a, b) {
+      return b.context.time - a.context.time
+    })
+    setSortedHistory(sortedHistory)
+  }, [wohHistory])
+
   return (
     <Row gutter={[16, 16]} justify="center">
       <Col span={24}>
         <Table
           columns={WORMHOLE_COLUMNS}
-          dataSource={Object.values(wohHistory).slice(0, amountRow)}
+          dataSource={sortedHistory?.slice(0, amountRow)}
           rowClassName={(record, index) => (index % 2 ? 'odd-row' : 'even-row')}
           pagination={false}
           scroll={{ x: 1000 }}
