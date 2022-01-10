@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Col, Row, Table } from 'antd'
@@ -25,12 +25,17 @@ const WormholeHistory = () => {
   const [leftTrxInBlk, setLeftTrxInBlk] = useState<RawEtherTransaction[]>()
   const [fetchedDays, setFetchedDays] = useState<number>(0)
 
+  /* toLowerCase sourceWalletAddress to avoid unnecessary rerenders caused by sensitive case */
+  const nomalizeSourceAddr = useMemo(() => {
+    return sourceWalletAddress?.toLowerCase()
+  }, [sourceWalletAddress])
+
   const fetchBridgeHistory = useCallback(async () => {
-    if (!sourceWalletAddress) return
+    if (!nomalizeSourceAddr) return
     try {
       setIsLoading(true)
       const { fromBlock, leftTransaction, count } = await dispatch(
-        fetchWohHistory({ address: sourceWalletAddress }),
+        fetchWohHistory({ address: nomalizeSourceAddr }),
       ).unwrap()
       setFromBlk(fromBlock)
       setLeftTrxInBlk(leftTransaction)
@@ -40,7 +45,7 @@ const WormholeHistory = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [dispatch, sourceWalletAddress])
+  }, [dispatch, nomalizeSourceAddr])
 
   useEffect(() => {
     fetchBridgeHistory()

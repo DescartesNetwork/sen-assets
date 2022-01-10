@@ -153,7 +153,7 @@ export const createTransferState = async (
     logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs/logo.png',
     name: 'Ethereum',
     symbol: 'ETH',
-    address: 'string',
+    address: WETH_ADDRESS[getEtherNetwork()],
     amount: Number(params.amount),
   }
   const token = params.token
