@@ -24,9 +24,12 @@ const WormholeHistory = () => {
   const [fromBlk, setFromBlk] = useState<number>()
   const [leftTrxInBlk, setLeftTrxInBlk] = useState<RawEtherTransaction[]>()
   const [fetchedDays, setFetchedDays] = useState<number>(0)
+
+  /* To check sensitive case of sourceWalletAddress */
   const nomalizeSourceAddr = useMemo(() => {
     return sourceWalletAddress?.toLowerCase()
   }, [sourceWalletAddress])
+
   const fetchBridgeHistory = useCallback(async () => {
     if (!nomalizeSourceAddr) return
     try {
