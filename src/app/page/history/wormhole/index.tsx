@@ -25,7 +25,7 @@ const WormholeHistory = () => {
   const [leftTrxInBlk, setLeftTrxInBlk] = useState<RawEtherTransaction[]>()
   const [fetchedDays, setFetchedDays] = useState<number>(0)
 
-  /* To check sensitive case of sourceWalletAddress */
+  /* toLowerCase sourceWalletAddress to avoid unnecessary rerenders caused by sensitive case */
   const nomalizeSourceAddr = useMemo(() => {
     return sourceWalletAddress?.toLowerCase()
   }, [sourceWalletAddress])
