@@ -288,8 +288,10 @@ export const fetchTransactionEtherAddress = async (
   const currentBlockNumber = await web3Http.eth.getBlockNumber()
   const transactions: TransactionEtherInfo[] = []
   let leftTransaction: RawEtherTransaction[] = []
-  let fromBlock = fromBLK ? fromBLK : currentBlockNumber - 6371
-  let toBlock: string | number = 'latest'
+  let fromBlock: string | number = fromBLK
+    ? fromBLK - 6371
+    : currentBlockNumber - 6371
+  let toBlock: string | number = fromBlock + 6371
   let count: number = fetchedDays ? fetchedDays : 0
 
   if (leftTrx?.length) {
@@ -315,11 +317,11 @@ export const fetchTransactionEtherAddress = async (
     )
     leftTransaction = leftTrx
     if (transactions.length > 5) {
+      fromBlock += 6371
       return { transactions, leftTransaction, fromBlock, count }
     }
-    toBlock = fromBlock
-    fromBlock -= 6371
   }
+
   while (transactions.length < 5 && count < 30) {
     const tempTransactions: RawEtherTransaction[] =
       await web3WormholeContract.getPastEvents(
