@@ -285,13 +285,11 @@ export const fetchTransactionEtherAddress = async (
   fromBlock: number
   count: number
 }> => {
-  const currentBlockNumber = await web3Http.eth.getBlockNumber()
+  const currentBlockNumber = (await web3Http.eth.getBlockNumber()) as number
   const transactions: TransactionEtherInfo[] = []
   let leftTransaction: RawEtherTransaction[] = []
-  let fromBlock: string | number = fromBLK
-    ? fromBLK - 6371
-    : currentBlockNumber - 6371
-  let toBlock: string | number = fromBlock + 6371
+  let fromBlock: number = fromBLK ? fromBLK - 6371 : currentBlockNumber - 6371
+  let toBlock: number = fromBlock + 6371
   let count: number = fetchedDays ? fetchedDays : 0
 
   if (leftTrx?.length) {
