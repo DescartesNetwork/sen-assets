@@ -23,6 +23,9 @@ export type MoralisStructure = {
   apiKey: string
 }
 
+export const AVERAGE_BLOCK_PER_DAY = 6371
+export const MAX_QUERIRED_DAYS = 30
+
 export const ETH_BRIDGE_ADDRESS: EthAddressConfig = {
   mainnet: '0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B',
   goerli: '0x706abc4E45D419950511e474C7B9Ed348A4a716c',
@@ -46,18 +49,19 @@ export const MORALIS_INFO: MoralisStructure = {
   apiKey: 'N6yeIUl1FxCPZWbXyxLHWPAjSr6ahQeJTX3d19pSKCwHsLCzpWE7z1hilon4xDOd',
 }
 
-export const INFURA_API_KEY: String = '5eb1b92f2065414d9dd21858fac54257'
+export const INFURA_PROJECT_ID: String = '5eb1b92f2065414d9dd21858fac54257'
+export const INFURA_SECRET_KEY: String = 'ff3fa1218f644c85a7374e40014374f1'
 
 export const INFURA_API_HTTP_URL: EtherConfigSet = {
-  mainnet: `https://mainnet.infura.io/v3/${INFURA_API_KEY}`,
-  goerli: `https://goerli.infura.io/v3/${INFURA_API_KEY}`,
-  ropsten: `https://ropsten.infura.io/v3/${INFURA_API_KEY}`,
+  mainnet: `https://mainnet.infura.io/v3/${INFURA_PROJECT_ID}`,
+  goerli: `https://goerli.infura.io/v3/${INFURA_PROJECT_ID}`,
+  ropsten: `https://ropsten.infura.io/v3/${INFURA_PROJECT_ID}`,
 }
 
 export const INFURA_API_WSS_URL: EtherConfigSet = {
-  mainnet: `wss://mainnet.infura.io/ws/v3/${INFURA_API_KEY}`,
-  goerli: `wss://goerli.infura.io/ws/v3/${INFURA_API_KEY}`,
-  ropsten: `wss://ropsten.infura.io/ws/v3/${INFURA_API_KEY}`,
+  mainnet: `wss://mainnet.infura.io/ws/v3/${INFURA_PROJECT_ID}`,
+  goerli: `wss://goerli.infura.io/ws/v3/${INFURA_PROJECT_ID}`,
+  ropsten: `wss://ropsten.infura.io/ws/v3/${INFURA_PROJECT_ID}`,
 }
 
 export const WETH_ADDRESS: EthAddressConfig = {

@@ -9,6 +9,7 @@ import { ethers } from 'ethers'
 import { getEmitterAddressEth } from '@certusone/wormhole-sdk'
 import { getSignedVAA } from '@certusone/wormhole-sdk'
 import { getForeignAssetSolana } from '@certusone/wormhole-sdk'
+// import abiDecoder from 'abi-decoder-ts'
 
 import {
   StepTransfer,
@@ -27,8 +28,13 @@ import { ABI_TOKEN_IMPLEMENTATION } from 'app/lib/wormhole/constant/abis'
 import { Moralis } from './moralis'
 import { DataLoader } from 'shared/dataloader'
 import { web3Http, web3WormholeContract } from 'app/lib/etherWallet/web3Config'
-import { WETH_ADDRESS } from '../constant/ethConfig'
+import {
+  WETH_ADDRESS,
+  AVERAGE_BLOCK_PER_DAY,
+  MAX_QUERIRED_DAYS,
+} from '../constant/ethConfig'
 import { getEtherNetwork } from './utils'
+import { provider } from 'app/lib/etherWallet/ethersConfig'
 
 const abiDecoder = require('abi-decoder')
 
@@ -37,7 +43,7 @@ type ParsedTransaction = {
   amount: string
   token?: string
 }
-type TransParam = { name: string; type: string; value: string }
+type TransParam = { name: string; type: string; value?: any }
 
 export const fetchTokenEther = async (
   address: string,
@@ -55,7 +61,7 @@ export const fetchTokenEther = async (
 
   const ethAddress = await window.wormhole.sourceWallet.ether?.getAddress()
   let ethBalance = BigInt(0)
-  if (ethAddress) ethBalance = await web3Http.eth.getBalance(ethAddress)
+  if (ethAddress) ethBalance = BigInt(await web3Http.eth.getBalance(ethAddress))
 
   const ethDecimals = 18
   const weth: any = {
@@ -88,18 +94,21 @@ export const fetchEtherTokenInfo = async (
 
 export const fetchEtherSolHistory = async (
   address: string,
-  leftTrx?: RawEtherTransaction[],
+  minNeededTrx: number,
   fromBLK?: number,
   fetchedDays?: number,
 ): Promise<{
   history: TransferState[]
-  leftTransaction: RawEtherTransaction[]
   fromBlock: number
   count: number
 }> => {
   const history: TransferState[] = []
-  let { transactions, leftTransaction, count, fromBlock } =
-    await fetchTransactionEtherAddress(address, leftTrx, fromBLK, fetchedDays)
+  let { transactions, count, fromBlock } = await fetchTransactionEtherAddress(
+    address,
+    minNeededTrx,
+    fromBLK,
+    fetchedDays,
+  )
   const transferData = await Promise.all(
     transactions.map(async (trans) => {
       const transferState = await createTransferState(trans)
@@ -109,17 +118,22 @@ export const fetchEtherSolHistory = async (
   for (const data of transferData) {
     if (data) history.push(data)
   }
-  return { history, leftTransaction, count, fromBlock }
+  return { history, count, fromBlock }
 }
 
 const parseTransParam = async (
   trans: TransactionEtherInfo,
 ): Promise<ParsedTransaction | undefined> => {
   abiDecoder.addABI(ABI_TOKEN_IMPLEMENTATION)
+  // const decoded = abiDecoder.decodeMethod(trans.input)
+  // if (!decoded) return
   const { name, params: transParams }: { name: string; params: TransParam[] } =
     abiDecoder.decodeMethod(trans.input)
+  console.log(transParams, trans.input)
 
-  if (!transParams || !name) return
+  if (!name || !transParams) return
+  // const { name, params: transParams }: { name: string; params: TransParam[] } =
+  //   decoded
   // parse token
   const tokenAddr = transParams.find((item) => item.name === 'token')?.value
   const amount = transParams.find((item) => item.name === 'amount')?.value
@@ -168,8 +182,8 @@ export const createTransferState = async (
   if (!solWallet) throw new Error('Wallet is not connected')
 
   const context = createEtherSolContext(tokenInfo)
-  const block = await web3Http.eth.getBlock(trans.blockNumber)
-  context.time = new Date(block.timestamp * 1000).getTime()
+  const block = await web3Http.eth.getBlock(`${trans.blockNumber}`)
+  context.time = new Date(Number(block.timestamp) * 1000).getTime()
   const transferData: TransferData = {
     nextStep: StepTransfer.Unknown,
     amount: utils.undecimalize(BigInt(params.amount), tokenInfo.decimals),
@@ -195,7 +209,7 @@ export const restoreEther = async (
   const txHash = transferData.txHash
   if (!txHash) throw new Error('Invalid txHash')
 
-  const value = await web3Http.eth.getTransactionReceipt(txHash)
+  const value = await provider.getTransactionReceipt(txHash)
   const sequence = parseSequenceFromLogEth(
     value,
     state.context.srcBridgeAddress,
@@ -274,53 +288,115 @@ export const isTrxWithSol = async (
   return receipient === solCurrentReceipient
 }
 
+// export const fetchTransactionEtherAddress = async (
+//   address: string,
+//   leftTrx?: RawEtherTransaction[],
+//   fromBLK?: number,
+//   fetchedDays?: number,
+// ): Promise<{
+//   transactions: TransactionEtherInfo[]
+//   leftTransaction: RawEtherTransaction[]
+//   fromBlock: number
+//   count: number
+// }> => {
+//   const currentBlockNumber: number = await web3Http.eth.getBlockNumber()
+//   const transactions: TransactionEtherInfo[] = []
+//   let leftTransaction: RawEtherTransaction[] = []
+//   let fromBlock: number = fromBLK ? fromBLK - 6371 : currentBlockNumber - 6371
+//   let toBlock: number = fromBlock + 6371
+//   let count: number = fetchedDays ? fetchedDays : 0
+
+//   if (leftTrx?.length) {
+//     let isStop = false
+//     await Promise.all(
+//       leftTrx.map(async (tempTransaction) => {
+//         if (transactions.length >= 4) isStop = true
+//         if (isStop) return
+//         const isTrxSol = await isTrxWithSol(tempTransaction)
+//         if (isTrxSol === false) return
+
+//         const value = (await web3Http.eth.getTransaction(
+//           tempTransaction.transactionHash,
+//         )) as any
+//         if (value.from.toLowerCase() === address) {
+//           transactions.push(value)
+//           let index = leftTrx.indexOf(tempTransaction)
+//           if (index > -1) {
+//             leftTrx.splice(index, 1)
+//           }
+//         }
+//       }),
+//     )
+//     leftTransaction = leftTrx
+//     if (transactions.length > 5) {
+//       fromBlock += 6371
+//       return { transactions, leftTransaction, fromBlock, count }
+//     }
+//   }
+
+//   while (transactions.length < 5 && count < 30) {
+//     const tempTransactions: RawEtherTransaction[] =
+//       (await web3WormholeContract.getPastEvents(
+//         'LogMessagePublished',
+//         {
+//           fromBlock,
+//           toBlock,
+//         },
+//         function (error: any, events: any) {},
+//       )) as any
+//     await Promise.all(
+//       tempTransactions.map(async (tempTransaction) => {
+//         let isStop = false
+//         if (transactions.length >= 5) isStop = true
+//         if (isStop) return
+//         const isTrxSol = await isTrxWithSol(tempTransaction)
+//         if (isTrxSol === false) return
+
+//         const value = (await web3Http.eth.getTransaction(
+//           tempTransaction.transactionHash,
+//         )) as any
+//         if (value.from.toLowerCase() === address) {
+//           transactions.push(value)
+//           let index = tempTransactions.indexOf(tempTransaction)
+//           if (index > -1) {
+//             tempTransactions.splice(index, 1)
+//           }
+//         }
+//       }),
+//     )
+//     leftTransaction = tempTransactions.map((trx) => {
+//       // ReturnValues is a non-serializable data, so it must be removed
+//       delete trx.returnValues
+//       return { ...trx }
+//     })
+//     if (transactions.length < 5) {
+//       toBlock = fromBlock
+//       fromBlock -= 6371
+//       count++
+//     }
+//   }
+//   return { transactions, leftTransaction, fromBlock, count }
+// }
+
 export const fetchTransactionEtherAddress = async (
   address: string,
-  leftTrx?: RawEtherTransaction[],
+  minNeededTrx: number,
   fromBLK?: number,
   fetchedDays?: number,
 ): Promise<{
   transactions: TransactionEtherInfo[]
-  leftTransaction: RawEtherTransaction[]
   fromBlock: number
   count: number
 }> => {
   const currentBlockNumber: number = await web3Http.eth.getBlockNumber()
   const transactions: TransactionEtherInfo[] = []
-  let leftTransaction: RawEtherTransaction[] = []
-  let fromBlock: number = fromBLK ? fromBLK - 6371 : currentBlockNumber - 6371
-  let toBlock: number = fromBlock + 6371
+  let fromBlock: number = fromBLK
+    ? fromBLK - AVERAGE_BLOCK_PER_DAY
+    : currentBlockNumber - AVERAGE_BLOCK_PER_DAY
+  let toBlock: number = fromBlock + AVERAGE_BLOCK_PER_DAY
   let count: number = fetchedDays ? fetchedDays : 0
 
-  if (leftTrx?.length) {
-    let isStop = false
-    await Promise.all(
-      leftTrx.map(async (tempTransaction) => {
-        if (transactions.length >= 4) isStop = true
-        if (isStop) return
-        const isTrxSol = await isTrxWithSol(tempTransaction)
-        if (isTrxSol === false) return
-
-        const value = await web3Http.eth.getTransaction(
-          tempTransaction.transactionHash,
-        )
-        if (value.from.toLowerCase() === address) {
-          transactions.push(value)
-          let index = leftTrx.indexOf(tempTransaction)
-          if (index > -1) {
-            leftTrx.splice(index, 1)
-          }
-        }
-      }),
-    )
-    leftTransaction = leftTrx
-    if (transactions.length > 5) {
-      fromBlock += 6371
-      return { transactions, leftTransaction, fromBlock, count }
-    }
-  }
-
-  while (transactions.length < 5 && count < 30) {
+  while (transactions.length < minNeededTrx && count < MAX_QUERIRED_DAYS) {
     const tempTransactions: RawEtherTransaction[] =
       await web3WormholeContract.getPastEvents(
         'LogMessagePublished',
@@ -332,9 +408,6 @@ export const fetchTransactionEtherAddress = async (
       )
     await Promise.all(
       tempTransactions.map(async (tempTransaction) => {
-        let isStop = false
-        if (transactions.length >= 5) isStop = true
-        if (isStop) return
         const isTrxSol = await isTrxWithSol(tempTransaction)
         if (isTrxSol === false) return
 
@@ -343,23 +416,15 @@ export const fetchTransactionEtherAddress = async (
         )
         if (value.from.toLowerCase() === address) {
           transactions.push(value)
-          let index = tempTransactions.indexOf(tempTransaction)
-          if (index > -1) {
-            tempTransactions.splice(index, 1)
-          }
         }
       }),
     )
-    leftTransaction = tempTransactions.map((trx) => {
-      // ReturnValues is a non-serializable data, so it must be removed
-      delete trx.returnValues
-      return { ...trx }
-    })
-    if (transactions.length < 5) {
+
+    if (transactions.length < minNeededTrx) {
       toBlock = fromBlock
-      fromBlock -= 6371
+      fromBlock -= AVERAGE_BLOCK_PER_DAY
       count++
     }
   }
-  return { transactions, leftTransaction, fromBlock, count }
+  return { transactions, fromBlock, count }
 }
