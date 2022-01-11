@@ -153,7 +153,7 @@ export const createTransferState = async (
     logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs/logo.png',
     name: 'Ethereum',
     symbol: 'ETH',
-    address: 'string',
+    address: WETH_ADDRESS[getEtherNetwork()],
     amount: Number(params.amount),
   }
   const token = params.token
@@ -285,11 +285,11 @@ export const fetchTransactionEtherAddress = async (
   fromBlock: number
   count: number
 }> => {
-  const currentBlockNumber = await web3Http.eth.getBlockNumber()
+  const currentBlockNumber: number = await web3Http.eth.getBlockNumber()
   const transactions: TransactionEtherInfo[] = []
   let leftTransaction: RawEtherTransaction[] = []
-  let fromBlock = fromBLK ? fromBLK : currentBlockNumber - 6371
-  let toBlock: string | number = 'latest'
+  let fromBlock: number = fromBLK ? fromBLK - 6371 : currentBlockNumber - 6371
+  let toBlock: number = fromBlock + 6371
   let count: number = fetchedDays ? fetchedDays : 0
 
   if (leftTrx?.length) {
@@ -315,11 +315,11 @@ export const fetchTransactionEtherAddress = async (
     )
     leftTransaction = leftTrx
     if (transactions.length > 5) {
+      fromBlock += 6371
       return { transactions, leftTransaction, fromBlock, count }
     }
-    toBlock = fromBlock
-    fromBlock -= 6371
   }
+
   while (transactions.length < 5 && count < 30) {
     const tempTransactions: RawEtherTransaction[] =
       await web3WormholeContract.getPastEvents(
