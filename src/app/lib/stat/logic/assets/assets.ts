@@ -13,10 +13,16 @@ export default class AssetsService {
     this.programId = address
   }
 
+  private async getPDB(address: string) {
+    const walletAddress = await window.sentre.wallet?.getAddress()
+    if (!walletAddress) throw new Error('Invalid wallet address')
+    const key = `sen-assets:${net}:${address}`
+    return new PDB(walletAddress).createInstance(key)
+  }
+
   fetchTransLog = async (timeFrom: number, timeTo: number) => {
-    const db = new PDB(this.programId).createInstance('sen-assets' + net)
+    const db = await this.getPDB(this.programId)
     let cacheTransLog: TransLog[] = (await db.getItem('translogs')) || []
-    cacheTransLog = cacheTransLog.sort((a, b) => b.blockTime - a.blockTime)
     const fistTransLog = cacheTransLog[0]
     const lastTransLog = cacheTransLog[cacheTransLog.length - 1]
 
@@ -37,8 +43,18 @@ export default class AssetsService {
         secondTo: timeTo,
       })
     }
-    await db.setItem('translogs', cacheTransLog)
-    return cacheTransLog
+    //
+    const mapTransLogs: Record<string, TransLog> = {}
+    let filteredTransLogs: TransLog[] = []
+    for (const log of cacheTransLog) {
+      if (mapTransLogs[log.signature]) continue
+      filteredTransLogs.push(log)
+    }
+    filteredTransLogs = filteredTransLogs.sort(
+      (a, b) => b.blockTime - a.blockTime,
+    )
+    await db.setItem('translogs', filteredTransLogs)
+    return filteredTransLogs
   }
 
   fetchHistory = async () => {
