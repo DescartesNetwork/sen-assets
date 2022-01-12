@@ -18,38 +18,38 @@ export type TransactionDataPerAddress = {
 }
 
 export type TransactionEtherInfo = {
-  blockHash: string
-  blockNumber: string
-  block_timestamp: string
+  blockHash: string | null
+  blockNumber: number | null
+  block_timestamp?: string
   from: string
-  gas: string
-  gas_price: string
+  gas: number
+  gasPrice: string
   hash: string
-  input: InputEtherTransaction
-  nonce: string
-  receipt_contract_address: string
-  receipt_cumulative_gas_used: string
-  receipt_gas_used: string
-  receipt_root: string
-  receipt_status: string
-  to_address: string
-  transaction_index: string
+  input: string
+  nonce: number
+  receipt_contract_address?: string
+  receipt_cumulative_gas_used?: string
+  receipt_gas_used?: string
+  receipt_root?: string
+  receipt_status?: string
+  to: string | null
+  transactionIndex: number | null
   value: string
 }
 
 export type RawEtherTransaction = {
   address: string
   blockHash: string
-  blockNumber: string
+  blockNumber: number
   event: string
-  id: string
-  logIndex: string
+  id?: string
+  logIndex: number
   raw: RawLog
-  removed: string
+  removed?: string
   returnValues?: LogDetail
   signature: string
   transactionHash: string
-  transactionIndex: string
+  transactionIndex: number
 }
 
 export type RawLog = {
@@ -58,16 +58,7 @@ export type RawLog = {
 }
 
 export type LogDetail = {
-  0: string
-  1: string
-  2: string
-  3: string
-  4: string
-  consistencyLevel: string
-  nonce: string
-  payload: string
-  sender: string
-  sequence: string
+  [key: string]: any
 }
 
 export type InputEtherTransaction = {
