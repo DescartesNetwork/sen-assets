@@ -2,13 +2,17 @@ import {
   CHAIN_ID_SOLANA,
   getIsTransferCompletedSolana,
   getOriginalAssetEth,
+  getOriginalAssetSol,
   parseSequenceFromLogEth,
 } from '@certusone/wormhole-sdk'
 import { account, utils } from '@senswap/sen-js'
 import { ethers } from 'ethers'
-import { getEmitterAddressEth } from '@certusone/wormhole-sdk'
-import { getSignedVAA } from '@certusone/wormhole-sdk'
-import { getForeignAssetSolana } from '@certusone/wormhole-sdk'
+import {
+  getEmitterAddressEth,
+  getSignedVAA,
+  getForeignAssetSolana,
+  uint8ArrayToHex,
+} from '@certusone/wormhole-sdk'
 
 import {
   StepTransfer,
@@ -34,6 +38,7 @@ import {
 } from '../constant/ethConfig'
 import { getEtherNetwork } from './utils'
 import { provider } from 'app/lib/etherWallet/ethersConfig'
+import { getSolConnection } from './solana'
 
 const abiDecoder = require('abi-decoder')
 
@@ -331,4 +336,26 @@ export const fetchTransactionEtherAddress = async (
     }
   }
   return { transactions, fromBlock, count }
+}
+
+export const compareHexAddress = (
+  firstHexAddress: string,
+  secondHexAddress: string,
+) =>
+  getEmitterAddressEth(firstHexAddress) ===
+  getEmitterAddressEth(secondHexAddress)
+
+export const fetchForeignAssetEtherFromSol = async (
+  solTokenAddress: string,
+) => {
+  const solContext = getSolContext()
+  if (!account.isAddress(solTokenAddress))
+    throw new Error('Invalid token address')
+
+  const originAsset = await getOriginalAssetSol(
+    getSolConnection(),
+    solContext.tokenBridgeAddress,
+    solTokenAddress,
+  )
+  return uint8ArrayToHex(originAsset.assetAddress)
 }

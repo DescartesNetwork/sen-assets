@@ -1,6 +1,4 @@
-import { ABI } from 'abi-decoder-ts/src/types'
-
-export const ABI_TOKEN_IMPLEMENTATION: ABI.Item[] = [
+export const ABI_TOKEN_IMPLEMENTATION = [
   {
     anonymous: false,
     inputs: [
