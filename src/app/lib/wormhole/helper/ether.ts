@@ -338,12 +338,15 @@ export const fetchTransactionEtherAddress = async (
   return { transactions, fromBlock, count }
 }
 
+export const getTrickHexAddress = (address: string) => {
+  if (!address.startsWith('0x')) address = address.replace(/^0+/, '0x')
+  return address.toLowerCase()
+}
 export const compareHexAddress = (
   firstHexAddress: string,
   secondHexAddress: string,
 ) =>
-  getEmitterAddressEth(firstHexAddress) ===
-  getEmitterAddressEth(secondHexAddress)
+  getTrickHexAddress(firstHexAddress) === getTrickHexAddress(secondHexAddress)
 
 export const fetchForeignAssetEtherFromSol = async (
   solTokenAddress: string,

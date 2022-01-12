@@ -4,23 +4,49 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, AppState } from 'app/model'
 import { randomColor } from 'shared/util'
 import { setSourceToken } from 'app/model/wormhole.controller'
-import { useEffect } from 'react'
-
-const FAU_TOKEN = '0xba62bcfcaafc6622853cca2be6ac7d845bc0f2dc'
+import { useCallback, useEffect, useMemo } from 'react'
+import {
+  fetchForeignAssetEtherFromSol,
+  compareHexAddress,
+} from 'app/lib/wormhole/helper/ether'
+import { account } from '@senswap/sen-js'
+import { useLocation } from 'react-router-dom'
 
 const SourceMintSelect = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
     wormhole: { sourceTokens, sourceWalletAddress, tokenAddress },
   } = useSelector((state: AppState) => state)
+  const query = new URLSearchParams(useLocation().search)
+  const tokenFromSwap = query.get('tokenAddress') || ''
+
+  const ethTokens = useMemo(() => {
+    return Object.keys(sourceTokens)
+  }, [sourceTokens])
 
   const onChange = (tokenAddress: string) =>
     dispatch(setSourceToken({ tokenAddress }))
 
+  const fetchToken = useCallback(async () => {
+    if (
+      !account.isAddress(tokenFromSwap) ||
+      !sourceWalletAddress ||
+      !ethTokens.length
+    )
+      return
+
+    const ethTokenFromSol = await fetchForeignAssetEtherFromSol(tokenFromSwap)
+    for (const token of ethTokens) {
+      if (compareHexAddress(ethTokenFromSol, token)) {
+        dispatch(setSourceToken({ tokenAddress: token }))
+        break
+      }
+    }
+  }, [dispatch, ethTokens, sourceWalletAddress, tokenFromSwap])
+
   useEffect(() => {
-    if (!FAU_TOKEN || !sourceWalletAddress || !sourceTokens?.[FAU_TOKEN]) return
-    dispatch(setSourceToken({ tokenAddress: FAU_TOKEN }))
-  }, [dispatch, sourceTokens, sourceWalletAddress])
+    fetchToken()
+  }, [fetchToken])
 
   return (
     <Select

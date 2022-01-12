@@ -16,9 +16,20 @@ import {
 import session from 'shared/session'
 import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
 import { notifyError } from 'app/helper'
+import { useHistory, useLocation } from 'react-router-dom'
+import configs from 'app/configs'
+import { account } from '@senswap/sen-js'
+
+const {
+  manifest: { appId },
+} = configs
 
 const SourceWallet = () => {
   const dispatch = useDispatch<AppDispatch>()
+  const history = useHistory()
+  const query = new URLSearchParams(useLocation().search)
+  const tokenFromSwap = query.get('tokenAddress') || ''
+
   const {
     wormhole: { sourceWalletAddress, sourceChain },
   } = useSelector((state: AppState) => state)
@@ -64,11 +75,12 @@ const SourceWallet = () => {
     try {
       const wallet = getSourceWallet()
       await dispatch(disconnectSourceWallet())
+      if (account.isAddress(tokenFromSwap)) history.push(appId)
       return wallet.disconnect()
     } catch (er) {
       return notifyError(er)
     }
-  }, [getSourceWallet, dispatch])
+  }, [dispatch, getSourceWallet, history, tokenFromSwap])
 
   // reconnect source wallet
   useEffect(() => {

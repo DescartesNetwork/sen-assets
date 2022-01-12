@@ -1,3 +1,5 @@
+import { useLocation } from 'react-router-dom'
+
 import {
   Avatar,
   Button,
@@ -18,6 +20,10 @@ import METAMASK from 'app/static/images/metamask.png'
 import COIN98 from 'app/static/images/coin98.png'
 import MetamaskWallet from 'app/lib/etherWallet/metamask'
 import Coin98Wallet from 'app/lib/etherWallet/coin98'
+import { useEffect, useState } from 'react'
+import { account } from '@senswap/sen-js'
+import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
+import session from 'shared/session'
 
 export type WalletOptionProps = {
   onClick?: () => void
@@ -56,9 +62,24 @@ export const NetworkConnect = ({
   onConnect?: (type?: string) => void
   onDisconnect?: () => void
 }) => {
+  const [visisble, setVisible] = useState(false)
+  const query = new URLSearchParams(useLocation().search)
+  const tokenFromSwap = query.get('tokenAddress') || ''
+  const walletType = session.get(WOH_WALLET)
+
+  const disconnectWallet = () => {
+    setVisible(false)
+    return onDisconnect()
+  }
+
+  useEffect(() => {
+    if (!account.isAddress(tokenFromSwap) || walletType) return
+    return setVisible(true)
+  }, [tokenFromSwap, walletType])
+
   if (connected)
     return (
-      <Button size="small" onClick={onDisconnect}>
+      <Button size="small" onClick={disconnectWallet}>
         Disconnect
       </Button>
     )
@@ -86,9 +107,10 @@ export const NetworkConnect = ({
           </Col>
         </Row>
       }
+      visible={visisble}
       trigger="click"
     >
-      <Button size="small" type="primary">
+      <Button size="small" onClick={() => setVisible(true)} type="primary">
         Connect
       </Button>
     </Popover>
