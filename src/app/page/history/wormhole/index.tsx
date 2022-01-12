@@ -8,7 +8,7 @@ import { WORMHOLE_COLUMNS } from './column'
 import { AppDispatch, AppState } from 'app/model'
 import { fetchWohHistory } from 'app/model/wohHistory.controller'
 import { notifyError } from 'app/helper'
-import { RawEtherTransaction, TransferState } from 'app/constant/types/wormhole'
+import { TransferState } from 'app/constant/types/wormhole'
 
 const ROW_PER_PAGE = 4
 
@@ -22,7 +22,6 @@ const WormholeHistory = () => {
 
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
   const [fromBlk, setFromBlk] = useState<number>()
-  const [leftTrxInBlk, setLeftTrxInBlk] = useState<RawEtherTransaction[]>()
   const [fetchedDays, setFetchedDays] = useState<number>(0)
   const [sortedHistory, setSortedHistory] = useState<TransferState[]>()
 
@@ -35,11 +34,13 @@ const WormholeHistory = () => {
     if (!nomalizeSourceAddr) return
     try {
       setIsLoading(true)
-      const { fromBlock, leftTransaction, count } = await dispatch(
-        fetchWohHistory({ address: nomalizeSourceAddr }),
+      const { fromBlock, count } = await dispatch(
+        fetchWohHistory({
+          address: nomalizeSourceAddr,
+          minNeededTrx: ROW_PER_PAGE,
+        }),
       ).unwrap()
       setFromBlk(fromBlock)
-      setLeftTrxInBlk(leftTransaction)
       setFetchedDays(count)
     } catch (er) {
       notifyError(er)
@@ -55,18 +56,20 @@ const WormholeHistory = () => {
   const onHandleViewMore = async () => {
     setAmountRow(amountRow + ROW_PER_PAGE)
     try {
-      // setIsLoading(true)
-      const { fromBlock, leftTransaction, count } = await dispatch(
-        fetchWohHistory({
-          address: sourceWalletAddress,
-          fromBLK: fromBlk,
-          leftTrx: leftTrxInBlk,
-          fetchedDays: fetchedDays,
-        }),
-      ).unwrap()
-      setFromBlk(fromBlock)
-      setLeftTrxInBlk(leftTransaction)
-      setFetchedDays(count)
+      setIsLoading(true)
+      if (Object.keys(wohHistory).length < amountRow + ROW_PER_PAGE) {
+        const { fromBlock, count } = await dispatch(
+          fetchWohHistory({
+            address: sourceWalletAddress,
+            minNeededTrx:
+              amountRow + ROW_PER_PAGE - Object.keys(wohHistory).length,
+            fromBLK: fromBlk,
+            fetchedDays: fetchedDays,
+          }),
+        ).unwrap()
+        setFromBlk(fromBlock)
+        setFetchedDays(count)
+      }
     } catch (er) {
       notifyError(er)
     } finally {

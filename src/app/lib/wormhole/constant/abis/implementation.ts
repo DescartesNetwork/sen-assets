@@ -1,4 +1,6 @@
-export const ABI_IMPLEMENTATION = [
+import { AbiItem } from 'web3-utils/types'
+
+export const ABI_IMPLEMENTATION: AbiItem[] = [
   {
     anonymous: false,
     inputs: [
@@ -477,5 +479,4 @@ export const ABI_IMPLEMENTATION = [
     stateMutability: 'view',
     type: 'function',
   },
-  { stateMutability: 'payable', type: 'receive' },
 ]
