@@ -4,14 +4,23 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, AppState } from 'app/model'
 import { randomColor } from 'shared/util'
 import { setSourceToken } from 'app/model/wormhole.controller'
+import { useEffect } from 'react'
+
+const FAU_TOKEN = '0xba62bcfcaafc6622853cca2be6ac7d845bc0f2dc'
 
 const SourceMintSelect = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
     wormhole: { sourceTokens, sourceWalletAddress, tokenAddress },
   } = useSelector((state: AppState) => state)
+
   const onChange = (tokenAddress: string) =>
     dispatch(setSourceToken({ tokenAddress }))
+
+  useEffect(() => {
+    if (!FAU_TOKEN || !sourceWalletAddress || !sourceTokens?.[FAU_TOKEN]) return
+    dispatch(setSourceToken({ tokenAddress: FAU_TOKEN }))
+  }, [dispatch, sourceTokens, sourceWalletAddress])
 
   return (
     <Select
