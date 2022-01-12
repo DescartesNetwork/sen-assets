@@ -1,4 +1,6 @@
-export const ABI_TOKEN_IMPLEMENTATION = [
+import { ABI } from 'abi-decoder-ts/src/types'
+
+export const ABI_TOKEN_IMPLEMENTATION: ABI.Item[] = [
   {
     anonymous: false,
     inputs: [
@@ -771,9 +773,5 @@ export const ABI_TOKEN_IMPLEMENTATION = [
     ],
     stateMutability: 'view',
     type: 'function',
-  },
-  {
-    stateMutability: 'payable',
-    type: 'receive',
   },
 ]

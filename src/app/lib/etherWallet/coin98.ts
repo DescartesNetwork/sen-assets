@@ -23,7 +23,7 @@ class Coin98Wallet implements IEtherWallet {
     })
     if (Number(currentChainId) !== expectedChainId)
       throw new Error(
-        `Incorrect network configs. Please change the network to ${getEtherNetwork()}.`,
+        `Incorrect Solana network of Coin98. Please change the network to ${getEtherNetwork()}.`,
       )
 
     return provider

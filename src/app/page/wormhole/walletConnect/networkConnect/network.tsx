@@ -68,7 +68,7 @@ export const NetworkConnect = ({
       content={
         <Row gutter={[16, 16]} style={{ maxWidth: 256 }}>
           <Col span={24}>
-            <Typography.Title level={5}>Wallet Connection</Typography.Title>
+            <Typography.Title level={5}>Ethereum Connection</Typography.Title>
           </Col>
           <Col span={24}>
             <WalletOption
