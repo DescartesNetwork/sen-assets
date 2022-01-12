@@ -9,7 +9,6 @@ import { ethers } from 'ethers'
 import { getEmitterAddressEth } from '@certusone/wormhole-sdk'
 import { getSignedVAA } from '@certusone/wormhole-sdk'
 import { getForeignAssetSolana } from '@certusone/wormhole-sdk'
-// import abiDecoder from 'abi-decoder-ts'
 
 import {
   StepTransfer,
@@ -125,15 +124,10 @@ const parseTransParam = async (
   trans: TransactionEtherInfo,
 ): Promise<ParsedTransaction | undefined> => {
   abiDecoder.addABI(ABI_TOKEN_IMPLEMENTATION)
-  // const decoded = abiDecoder.decodeMethod(trans.input)
-  // if (!decoded) return
   const { name, params: transParams }: { name: string; params: TransParam[] } =
     abiDecoder.decodeMethod(trans.input)
-  console.log(transParams, trans.input)
 
   if (!name || !transParams) return
-  // const { name, params: transParams }: { name: string; params: TransParam[] } =
-  //   decoded
   // parse token
   const tokenAddr = transParams.find((item) => item.name === 'token')?.value
   const amount = transParams.find((item) => item.name === 'amount')?.value
@@ -287,96 +281,6 @@ export const isTrxWithSol = async (
   const solCurrentReceipient = await getSolReceipient(tokenEtherAddr)
   return receipient === solCurrentReceipient
 }
-
-// export const fetchTransactionEtherAddress = async (
-//   address: string,
-//   leftTrx?: RawEtherTransaction[],
-//   fromBLK?: number,
-//   fetchedDays?: number,
-// ): Promise<{
-//   transactions: TransactionEtherInfo[]
-//   leftTransaction: RawEtherTransaction[]
-//   fromBlock: number
-//   count: number
-// }> => {
-//   const currentBlockNumber: number = await web3Http.eth.getBlockNumber()
-//   const transactions: TransactionEtherInfo[] = []
-//   let leftTransaction: RawEtherTransaction[] = []
-//   let fromBlock: number = fromBLK ? fromBLK - 6371 : currentBlockNumber - 6371
-//   let toBlock: number = fromBlock + 6371
-//   let count: number = fetchedDays ? fetchedDays : 0
-
-//   if (leftTrx?.length) {
-//     let isStop = false
-//     await Promise.all(
-//       leftTrx.map(async (tempTransaction) => {
-//         if (transactions.length >= 4) isStop = true
-//         if (isStop) return
-//         const isTrxSol = await isTrxWithSol(tempTransaction)
-//         if (isTrxSol === false) return
-
-//         const value = (await web3Http.eth.getTransaction(
-//           tempTransaction.transactionHash,
-//         )) as any
-//         if (value.from.toLowerCase() === address) {
-//           transactions.push(value)
-//           let index = leftTrx.indexOf(tempTransaction)
-//           if (index > -1) {
-//             leftTrx.splice(index, 1)
-//           }
-//         }
-//       }),
-//     )
-//     leftTransaction = leftTrx
-//     if (transactions.length > 5) {
-//       fromBlock += 6371
-//       return { transactions, leftTransaction, fromBlock, count }
-//     }
-//   }
-
-//   while (transactions.length < 5 && count < 30) {
-//     const tempTransactions: RawEtherTransaction[] =
-//       (await web3WormholeContract.getPastEvents(
-//         'LogMessagePublished',
-//         {
-//           fromBlock,
-//           toBlock,
-//         },
-//         function (error: any, events: any) {},
-//       )) as any
-//     await Promise.all(
-//       tempTransactions.map(async (tempTransaction) => {
-//         let isStop = false
-//         if (transactions.length >= 5) isStop = true
-//         if (isStop) return
-//         const isTrxSol = await isTrxWithSol(tempTransaction)
-//         if (isTrxSol === false) return
-
-//         const value = (await web3Http.eth.getTransaction(
-//           tempTransaction.transactionHash,
-//         )) as any
-//         if (value.from.toLowerCase() === address) {
-//           transactions.push(value)
-//           let index = tempTransactions.indexOf(tempTransaction)
-//           if (index > -1) {
-//             tempTransactions.splice(index, 1)
-//           }
-//         }
-//       }),
-//     )
-//     leftTransaction = tempTransactions.map((trx) => {
-//       // ReturnValues is a non-serializable data, so it must be removed
-//       delete trx.returnValues
-//       return { ...trx }
-//     })
-//     if (transactions.length < 5) {
-//       toBlock = fromBlock
-//       fromBlock -= 6371
-//       count++
-//     }
-//   }
-//   return { transactions, leftTransaction, fromBlock, count }
-// }
 
 export const fetchTransactionEtherAddress = async (
   address: string,
