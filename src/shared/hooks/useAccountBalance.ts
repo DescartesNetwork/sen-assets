@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { account, DEFAULT_EMPTY_ADDRESS, utils } from '@senswap/sen-js'
 import { useAccount, useWallet } from '@senhub/providers'
+
 import useMintDecimals from './useMintDecimals'
 
 export type AccountBalanceReturn = {

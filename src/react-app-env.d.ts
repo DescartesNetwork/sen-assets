@@ -87,9 +87,6 @@ declare module '@senhub/context' {
 declare module '@senhub/providers' {
   export * from 'os/providers'
 }
-declare module 'senhub/providers' {
-  export * from 'os/providers'
-}
 
 /**
  * Declare namespace
