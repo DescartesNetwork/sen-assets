@@ -1,16 +1,17 @@
-import { Space, Select, Divider, Typography, Avatar } from 'antd'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useLocation } from 'react-router-dom'
+import { account } from '@senswap/sen-js'
+
+import { Space, Select, Divider, Typography, Avatar } from 'antd'
 
 import { AppDispatch, AppState } from 'app/model'
 import { randomColor } from 'shared/util'
 import { setSourceToken } from 'app/model/wormhole.controller'
-import { useCallback, useEffect, useMemo } from 'react'
 import {
   fetchForeignAssetEtherFromSol,
   compareHexAddress,
 } from 'app/lib/wormhole/helper/ether'
-import { account } from '@senswap/sen-js'
-import { useLocation } from 'react-router-dom'
 
 const SourceMintSelect = () => {
   const dispatch = useDispatch<AppDispatch>()

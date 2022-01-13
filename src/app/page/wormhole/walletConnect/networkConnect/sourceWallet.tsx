@@ -1,10 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useHistory, useLocation } from 'react-router-dom'
 import { CHAIN_ID_ETH } from '@certusone/wormhole-sdk'
 import detectEthereumProvider from '@metamask/detect-provider'
+import { account } from '@senswap/sen-js'
 
 import { Col, Row } from 'antd'
 import Network, { NetworkConnect } from './network'
+import session from 'shared/session'
 
 import MetamaskWallet from 'app/lib/etherWallet/metamask'
 import Coin98Wallet from 'app/lib/etherWallet/coin98'
@@ -13,12 +16,9 @@ import {
   connectSourceWallet,
   disconnectSourceWallet,
 } from 'app/model/wormhole.controller'
-import session from 'shared/session'
 import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
 import { notifyError } from 'app/helper'
-import { useHistory, useLocation } from 'react-router-dom'
 import configs from 'app/configs'
-import { account } from '@senswap/sen-js'
 
 const {
   manifest: { appId },
