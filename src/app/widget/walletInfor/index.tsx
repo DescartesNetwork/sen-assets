@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { utils } from '@senswap/sen-js'
+import { useWallet } from '@senhub/providers'
 
 import { Avatar, Button, Col, Row, Space, Typography } from 'antd'
 import Address from './address'
@@ -6,8 +8,6 @@ import Balance from './balance'
 import IonIcon from 'shared/antd/ionicon'
 
 import { shortenAddress } from 'shared/util'
-import { useWallet } from 'senhub/providers'
-import { utils } from '@senswap/sen-js'
 
 const WalletInfor = () => {
   const {

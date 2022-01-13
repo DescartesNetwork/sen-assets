@@ -1,13 +1,13 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { account } from '@senswap/sen-js'
+import { useWallet } from '@senhub/providers'
 
 import { Col, Row, Tag } from 'antd'
 import Network from './network'
 
 import { AppDispatch, AppState } from 'app/model'
 import { connectTargetWallet } from 'app/model/wormhole.controller'
-import { useWallet } from 'senhub/providers'
-import { account } from '@senswap/sen-js'
 
 const TargetWallet = () => {
   const dispatch = useDispatch<AppDispatch>()

@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { utils } from '@senswap/sen-js'
+import { useAccount, useMint, useWallet } from '@senhub/providers'
 
 import { Skeleton, Typography } from 'antd'
 
 import { numeric, fetchCGK } from 'shared/util'
-import { useAccount, useMint, useWallet } from 'senhub/providers'
 
 const Balance = ({ hidden = false }: { hidden?: boolean }) => {
   const { accounts } = useAccount()

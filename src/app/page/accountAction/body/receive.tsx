@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useAccount, useWallet } from '@senhub/providers'
 
 import { Col, Row, Space, Switch, Typography } from 'antd'
 import InputCopy from 'app/components/inputCopy'
 import QRcode from 'qrcode.react'
-
-import { useAccount, useWallet } from 'senhub/providers'
 
 const Receive = ({ accountAddr }: { accountAddr: string }) => {
   const { accounts } = useAccount()

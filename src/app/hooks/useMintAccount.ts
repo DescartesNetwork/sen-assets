@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
-
 import { utils } from '@senswap/sen-js'
-import { useAccount, useWallet } from 'senhub/providers'
+import { useAccount, useWallet } from '@senhub/providers'
 
 import { SOL_ADDRESS } from 'app/constant/sol'
 import useMintDecimals from 'shared/hooks/useMintDecimals'

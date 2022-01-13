@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import LazyLoad from '@senswap/react-lazyload'
 import { account } from '@senswap/sen-js'
 import { TokenInfo } from '@solana/spl-token-registry'
+import { useAccount, useMint, useWallet } from '@senhub/providers'
 
 import {
   Row,
@@ -16,7 +17,6 @@ import {
 } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
-import { useAccount, useMint, useWallet } from 'senhub/providers'
 import { notifyError, notifySuccess } from 'app/helper'
 
 const KEY_SIZE = 3

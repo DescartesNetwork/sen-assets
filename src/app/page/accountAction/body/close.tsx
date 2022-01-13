@@ -1,9 +1,9 @@
 import { useDispatch } from 'react-redux'
+import { useAccount } from '@senhub/providers'
 
 import { Row, Col, Card, Typography, Button, Space } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
 
-import { useAccount } from 'senhub/providers'
 import { explorer, shortenAddress } from 'shared/util'
 import { selectAccount } from 'app/model/account.controller'
 import { DEFAULT_EMPTY_ADDRESS } from '@senswap/sen-js'

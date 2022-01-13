@@ -1,9 +1,9 @@
+import { useAccount } from '@senhub/providers'
+
 import { Card, Col, Row, Space, Typography } from 'antd'
 import { MintAvatar, MintName, MintSymbol } from 'shared/antd/mint'
 import Balance from 'app/components/balance'
 import IonIcon from 'shared/antd/ionicon'
-
-import { useAccount } from 'senhub/providers'
 
 const AccountItem = ({
   accountAddr,

@@ -1,5 +1,5 @@
+import { useWallet } from '@senhub/providers'
 import { Row, Col, Typography, Input } from 'antd'
-import { useWallet } from 'senhub/providers'
 
 const Destination = ({
   onChange,

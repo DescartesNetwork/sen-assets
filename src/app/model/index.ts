@@ -12,7 +12,7 @@ import transHistory from './history.controller'
 const model = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware(bigintSerializationMiddleware),
-  devTools: devTools('myapp'),
+  devTools: devTools(process.env.REACT_APP_ID as string),
   reducer: {
     history: transHistory,
     settings,

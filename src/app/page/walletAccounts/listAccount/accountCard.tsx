@@ -1,8 +1,9 @@
+import { useAccount } from '@senhub/providers'
+
 import { Card, Col, Row, Space, Typography } from 'antd'
 import { MintAvatar, MintName, MintSymbol } from 'shared/antd/mint'
 import Price, { PriceChange, PriceIndicator } from 'app/components/price'
 
-import { useAccount } from 'senhub/providers'
 import Balance from 'app/components/balance'
 
 const AccountCard = ({
