@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 
-import { Button, Col, Row, Tooltip } from 'antd'
+import { Button, Col, Row } from 'antd'
 import ConfirmBridge from './confirm'
 
 import { AppDispatch, AppState } from 'app/model'
@@ -21,16 +21,14 @@ const WormAction = () => {
     <Row>
       <Col span={24}>
         {loading ? (
-          <Tooltip title={'Have transaction in progress'}>
-            <Button
-              disabled={visible}
-              type="primary"
-              onClick={() => setVisible(true)}
-              block
-            >
-              Reopen
-            </Button>
-          </Tooltip>
+          <Button
+            disabled={visible}
+            type="primary"
+            onClick={() => setVisible(true)}
+            block
+          >
+            Reopen
+          </Button>
         ) : (
           <Button
             disabled={!Number(amount)}
