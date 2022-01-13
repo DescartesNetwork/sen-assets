@@ -1,10 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { WalletInterface } from '@senswap/sen-js'
+import { ChainId } from '@certusone/wormhole-sdk'
 
 import { fetchTokenEther } from 'app/lib/wormhole/helper/ether'
 import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
-import { WohTokenInfo, State, TransferState } from 'app/constant/types/wormhole'
+import { WohTokenInfo, TransferState } from 'app/constant/types/wormhole'
 
 /**
  * Interface & Utility
@@ -14,12 +15,28 @@ window.wormhole = {
   targetWallet: {},
 }
 
+export type WohState = {
+  // source wallet
+  sourceTokens: Record<string, WohTokenInfo>
+  sourceChain: ChainId
+  sourceWalletAddress: string
+  // target wallet
+  targetWalletAddress: string
+  targetChain: ChainId
+  // other
+  tokenAddress: string
+  amount: string
+  processId: string
+  visible: boolean
+  waiting: boolean
+}
+
 /**
  * Store constructor
  */
 
 const NAME = 'wormhole'
-const initialState: State = {
+const initialState: WohState = {
   // source wallet
   sourceTokens: {},
   sourceChain: CHAIN_ID_ETH,
@@ -32,6 +49,7 @@ const initialState: State = {
   amount: '',
   processId: '',
   visible: false,
+  waiting: false,
 }
 
 /**
@@ -39,11 +57,7 @@ const initialState: State = {
  */
 
 export const connectSourceWallet = createAsyncThunk<
-  {
-    sourceWalletAddress: string
-    sourceTokens: Record<string, WohTokenInfo>
-    tokenAddress: string
-  },
+  Partial<WohState>,
   { wallet: IEtherWallet }
 >(`${NAME}/connectSourceWallet`, async ({ wallet }) => {
   window.wormhole.sourceWallet.ether = wallet
@@ -61,25 +75,26 @@ export const connectSourceWallet = createAsyncThunk<
   }
 })
 
-export const fetchEtherTokens = createAsyncThunk<{
-  sourceTokens: Record<string, WohTokenInfo>
-}>(`${NAME}/fetchSourceTokens`, async () => {
-  const wallet = window.wormhole.sourceWallet.ether
-  if (!wallet) throw new Error('Wallet is not connected')
-  const address = await wallet.getAddress()
-  // fetch wallet's tokens
-  const tokenList = await fetchTokenEther(address)
-  const tokens: Record<string, WohTokenInfo> = {}
-  for (const token of tokenList) {
-    tokens[token.address] = token
-  }
-  return {
-    sourceTokens: tokens,
-  }
-})
+export const fetchEtherTokens = createAsyncThunk<Partial<WohState>>(
+  `${NAME}/fetchSourceTokens`,
+  async () => {
+    const wallet = window.wormhole.sourceWallet.ether
+    if (!wallet) throw new Error('Wallet is not connected')
+    const address = await wallet.getAddress()
+    // fetch wallet's tokens
+    const tokenList = await fetchTokenEther(address)
+    const tokens: Record<string, WohTokenInfo> = {}
+    for (const token of tokenList) {
+      tokens[token.address] = token
+    }
+    return {
+      sourceTokens: tokens,
+    }
+  },
+)
 
 export const disconnectSourceWallet = createAsyncThunk<
-  State,
+  WohState,
   void,
   { state: any }
 >(`${NAME}/disconnectSourceWallet`, async (_, { getState }) => {
@@ -102,9 +117,9 @@ export const connectTargetWallet = createAsyncThunk<
 })
 
 export const setSourceToken = createAsyncThunk<
-  State,
+  WohState,
   { tokenAddress?: string; amount?: string },
-  { state: { wormhole: State } }
+  { state: { wormhole: WohState } }
 >(`${NAME}/setSourceToken`, async ({ tokenAddress, amount }, { getState }) => {
   const { wormhole } = getState()
   const newTokenAddress = tokenAddress || wormhole.tokenAddress
@@ -112,22 +127,19 @@ export const setSourceToken = createAsyncThunk<
   return { ...wormhole, tokenAddress: newTokenAddress, amount: newAmount }
 })
 
-export const setProcess = createAsyncThunk<
-  State,
-  { id: string },
-  { state: { wormhole: State } }
->(`${NAME}/setWormholeProcess`, async ({ id }, { getState }) => {
-  const { wormhole } = getState()
-  return {
-    ...wormhole,
-    processId: id,
-  }
-})
+export const setProcess = createAsyncThunk<Partial<WohState>, { id: string }>(
+  `${NAME}/setWormholeProcess`,
+  async ({ id }) => {
+    return {
+      processId: id,
+    }
+  },
+)
 
 export const restoreTransfer = createAsyncThunk<
-  State | void,
+  WohState | void,
   { transferState: TransferState },
-  { state: { wormhole: State } }
+  { state: { wormhole: WohState } }
 >(`${NAME}/restoreTransfer`, async ({ transferState }, { getState }) => {
   const { sourceWallet } = window.wormhole
   if (!sourceWallet.ether) throw new Error('Wallet is not connected')
@@ -150,16 +162,23 @@ export const restoreTransfer = createAsyncThunk<
 })
 
 export const setVisibleProcess = createAsyncThunk<
-  { visible: boolean },
+  Partial<WohState>,
   { visible: boolean }
 >(`${NAME}/setVisibleProcess`, async ({ visible }) => {
   return { visible }
 })
 
+export const setWaiting = createAsyncThunk<
+  Partial<WohState>,
+  { waiting: boolean }
+>(`${NAME}/setWaiting`, async ({ waiting }) => {
+  return { waiting }
+})
+
 export const clearProcess = createAsyncThunk<
-  Partial<State>,
+  Partial<WohState>,
   void,
-  { state: { wormhole: State } }
+  { state: { wormhole: WohState } }
 >(`${NAME}/clearProcess`, async (_, { getState }) => {
   const { wormhole } = getState()
   const filterToken: Record<string, WohTokenInfo> = {}
@@ -222,6 +241,10 @@ const slice = createSlice({
       )
       .addCase(
         clearProcess.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        setWaiting.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

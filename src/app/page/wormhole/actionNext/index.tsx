@@ -9,8 +9,10 @@ import { setVisibleProcess } from 'app/model/wormhole.controller'
 const WormAction = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
-    wormhole: { amount, processId, visible },
+    wormhole: { amount, processId, visible, waiting },
   } = useSelector((state: AppState) => state)
+
+  const loading = waiting || !!processId
 
   const setVisible = (visible: boolean) =>
     dispatch(setVisibleProcess({ visible }))
@@ -18,16 +20,27 @@ const WormAction = () => {
   return (
     <Row>
       <Col span={24}>
-        <Tooltip title={!processId ? '' : 'Have transaction in progress'}>
+        {loading ? (
+          <Tooltip title={'Have transaction in progress'}>
+            <Button
+              disabled={visible}
+              type="primary"
+              onClick={() => setVisible(true)}
+              block
+            >
+              Reopen
+            </Button>
+          </Tooltip>
+        ) : (
           <Button
-            disabled={!Number(amount) || !!processId}
+            disabled={!Number(amount)}
             type="primary"
             onClick={() => setVisible(true)}
             block
           >
             Next
           </Button>
-        </Tooltip>
+        )}
       </Col>
 
       <ConfirmBridge visible={visible} onCancel={setVisible} />

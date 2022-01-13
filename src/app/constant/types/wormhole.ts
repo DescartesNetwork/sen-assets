@@ -72,21 +72,6 @@ export type InputDetail = {
   value: string
 }
 
-export type State = {
-  // source wallet
-  sourceTokens: Record<string, WohTokenInfo>
-  sourceChain: ChainId
-  sourceWalletAddress: string
-  // target wallet
-  targetWalletAddress: string
-  targetChain: ChainId
-  // other
-  tokenAddress: string
-  amount: string
-  processId: string
-  visible: boolean
-}
-
 export enum WormholeStoreKey {
   Transfer = 'Transfer',
   Provider = 'Provider',
