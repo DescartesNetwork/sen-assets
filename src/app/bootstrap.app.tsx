@@ -9,6 +9,7 @@ import {
 
 import PageView from 'app/page'
 import WidgetView from 'app/widget'
+import WormHole from 'app/page/wormhole'
 
 import model from 'app/model'
 import configs from 'app/configs'
@@ -58,6 +59,24 @@ export const Widget = () => {
           </MintProvider>
         </PoolProvider>
       </WalletProvider>
+    </UIProvider>
+  )
+}
+
+export const FrameWormhole = () => {
+  return (
+    <UIProvider appId={appId} antd>
+      <MintProvider>
+        <PoolProvider>
+          <AccountProvider>
+            <WalletProvider>
+              <Provider store={model}>
+                <WormHole />
+              </Provider>
+            </WalletProvider>
+          </AccountProvider>
+        </PoolProvider>
+      </MintProvider>
     </UIProvider>
   )
 }

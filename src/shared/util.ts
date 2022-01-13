@@ -34,7 +34,7 @@ export const shortenAddress = (address: string, num = 4, delimiter = '...') => {
  * @param addressOrTxId - Address or TxId
  * @returns
  */
-export const solExplorer = (addressOrTxId: string): string => {
+export const explorer = (addressOrTxId: string): string => {
   if (account.isAddress(addressOrTxId)) {
     return `https://explorer.solana.com/address/${addressOrTxId}?cluster=${net}`
   }

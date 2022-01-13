@@ -1,10 +1,10 @@
-import { solExplorer } from 'shared/util'
+import { explorer } from 'shared/util'
 
 export const notifySuccess = (content: string, txId: string) => {
   return window.notify({
     type: 'success',
     description: `${content} successfully. Click to view details.`,
-    onClick: () => window.open(solExplorer(txId), '_blank'),
+    onClick: () => window.open(explorer(txId), '_blank'),
   })
 }
 

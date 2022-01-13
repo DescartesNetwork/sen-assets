@@ -1,17 +1,15 @@
 import { ComponentProps, ElementType, useCallback } from 'react'
-import { useSelector } from 'react-redux'
 import { Route, Redirect } from 'react-router-dom'
 import { account } from '@senswap/sen-js'
 
-import { RootState } from 'os/store'
+import { useRootSelector, RootState } from 'os/store'
 
-const PrivateRoute = ({
-  component: Component,
-  ...rest
-}: {
+export type PrivateRouteProps = {
   component: ElementType
-} & ComponentProps<typeof Route>) => {
-  const { address: walletAddress } = useSelector(
+} & ComponentProps<typeof Route>
+
+const PrivateRoute = ({ component: Component, ...rest }: PrivateRouteProps) => {
+  const { address: walletAddress } = useRootSelector(
     (state: RootState) => state.wallet,
   )
 

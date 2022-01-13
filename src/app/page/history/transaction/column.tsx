@@ -2,7 +2,7 @@ import { Button, Space, Typography } from 'antd'
 import StatusTag from '../statusTags'
 import IonIcon from 'shared/antd/ionicon'
 
-import { solExplorer, numeric, shortenAddress } from 'shared/util'
+import { explorer, numeric, shortenAddress } from 'shared/util'
 import { MintSymbol } from 'shared/antd/mint'
 
 export const TRANSACTION_COLUMNS = [
@@ -18,7 +18,7 @@ export const TRANSACTION_COLUMNS = [
     render: (text: string) => (
       <Space align="baseline">
         <Typography.Text
-          onClick={() => window.open(solExplorer(text), '_blank')}
+          onClick={() => window.open(explorer(text), '_blank')}
           style={{ fontWeight: 700, cursor: 'pointer' }}
         >
           {shortenAddress(text, 8, '...')}
@@ -26,7 +26,7 @@ export const TRANSACTION_COLUMNS = [
         <Button
           type="text"
           size="small"
-          onClick={() => window.open(solExplorer(text), '_blank')}
+          onClick={() => window.open(explorer(text), '_blank')}
           icon={<IonIcon name="open-outline" />}
         />
       </Space>

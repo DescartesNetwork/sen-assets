@@ -81,6 +81,10 @@ type CgkData = {
  */
 declare module '*.md'
 declare module 'flexsearch'
+declare module 'react-redux-context' {
+  export * from 'os/store/context'
+}
+
 declare module 'senhub/providers' {
   export * from 'os/providers'
 }

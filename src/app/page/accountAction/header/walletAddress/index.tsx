@@ -5,7 +5,7 @@ import QRCode from 'qrcode.react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 import IconButton from 'app/components/iconButton'
 
-import { solExplorer, shortenAddress } from 'shared/util'
+import { explorer, shortenAddress } from 'shared/util'
 import { useWallet } from 'senhub/providers'
 
 const QR = ({ address }: { address: string }) => {
@@ -46,7 +46,7 @@ const WalletAddress = () => {
     <Space size={10}>
       <Typography.Text
         style={{ color: '#E9E9EB', cursor: 'pointer' }}
-        onClick={() => window.open(solExplorer(address), '_blank')}
+        onClick={() => window.open(explorer(address), '_blank')}
       >
         {shortenAddress(address, 3, '...')}
       </Typography.Text>
