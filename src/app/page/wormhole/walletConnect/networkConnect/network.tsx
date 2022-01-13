@@ -1,4 +1,7 @@
 import { useLocation } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { account } from '@senswap/sen-js'
+import { ChainId } from '@certusone/wormhole-sdk'
 
 import {
   Avatar,
@@ -15,13 +18,10 @@ import IonIcon from 'shared/antd/ionicon'
 
 import { WORMHOLE_NETWORK } from 'app/lib/wormhole/constant/wormhole'
 import { shortenAddress } from 'shared/util'
-import { ChainId } from '@certusone/wormhole-sdk'
 import METAMASK from 'app/static/images/metamask.png'
 import COIN98 from 'app/static/images/coin98.png'
 import MetamaskWallet from 'app/lib/etherWallet/metamask'
 import Coin98Wallet from 'app/lib/etherWallet/coin98'
-import { useEffect, useState } from 'react'
-import { account } from '@senswap/sen-js'
 import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
 import session from 'shared/session'
 
