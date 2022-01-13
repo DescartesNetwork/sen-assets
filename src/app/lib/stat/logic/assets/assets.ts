@@ -45,16 +45,13 @@ export default class AssetsService {
     }
     //
     const mapTransLogs: Record<string, TransLog> = {}
-    let filteredTransLogs: TransLog[] = []
-    for (const log of cacheTransLog) {
-      if (mapTransLogs[log.signature]) continue
-      filteredTransLogs.push(log)
-    }
-    filteredTransLogs = filteredTransLogs.sort(
+    for (const log of cacheTransLog) mapTransLogs[log.signature] = log
+
+    const newTransLogs = Object.values(mapTransLogs).sort(
       (a, b) => b.blockTime - a.blockTime,
     )
-    await db.setItem('translogs', filteredTransLogs)
-    return filteredTransLogs
+    await db.setItem('translogs', newTransLogs)
+    return newTransLogs
   }
 
   fetchHistory = async () => {
