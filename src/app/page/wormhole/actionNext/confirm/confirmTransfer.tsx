@@ -9,6 +9,7 @@ import { AppDispatch, AppState } from 'app/model'
 import {
   clearProcess,
   fetchEtherTokens,
+  setWaiting,
   setProcess,
 } from 'app/model/wormhole.controller'
 import { WohEthSol } from 'app/lib/wormhole'
@@ -24,10 +25,9 @@ const ConfirmAction = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>()
   const {
-    wormhole: { sourceTokens, tokenAddress, amount, processId },
+    wormhole: { sourceTokens, tokenAddress, amount, processId, waiting },
   } = useSelector((state: AppState) => state)
   const [acceptable, setAcceptable] = useState(false)
-  const [waiting, setWaiting] = useState(false)
   const loading = waiting || !!processId
 
   const onUpdate = async (stateTransfer: TransferState) => {
@@ -40,7 +40,7 @@ const ConfirmAction = ({
   }
 
   const onTransfer = async () => {
-    await setWaiting(true)
+    await dispatch(setWaiting({ waiting: true }))
     try {
       //Transfer
       const { sourceWallet, targetWallet } = window.wormhole
@@ -62,7 +62,7 @@ const ConfirmAction = ({
       notifyError(er)
       dispatch(clearProcess())
     } finally {
-      setWaiting(false)
+      await dispatch(setWaiting({ waiting: false }))
     }
   }
 

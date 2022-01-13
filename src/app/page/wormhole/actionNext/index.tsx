@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 
-import { Button, Col, Row, Tooltip } from 'antd'
+import { Button, Col, Row } from 'antd'
 import ConfirmBridge from './confirm'
 
 import { AppDispatch, AppState } from 'app/model'
@@ -9,8 +9,10 @@ import { setVisibleProcess } from 'app/model/wormhole.controller'
 const WormAction = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
-    wormhole: { amount, processId, visible },
+    wormhole: { amount, processId, visible, waiting },
   } = useSelector((state: AppState) => state)
+
+  const loading = waiting || !!processId
 
   const setVisible = (visible: boolean) =>
     dispatch(setVisibleProcess({ visible }))
@@ -18,16 +20,25 @@ const WormAction = () => {
   return (
     <Row>
       <Col span={24}>
-        <Tooltip title={!processId ? '' : 'Have transaction in progress'}>
+        {loading ? (
           <Button
-            disabled={!Number(amount) || !!processId}
+            disabled={visible}
+            type="primary"
+            onClick={() => setVisible(true)}
+            block
+          >
+            Reopen
+          </Button>
+        ) : (
+          <Button
+            disabled={!Number(amount)}
             type="primary"
             onClick={() => setVisible(true)}
             block
           >
             Next
           </Button>
-        </Tooltip>
+        )}
       </Col>
 
       <ConfirmBridge visible={visible} onCancel={setVisible} />
