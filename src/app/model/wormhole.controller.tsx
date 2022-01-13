@@ -151,8 +151,6 @@ export const restoreTransfer = createAsyncThunk<
   // restore data
   const dataRestore = JSON.parse(JSON.stringify(wormhole))
   const tokenAddr = tokenInfo.address
-
-  dataRestore.sourceTokens[tokenAddr] = tokenInfo
   dataRestore.tokenAddress = tokenAddr
   dataRestore.processId = id
   dataRestore.amount = transferData.amount
