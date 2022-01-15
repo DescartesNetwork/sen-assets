@@ -1,10 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
 import { TransferState } from 'app/constant/types/wormhole'
-import {
-  fetchEtherSolHistory,
-  restoreEther,
-} from 'app/lib/wormhole/helper/ether'
+import { restoreEther } from 'app/lib/wormhole/helper/ether'
+import { EtherScan } from 'app/lib/wormhole/transaction/etherScan/etherScan'
 
 /**
  * Interface & Utility
@@ -41,20 +39,16 @@ export const fetchWohHistory = createAsyncThunk<
     fromBLK,
     fetchedDays,
   }): Promise<FetchWormholeParams> => {
-    let { history, fromBlock, count } = await fetchEtherSolHistory(
-      address,
-      minNeededTrx,
-      fromBLK,
-      fetchedDays,
-    )
-    history = history.sort(function (a, b) {
+    const etherScan = new EtherScan()
+    const trans = await etherScan.getTransferHistory(address)
+    const history = trans.sort(function (a, b) {
       return b.context.time - a.context.time
     })
     const historyState: State = {}
     for (const data of history) {
       historyState[data.context.id] = data
     }
-    return { historyState, fromBlock, count }
+    return { historyState, fromBlock: 0, count: 0 }
   },
 )
 
