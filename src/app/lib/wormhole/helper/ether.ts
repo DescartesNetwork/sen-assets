@@ -181,6 +181,8 @@ export const createTransferState = async (
   if (!solWallet) throw new Error('Wallet is not connected')
 
   const context = createEtherSolContext(tokenInfo)
+  context.id = trans.hash
+
   const block = await web3Http.eth.getBlock(`${trans.blockNumber}`)
   context.time = new Date(Number(block.timestamp) * 1000).getTime()
   const transferData: TransferData = {
