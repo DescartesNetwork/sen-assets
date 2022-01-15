@@ -30,8 +30,12 @@ import {
 import { ABI_TOKEN_IMPLEMENTATION } from 'app/lib/wormhole/constant/abis'
 import { Moralis } from './moralis'
 import { DataLoader } from 'shared/dataloader'
-import { web3Http } from 'app/lib/etherWallet/web3Config'
-import { WETH_ADDRESS } from '../constant/ethConfig'
+import { web3Http, web3WormholeContract } from 'app/lib/etherWallet/web3Config'
+import {
+  AVERAGE_BLOCK_PER_DAY,
+  MAX_QUERIRED_DAYS,
+  WETH_ADDRESS,
+} from '../constant/ethConfig'
 import { getEtherNetwork } from './utils'
 import { provider } from 'app/lib/etherWallet/ethersConfig'
 import { getSolConnection } from './solana'
@@ -262,6 +266,56 @@ export const isTrxWithSol = async (
   if (receipient.length < 66) return false
   const solCurrentReceipient = await getSolReceipient(tokenEtherAddr)
   return receipient === solCurrentReceipient
+}
+
+export const fetchTransactionEtherAddress = async (
+  address: string,
+  minNeededTrx: number,
+  fromBLK?: number,
+  fetchedDays?: number,
+): Promise<{
+  transactions: TransactionEtherInfo[]
+  fromBlock: number
+  count: number
+}> => {
+  const currentBlockNumber: number = await web3Http.eth.getBlockNumber()
+  const transactions: TransactionEtherInfo[] = []
+  let fromBlock: number = fromBLK
+    ? fromBLK - AVERAGE_BLOCK_PER_DAY
+    : currentBlockNumber - AVERAGE_BLOCK_PER_DAY
+  let toBlock: number = fromBlock + AVERAGE_BLOCK_PER_DAY
+  let count: number = fetchedDays ? fetchedDays : 0
+
+  while (transactions.length < minNeededTrx && count < MAX_QUERIRED_DAYS) {
+    const tempTransactions: RawEtherTransaction[] =
+      await web3WormholeContract.getPastEvents(
+        'LogMessagePublished',
+        {
+          fromBlock,
+          toBlock,
+        },
+        function (error: any, events: any) {},
+      )
+    await Promise.all(
+      tempTransactions.map(async (tempTransaction) => {
+        const value = await web3Http.eth.getTransaction(
+          tempTransaction.transactionHash,
+        )
+        if (value.from.toLowerCase() !== address) return
+        const isTrxSol = await isTrxWithSol(tempTransaction)
+        if (isTrxSol === false) return
+        transactions.push(value)
+      }),
+    )
+
+    if (transactions.length < minNeededTrx) {
+      toBlock = fromBlock
+      fromBlock -= AVERAGE_BLOCK_PER_DAY
+      count++
+    }
+    console.log(count)
+  }
+  return { transactions, fromBlock, count }
 }
 
 export const compareHexAddress = (
