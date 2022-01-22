@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { CHAIN_ID_ETH } from '@certusone/wormhole-sdk'
+import { ChainId, CHAIN_ID_ETH } from '@certusone/wormhole-sdk'
 import detectEthereumProvider from '@metamask/detect-provider'
 
 import { Col, Row } from 'antd'
@@ -12,6 +12,7 @@ import { AppDispatch, AppState } from 'app/model'
 import {
   connectSourceWallet,
   disconnectSourceWallet,
+  setSourceToken,
 } from 'app/model/wormhole.controller'
 import session from 'shared/session'
 import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
@@ -23,6 +24,10 @@ const SourceWallet = () => {
     wormhole: { sourceWalletAddress, sourceChain },
   } = useSelector((state: AppState) => state)
   const [hasProvider, setHasProvider] = useState(false)
+  const [currentSourceAddress, setCurrentSourceAddress] =
+    useState(sourceWalletAddress)
+  const [currentSourceChain, setCurrentSourceChain] = useState(sourceChain)
+  const [disableSelect, setDisableSelect] = useState(false)
 
   const getSourceWallet = useCallback((fallback: string = '') => {
     const walletType = session.get(WOH_WALLET) || fallback
@@ -44,6 +49,13 @@ const SourceWallet = () => {
   useEffect(() => {
     checkProvider()
   }, [checkProvider])
+
+  useEffect(() => {
+    setDisableSelect(false)
+    if (sourceWalletAddress) {
+      setDisableSelect(true)
+    }
+  }, [sourceWalletAddress])
 
   // connect source wallet
   const onConnect = useCallback(
@@ -70,6 +82,11 @@ const SourceWallet = () => {
     }
   }, [getSourceWallet, dispatch])
 
+  const onChooseWallet = (value: ChainId) => {
+    console.log(value, 'sksksk')
+    setCurrentSourceChain(value)
+  }
+
   // reconnect source wallet
   useEffect(() => {
     const walletType = session.get(WOH_WALLET)
@@ -82,13 +99,24 @@ const SourceWallet = () => {
     }
   }, [dispatch, getSourceWallet, hasProvider])
 
+  useEffect(() => {
+    setCurrentSourceAddress(sourceWalletAddress)
+    setCurrentSourceChain(sourceChain)
+  }, [sourceChain, sourceWalletAddress])
+
   return (
     <Row gutter={[16, 16]}>
       <Col flex="auto">
-        <Network address={sourceWalletAddress} chainId={sourceChain} />
+        <Network
+          address={currentSourceAddress}
+          chainId={currentSourceChain}
+          onChange={onChooseWallet}
+          disabled={disableSelect}
+        />
       </Col>
       <Col>
         <NetworkConnect
+          chainId={currentSourceChain}
           connected={!!sourceWalletAddress}
           onConnect={onConnect}
           onDisconnect={onDisconnect}
