@@ -10,6 +10,16 @@ export type WohTokenInfo = {
   amount: number
 }
 
+export type SolTokenInfo = {
+  balance: string
+  decimals: number
+  logo: string
+  name: string
+  symbol: string
+  address: string
+  amount: number
+}
+
 export type TransactionDataPerAddress = {
   page: number
   page_size: number

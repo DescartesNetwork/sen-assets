@@ -17,8 +17,10 @@ import {
 import session from 'shared/session'
 import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
 import { notifyError } from 'app/helper'
-import { WalletInterface } from '@senswap/sen-js'
+import { utils, WalletInterface } from '@senswap/sen-js'
 import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
+import { useAccount, useMint } from '@senhub/providers'
+import { WohTokenInfo } from 'app/constant/types/wormhole'
 
 const SourceWallet = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -30,6 +32,8 @@ const SourceWallet = () => {
     useState(sourceWalletAddress)
   const [currentSourceChain, setCurrentSourceChain] = useState(sourceChain)
   const [disableSelect, setDisableSelect] = useState(false)
+  const { accounts } = useAccount()
+  const { tokenProvider } = useMint()
 
   const getSourceWallet = useCallback((fallback: string = '') => {
     const walletType = session.get(WOH_WALLET) || fallback
@@ -62,23 +66,55 @@ const SourceWallet = () => {
   // connect source wallet
   const onConnect = useCallback(
     async (type: string = '') => {
-      let wallet: any = window.sentre.wallet
-      if (currentSourceChain !== CHAIN_ID_SOLANA) {
-        wallet = getSourceWallet(type)
-      }
-      try {
-        await dispatch(
-          connectSourceWallet({ wallet, currentSourceChain }),
-        ).unwrap()
-        if (currentSourceChain !== CHAIN_ID_SOLANA) {
-          return wallet?.connect()
+      let wallet: any
+      let sourceToken: any = []
+      if (currentSourceChain === CHAIN_ID_SOLANA) {
+        wallet = window.sentre.wallet
+        sourceToken = await Promise.all(
+          Object.values(accounts)
+            .filter(({ amount }) => !!amount)
+            .map(async ({ mint, amount }) => {
+              const tokenInfo = await tokenProvider.findByAddress(mint)
+              if (!tokenInfo) return
+              const tempToken = {
+                balance: amount,
+                decimals: tokenInfo?.decimals,
+                logo: tokenInfo?.logoURI,
+                name: tokenInfo?.name,
+                symbol: tokenInfo?.symbol,
+                token_address: tokenInfo?.address,
+                address: tokenInfo?.address,
+                amount: utils.undecimalize(amount, tokenInfo?.decimals),
+              }
+              return tempToken
+            }),
+        )
+        try {
+          await dispatch(
+            connectSourceWallet({
+              wallet,
+              chainID: currentSourceChain,
+              sourceToken,
+            }),
+          ).unwrap()
+        } catch (er) {
+          notifyError(er)
+          return wallet.disconnect()
         }
-      } catch (er) {
-        notifyError(er)
-        return wallet.disconnect()
+      } else {
+        wallet = getSourceWallet(type)
+        try {
+          await dispatch(
+            connectSourceWallet({ wallet, chainID: currentSourceChain }),
+          ).unwrap()
+          return wallet?.connect()
+        } catch (er) {
+          notifyError(er)
+          return wallet.disconnect()
+        }
       }
     },
-    [currentSourceChain, dispatch, getSourceWallet],
+    [accounts, currentSourceChain, dispatch, getSourceWallet],
   )
 
   const onDisconnect = useCallback(async () => {
@@ -102,7 +138,8 @@ const SourceWallet = () => {
     if (!hasProvider || !walletType) return
     const wallet = getSourceWallet()
     try {
-      if (wallet) dispatch(connectSourceWallet({ wallet }))
+      if (wallet)
+        dispatch(connectSourceWallet({ wallet, chainID: currentSourceChain }))
     } catch (er: any) {
       return window.notify({ type: 'error', description: er.message })
     }
