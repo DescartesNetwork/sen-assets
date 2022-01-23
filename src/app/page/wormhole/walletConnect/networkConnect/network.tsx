@@ -18,6 +18,8 @@ import METAMASK from 'app/static/images/metamask.png'
 import COIN98 from 'app/static/images/coin98.png'
 import MetamaskWallet from 'app/lib/etherWallet/metamask'
 import Coin98Wallet from 'app/lib/etherWallet/coin98'
+import { useEffect, useState } from 'react'
+import { net } from 'shared/runtime'
 
 export type WalletOptionProps = {
   onClick?: () => void
@@ -124,6 +126,22 @@ const Network = ({
   onChange?: (chainId: ChainId) => void
   disabled?: boolean
 }) => {
+  const [logoNetwork, setLogoNetwork] = useState('')
+  const [nameNetwork, setNameNetwork] = useState('')
+
+  useEffect(() => {
+    console.log(chainId, 'saksdkasd')
+    WORMHOLE_NETWORK.map((value) => {
+      if (value.chainID === CHAIN_ID_SOLANA) {
+        setLogoNetwork(value.logo)
+        setNameNetwork(value.name)
+      }
+      return value
+    })
+  }, [chainId])
+
+  console.log(WORMHOLE_NETWORK, chainId)
+
   return (
     <Row>
       <Col span={24}>

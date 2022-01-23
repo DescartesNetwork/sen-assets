@@ -68,15 +68,22 @@ export const connectSourceWallet = createAsyncThunk<
   if (!sourceToken) {
     tokenList = await fetchTokenEther(address)
   }
-
-  const tokens: Record<string, WohTokenInfo> = {}
-  for (const token of tokenList) tokens[token.address] = token
   // select fist token
-  const tokenAddress = tokenList[0]?.address || ''
+  let tokenAddress = ''
+  const tokens: Record<string, WohTokenInfo> = {}
+  for (const token of tokenList) {
+    if (!token) continue
+    if (!tokenAddress) {
+      tokenAddress = token.address
+    }
+    tokens[token?.address] = token
+  }
+
   return {
-    sourceWalletAddress: ,
-    sourceTokens: tokenList,
-    tokenAddress: address,
+    sourceWalletAddress: address,
+    sourceTokens: tokens,
+    tokenAddress,
+    sourceChain: chainID,
   }
 })
 
