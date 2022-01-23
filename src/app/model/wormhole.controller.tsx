@@ -6,6 +6,7 @@ import { ChainId } from '@certusone/wormhole-sdk'
 import { fetchTokenEther } from 'app/lib/wormhole/helper/ether'
 import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
 import { WohTokenInfo, TransferState } from 'app/constant/types/wormhole'
+import { getSolTokens } from 'app/lib/wormhole/helper/solana'
 
 /**
  * Interface & Utility
@@ -63,17 +64,22 @@ export const connectSourceWallet = createAsyncThunk<
   window.wormhole.sourceWallet.ether = wallet
   const address = await wallet.getAddress()
   // fetch wallet's tokens
+  let tokenList
   if (chainID !== CHAIN_ID_SOLANA) {
+    tokenList = getSolTokens(address)
+  } else {
+    tokenList = await fetchTokenEther(address)
   }
-  const tokenList = await fetchTokenEther(address)
-  const tokens: Record<string, WohTokenInfo> = {}
-  for (const token of tokenList) tokens[token.address] = token
-  // select fist token
-  const tokenAddress = tokenList[0]?.address || ''
+
+  console.log(tokenList, 'sksklsll')
+  // const tokens: Record<string, WohTokenInfo> = {}
+  // for (const token of tokenList) tokens[token.address] = token
+  // // select fist token
+  // const tokenAddress = tokenList[0]?.address || ''
   return {
-    sourceWalletAddress: address,
-    sourceTokens: tokens,
-    tokenAddress,
+    sourceWalletAddress: '0xf27F3863177A72957D409054c3f48a5fe35dF84B',
+    sourceTokens: [],
+    tokenAddress: '',
   }
 })
 
