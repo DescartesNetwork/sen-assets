@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { ChainId, CHAIN_ID_ETH } from '@certusone/wormhole-sdk'
+import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import detectEthereumProvider from '@metamask/detect-provider'
 
 import { Col, Row } from 'antd'
@@ -17,6 +17,8 @@ import {
 import session from 'shared/session'
 import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
 import { notifyError } from 'app/helper'
+import { WalletInterface } from '@senswap/sen-js'
+import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
 
 const SourceWallet = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -60,16 +62,23 @@ const SourceWallet = () => {
   // connect source wallet
   const onConnect = useCallback(
     async (type: string = '') => {
-      const wallet = getSourceWallet(type)
+      let wallet: any = window.sentre.wallet
+      if (currentSourceChain !== CHAIN_ID_SOLANA) {
+        wallet = getSourceWallet(type)
+      }
       try {
-        await dispatch(connectSourceWallet({ wallet })).unwrap()
-        return wallet.connect()
+        await dispatch(
+          connectSourceWallet({ wallet, currentSourceChain }),
+        ).unwrap()
+        if (currentSourceChain !== CHAIN_ID_SOLANA) {
+          return wallet?.connect()
+        }
       } catch (er) {
         notifyError(er)
         return wallet.disconnect()
       }
     },
-    [dispatch, getSourceWallet],
+    [currentSourceChain, dispatch, getSourceWallet],
   )
 
   const onDisconnect = useCallback(async () => {

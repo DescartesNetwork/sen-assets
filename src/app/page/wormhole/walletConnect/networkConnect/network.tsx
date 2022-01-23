@@ -68,7 +68,13 @@ export const NetworkConnect = ({
   return (
     <Row>
       {chainId === CHAIN_ID_SOLANA ? (
-        <Button size="small" type="primary">
+        <Button
+          size="small"
+          type="primary"
+          onClick={() => {
+            onConnect()
+          }}
+        >
           Connect
         </Button>
       ) : (
