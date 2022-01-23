@@ -27,9 +27,10 @@ const ListAccount = () => {
       for (const addr in accounts) {
         const acc = accounts[addr]
         const token = await tokenProvider.findByAddress(acc.mint)
+        console.log(token, 'Im here')
         if (token) {
           // check prioritize
-          if (token.symbol === 'SEN') prioritizeAccount.push(addr)
+          if (token.symbol === 'SNTR') prioritizeAccount.push(addr)
           else listAccount.unshift(addr)
           continue
         }

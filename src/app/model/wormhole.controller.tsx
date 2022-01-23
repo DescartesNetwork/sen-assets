@@ -59,27 +59,24 @@ const initialState: WohState = {
 
 export const connectSourceWallet = createAsyncThunk<
   Partial<WohState>,
-  { wallet: IEtherWallet; chainID: ChainId }
->(`${NAME}/connectSourceWallet`, async ({ wallet, chainID }) => {
+  { wallet: IEtherWallet; chainID: ChainId; sourceToken?: [] }
+>(`${NAME}/connectSourceWallet`, async ({ wallet, chainID, sourceToken }) => {
   window.wormhole.sourceWallet.ether = wallet
   const address = await wallet.getAddress()
   // fetch wallet's tokens
-  let tokenList
-  if (chainID !== CHAIN_ID_SOLANA) {
-    tokenList = getSolTokens(address)
-  } else {
+  let tokenList: any = sourceToken
+  if (!sourceToken) {
     tokenList = await fetchTokenEther(address)
   }
 
-  console.log(tokenList, 'sksklsll')
-  // const tokens: Record<string, WohTokenInfo> = {}
-  // for (const token of tokenList) tokens[token.address] = token
-  // // select fist token
-  // const tokenAddress = tokenList[0]?.address || ''
+  const tokens: Record<string, WohTokenInfo> = {}
+  for (const token of tokenList) tokens[token.address] = token
+  // select fist token
+  const tokenAddress = tokenList[0]?.address || ''
   return {
-    sourceWalletAddress: '0xf27F3863177A72957D409054c3f48a5fe35dF84B',
-    sourceTokens: [],
-    tokenAddress: '',
+    sourceWalletAddress: ,
+    sourceTokens: tokenList,
+    tokenAddress: address,
   }
 })
 
