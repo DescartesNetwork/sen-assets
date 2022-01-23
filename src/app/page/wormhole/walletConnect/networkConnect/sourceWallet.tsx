@@ -21,6 +21,7 @@ import { utils, WalletInterface } from '@senswap/sen-js'
 import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
 import { useAccount, useMint } from '@senhub/providers'
 import { WohTokenInfo } from 'app/constant/types/wormhole'
+import { ChainID } from '@certusone/wormhole-sdk/lib/cjs/proto/publicrpc/v1/publicrpc'
 
 const SourceWallet = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -107,28 +108,33 @@ const SourceWallet = () => {
           await dispatch(
             connectSourceWallet({ wallet, chainID: currentSourceChain }),
           ).unwrap()
-          return wallet?.connect()
+          return wallet.connect()
         } catch (er) {
           notifyError(er)
           return wallet.disconnect()
         }
       }
     },
-    [accounts, currentSourceChain, dispatch, getSourceWallet],
+    [accounts, currentSourceChain, dispatch, getSourceWallet, tokenProvider],
   )
 
   const onDisconnect = useCallback(async () => {
     try {
-      const wallet = getSourceWallet()
+      console.log(currentSourceChain)
+      let wallet: any
+      if (currentSourceChain === CHAIN_ID_SOLANA) {
+        wallet = window.sentre.wallet
+      } else {
+        wallet = getSourceWallet()
+      }
       await dispatch(disconnectSourceWallet())
       return wallet.disconnect()
     } catch (er) {
       return notifyError(er)
     }
-  }, [getSourceWallet, dispatch])
+  }, [currentSourceChain, dispatch, getSourceWallet])
 
   const onChooseWallet = (value: ChainId) => {
-    console.log(value, 'sksksk')
     setCurrentSourceChain(value)
   }
 
@@ -143,7 +149,7 @@ const SourceWallet = () => {
     } catch (er: any) {
       return window.notify({ type: 'error', description: er.message })
     }
-  }, [dispatch, getSourceWallet, hasProvider])
+  }, [currentSourceChain, dispatch, getSourceWallet, hasProvider])
 
   useEffect(() => {
     setCurrentSourceAddress(sourceWalletAddress)
