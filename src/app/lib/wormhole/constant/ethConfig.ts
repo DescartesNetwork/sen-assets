@@ -4,6 +4,11 @@ export type EthAddressConfig = {
   ropsten: string
 }
 
+export type SolAddressConfig = {
+  mainnet: string
+  devnet: string
+}
+
 export type EthChainIdConfig = {
   mainnet: number
   goerli: number

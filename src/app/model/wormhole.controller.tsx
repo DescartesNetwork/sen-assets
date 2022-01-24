@@ -6,7 +6,6 @@ import { ChainId } from '@certusone/wormhole-sdk'
 import { fetchTokenEther } from 'app/lib/wormhole/helper/ether'
 import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
 import { WohTokenInfo, TransferState } from 'app/constant/types/wormhole'
-import { getSolTokens } from 'app/lib/wormhole/helper/solana'
 
 /**
  * Interface & Utility
@@ -116,16 +115,17 @@ export const disconnectSourceWallet = createAsyncThunk<
     sourceWalletAddress: '',
     sourceTokens: {},
     tokenAddress: '',
+    targetWalletAddress: '',
   }
 })
 
 export const connectTargetWallet = createAsyncThunk<
-  { targetWalletAddress: string },
-  { wallet: WalletInterface }
->(`${NAME}/connectTargetWallet`, async ({ wallet }) => {
+  { targetWalletAddress: string; targetChain: ChainId },
+  { wallet: WalletInterface; targetChain: ChainId }
+>(`${NAME}/connectTargetWallet`, async ({ wallet, targetChain }) => {
   window.wormhole.targetWallet.sol = wallet
   const address = await wallet.getAddress()
-  return { targetWalletAddress: address }
+  return { targetWalletAddress: address, targetChain }
 })
 
 export const setSourceToken = createAsyncThunk<

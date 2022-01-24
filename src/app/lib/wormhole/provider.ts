@@ -175,6 +175,7 @@ export class WormholeProvider {
 
   private attest = async (onUpdate: (state: TransferState) => void) => {
     const attestData = this.initAttestData()
+    console.log(attestData, 'slslslsls')
     if (attestData.step === 0) {
       const { emitterAddress, sequence } = await this.submitAttest()
       attestData.emitterAddress = emitterAddress

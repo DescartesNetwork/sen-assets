@@ -11,6 +11,7 @@ import Coin98Wallet from 'app/lib/etherWallet/coin98'
 import { AppDispatch, AppState } from 'app/model'
 import {
   connectSourceWallet,
+  connectTargetWallet,
   disconnectSourceWallet,
   setSourceToken,
 } from 'app/model/wormhole.controller'
@@ -67,10 +68,12 @@ const SourceWallet = () => {
   // connect source wallet
   const onConnect = useCallback(
     async (type: string = '') => {
-      let wallet: any
+      let sourceWallet: any
       let sourceToken: any = []
+      let targetWallet: any
       if (currentSourceChain === CHAIN_ID_SOLANA) {
-        wallet = window.sentre.wallet
+        sourceWallet = window.sentre.wallet
+        targetWallet = getSourceWallet(MetamaskWallet.walletType)
         sourceToken = await Promise.all(
           Object.values(accounts)
             .filter(({ amount }) => !!amount)
@@ -93,25 +96,42 @@ const SourceWallet = () => {
         try {
           await dispatch(
             connectSourceWallet({
-              wallet,
+              wallet: sourceWallet,
               chainID: currentSourceChain,
               sourceToken,
             }),
           ).unwrap()
+          dispatch(
+            connectTargetWallet({
+              wallet: targetWallet,
+              targetChain: CHAIN_ID_ETH,
+            }),
+          )
+          return targetWallet.connect()
         } catch (er) {
           notifyError(er)
-          return wallet.disconnect()
+          return sourceWallet.disconnect()
         }
       } else {
-        wallet = getSourceWallet(type)
+        sourceWallet = getSourceWallet(type)
+        targetWallet = window.sentre.wallet
         try {
           await dispatch(
-            connectSourceWallet({ wallet, chainID: currentSourceChain }),
+            connectSourceWallet({
+              wallet: sourceWallet,
+              chainID: currentSourceChain,
+            }),
           ).unwrap()
-          return wallet.connect()
+          dispatch(
+            connectTargetWallet({
+              wallet: targetWallet,
+              targetChain: CHAIN_ID_SOLANA,
+            }),
+          )
+          return sourceWallet.connect()
         } catch (er) {
           notifyError(er)
-          return wallet.disconnect()
+          return sourceWallet.disconnect()
         }
       }
     },
@@ -120,7 +140,6 @@ const SourceWallet = () => {
 
   const onDisconnect = useCallback(async () => {
     try {
-      console.log(currentSourceChain)
       let wallet: any
       if (currentSourceChain === CHAIN_ID_SOLANA) {
         wallet = window.sentre.wallet
@@ -142,10 +161,23 @@ const SourceWallet = () => {
   useEffect(() => {
     const walletType = session.get(WOH_WALLET)
     if (!hasProvider || !walletType) return
-    const wallet = getSourceWallet()
+    const sourceWallet: any = getSourceWallet()
+    const targetWallet: any = window.sentre.wallet
     try {
-      if (wallet)
-        dispatch(connectSourceWallet({ wallet, chainID: currentSourceChain }))
+      if (sourceWallet) {
+        dispatch(
+          connectSourceWallet({
+            wallet: sourceWallet,
+            chainID: currentSourceChain,
+          }),
+        )
+        dispatch(
+          connectTargetWallet({
+            wallet: targetWallet,
+            targetChain: CHAIN_ID_SOLANA,
+          }),
+        )
+      }
     } catch (er: any) {
       return window.notify({ type: 'error', description: er.message })
     }
