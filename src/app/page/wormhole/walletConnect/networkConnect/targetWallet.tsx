@@ -14,20 +14,15 @@ const TargetWallet = () => {
   const {
     wormhole: { targetWalletAddress, targetChain },
   } = useSelector((state: AppState) => state)
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
-
-  useEffect(() => {
-    const wallet = window.sentre.wallet
-    if (!wallet || !account.isAddress(walletAddress)) return
-    dispatch(connectTargetWallet({ wallet }))
-  }, [walletAddress, dispatch])
 
   return (
     <Row gutter={[16, 16]} align="middle">
       <Col flex="auto">
-        <Network address={targetWalletAddress} chainId={targetChain} />
+        <Network
+          address={targetWalletAddress}
+          chainId={targetChain}
+          disabled={true}
+        />
       </Col>
       <Col>
         <Tag
@@ -40,7 +35,7 @@ const TargetWallet = () => {
             border: 'none',
           }}
         >
-          Connected
+          {targetWalletAddress ? 'Connected' : 'Not Connected'}
         </Tag>
       </Col>
     </Row>

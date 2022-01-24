@@ -17,6 +17,8 @@ import { notifyError, notifySuccess } from 'app/helper'
 import { asyncWait } from 'shared/util'
 import { StepTransfer, TransferState } from 'app/constant/types/wormhole'
 import { updateWohHistory } from 'app/model/wohHistory.controller'
+import WohSolEth from 'app/lib/wormhole/wohSolEth'
+import { CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 
 const ConfirmAction = ({
   onClose = () => {},
@@ -25,7 +27,14 @@ const ConfirmAction = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>()
   const {
-    wormhole: { sourceTokens, tokenAddress, amount, processId, waiting },
+    wormhole: {
+      sourceTokens,
+      tokenAddress,
+      amount,
+      processId,
+      waiting,
+      sourceChain,
+    },
   } = useSelector((state: AppState) => state)
   const [acceptable, setAcceptable] = useState(false)
   const loading = waiting || !!processId
@@ -48,11 +57,20 @@ const ConfirmAction = ({
       if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
         throw new Error('Wallet is not connected')
 
-      let wormholeTransfer = new WohEthSol(
-        sourceWallet.ether,
-        targetWallet.sol,
-        tokenTransfer,
-      )
+      let wormholeTransfer
+      if (sourceChain !== CHAIN_ID_SOLANA) {
+        wormholeTransfer = new WohEthSol(
+          sourceWallet.ether,
+          targetWallet.sol,
+          tokenTransfer,
+        )
+      } else {
+        wormholeTransfer = new WohSolEth(
+          sourceWallet.ether as any,
+          targetWallet.sol as any,
+          tokenTransfer,
+        )
+      }
 
       const txId = await wormholeTransfer.transfer(amount, onUpdate)
       notifySuccess('Transfer', txId)

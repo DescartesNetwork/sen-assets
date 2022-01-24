@@ -126,22 +126,6 @@ const Network = ({
   onChange?: (chainId: ChainId) => void
   disabled?: boolean
 }) => {
-  const [logoNetwork, setLogoNetwork] = useState('')
-  const [nameNetwork, setNameNetwork] = useState('')
-
-  useEffect(() => {
-    console.log(chainId, 'saksdkasd')
-    WORMHOLE_NETWORK.map((value) => {
-      if (value.chainID === CHAIN_ID_SOLANA) {
-        setLogoNetwork(value.logo)
-        setNameNetwork(value.name)
-      }
-      return value
-    })
-  }, [chainId])
-
-  console.log(WORMHOLE_NETWORK, chainId)
-
   return (
     <Row>
       <Col span={24}>
