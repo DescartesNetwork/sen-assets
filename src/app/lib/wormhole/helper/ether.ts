@@ -275,6 +275,7 @@ export const fetchForeignAssetEtherFromSol = async (
   solTokenAddress: string,
 ) => {
   const solContext = getSolContext()
+  console.log(solContext, 'lsslslslls')
   if (!account.isAddress(solTokenAddress))
     throw new Error('Invalid token address')
 
@@ -283,5 +284,7 @@ export const fetchForeignAssetEtherFromSol = async (
     solContext.tokenBridgeAddress,
     solTokenAddress,
   )
+
+  console.log(originAsset, 'slslslsl')
   return uint8ArrayToHex(originAsset.assetAddress)
 }
