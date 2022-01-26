@@ -234,7 +234,7 @@ const getSolReceipient = async (tokenEtherAddr: string) => {
 }
 
 const getWrappedMintAddress = async (tokenEtherAddr: string) => {
-  const etherWallet = window.wormhole.sourceWallet.ether
+  const etherWallet = window.wormhole.sourceWallet?.ether
   if (!etherWallet) throw new Error('Wallet is not connected')
   const provider = await etherWallet.getProvider()
   const etherContext = getEtherContext()
@@ -275,7 +275,6 @@ export const fetchForeignAssetEtherFromSol = async (
   solTokenAddress: string,
 ) => {
   const solContext = getSolContext()
-  console.log(solContext, 'lsslslslls')
   if (!account.isAddress(solTokenAddress))
     throw new Error('Invalid token address')
 
@@ -285,6 +284,5 @@ export const fetchForeignAssetEtherFromSol = async (
     solTokenAddress,
   )
 
-  console.log(originAsset, 'slslslsl')
   return uint8ArrayToHex(originAsset.assetAddress)
 }
