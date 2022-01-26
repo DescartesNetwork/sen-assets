@@ -1,4 +1,5 @@
-import { getSignedVAA } from '@certusone/wormhole-sdk'
+import { ChainId, getSignedVAA } from '@certusone/wormhole-sdk'
+import { ChainID } from '@certusone/wormhole-sdk/lib/cjs/proto/publicrpc/v1/publicrpc'
 import { Connection } from '@solana/web3.js'
 import {
   AttestData,
@@ -57,6 +58,7 @@ export class WormholeProvider {
 
     if (transferData.nextStep === StepTransfer.Transfer) {
       const { emitterAddress, sequence, txHash } = await this.submitTransfer()
+      console.log(emitterAddress, sequence, txHash, 'xong transfer ')
       context.id = txHash
       transferData.txHash = txHash
       transferData.emitterAddress = emitterAddress
@@ -66,17 +68,21 @@ export class WormholeProvider {
       await onUpdate(newState)
     }
     if (transferData.nextStep === StepTransfer.WaitSigned) {
+      console.log('bat dau wait vaa')
       const vaaHex = await this.getSignedVAA(
         transferData.emitterAddress,
         transferData.sequence,
       )
+      console.log(vaaHex, 'get xong vaa')
       transferData.vaaHex = vaaHex
       transferData.nextStep = StepTransfer.Redeem
       const newState = await this.backup()
       await onUpdate(newState)
     }
     if (transferData.nextStep === StepTransfer.Redeem) {
+      console.log('bawts dau reddem')
       const newTxId = await this.redeem(transferData.vaaHex)
+      console.log(newTxId, 'xong redeeemmm')
       transferData.txId = newTxId
       transferData.nextStep = StepTransfer.Finish
       const newState = await this.backup()
@@ -132,6 +138,7 @@ export class WormholeProvider {
   }
 
   protected isAttested = async (): Promise<{
+    chainId?: ChainId
     attested: boolean
     wrappedMintAddress: string | null
   }> => {
@@ -177,7 +184,9 @@ export class WormholeProvider {
     const attestData = this.initAttestData()
     console.log(attestData, 'slslslsls')
     if (attestData.step === 0) {
+      console.log('bat dau attest')
       const { emitterAddress, sequence } = await this.submitAttest()
+      console.log('attest xong', emitterAddress, sequence)
       attestData.emitterAddress = emitterAddress
       attestData.sequence = sequence
       attestData.step++
@@ -185,17 +194,21 @@ export class WormholeProvider {
       await onUpdate(newState)
     }
     if (attestData.step === 1) {
+      console.log('bawt dau lay VAA')
       const vaaHex = await this.getSignedVAA(
         attestData.emitterAddress,
         attestData.sequence,
       )
+      console.log('lay vaa xong', vaaHex)
       attestData.vaaHex = vaaHex
       attestData.step++
       const newState = await this.backup()
       await onUpdate(newState)
     }
     if (attestData.step === 2) {
+      console.log('bat dau wraptoken')
       const txId = await this.wrapToken(attestData.vaaHex)
+      console.log('wrap token xong', txId)
       attestData.txId = txId
       attestData.step++
       const newState = await this.backup()

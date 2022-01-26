@@ -54,6 +54,7 @@ class TokenProvider {
       let tokenList = await (await new TokenListProvider().resolve())
         .filterByChainId(this.chainId)
         .getList()
+      console.log(this.cluster, tokenList, 'I am herrrr to check out')
       if (this.cluster === 'devnet') tokenList = tokenList.concat(supplementary)
       if (this.cluster === 'testnet')
         tokenList = tokenList.concat([sntr(102), sol(102)])
@@ -76,6 +77,7 @@ class TokenProvider {
 
   all = async (): Promise<TokenInfo[]> => {
     const [tokenMap] = await this._init()
+    console.log(tokenMap)
     return Array.from(tokenMap.values())
   }
 

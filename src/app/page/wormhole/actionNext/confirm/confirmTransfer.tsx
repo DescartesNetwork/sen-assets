@@ -11,6 +11,7 @@ import {
   fetchEtherTokens,
   setWaiting,
   setProcess,
+  fetchSolTokens,
 } from 'app/model/wormhole.controller'
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
@@ -18,7 +19,10 @@ import { asyncWait } from 'shared/util'
 import { StepTransfer, TransferState } from 'app/constant/types/wormhole'
 import { updateWohHistory } from 'app/model/wohHistory.controller'
 import WohSolEth from 'app/lib/wormhole/wohSolEth'
-import { CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
+import { CHAIN_ID_SOLANA, CHAIN_ID_ETH } from '@certusone/wormhole-sdk'
+import { useAccount, useMint } from '@senhub/providers'
+import { utils } from '@senswap/sen-js'
+// import { useSolWallet } from 'app/lib/wormhole/helper/solana'
 
 const ConfirmAction = ({
   onClose = () => {},
@@ -37,13 +41,44 @@ const ConfirmAction = ({
     },
   } = useSelector((state: AppState) => state)
   const [acceptable, setAcceptable] = useState(false)
+  const { accounts } = useAccount()
+  const { tokenProvider } = useMint()
   const loading = waiting || !!processId
 
   const onUpdate = async (stateTransfer: TransferState) => {
     if (stateTransfer.transferData.nextStep === StepTransfer.WaitSigned) {
       await asyncWait(5000)
-      await dispatch(fetchEtherTokens())
+      if (stateTransfer.context.srcChainId === CHAIN_ID_ETH) {
+        await dispatch(fetchEtherTokens())
+      }
+      if (stateTransfer.context.srcChainId === CHAIN_ID_SOLANA) {
+        const sourceToken: any = await Promise.all(
+          Object.values(accounts)
+            .filter(({ amount }) => !!amount)
+            .map(async ({ mint, amount }) => {
+              const tokenInfo = await tokenProvider.findByAddress(mint)
+
+              if (!tokenInfo) {
+                return
+              }
+              const tempToken = {
+                balance: amount,
+                decimals: tokenInfo?.decimals,
+                logo: tokenInfo?.logoURI,
+                name: tokenInfo?.name,
+                symbol: tokenInfo?.symbol,
+                token_address: tokenInfo?.address,
+                address: tokenInfo?.address,
+                amount: utils.undecimalize(amount, tokenInfo?.decimals),
+              }
+              console.log(tempToken, 'sslslslssourcetoken')
+              return tempToken
+            }),
+        )
+        await dispatch(fetchSolTokens(sourceToken))
+      }
     }
+
     await dispatch(setProcess({ id: stateTransfer.context.id }))
     await dispatch(updateWohHistory({ stateTransfer }))
   }
@@ -54,22 +89,18 @@ const ConfirmAction = ({
       //Transfer
       const { sourceWallet, targetWallet } = window.wormhole
       const tokenTransfer = sourceTokens[tokenAddress]
-      if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
-        throw new Error('Wallet is not connected')
+      const { ether: etherSource, sol: solSource } = sourceWallet
+      const { ether: etherTarget, sol: solTarget } = targetWallet
 
       let wormholeTransfer
       if (sourceChain !== CHAIN_ID_SOLANA) {
-        wormholeTransfer = new WohEthSol(
-          sourceWallet.ether,
-          targetWallet.sol,
-          tokenTransfer,
-        )
+        if (!etherSource || !solTarget)
+          throw new Error('Wallet is not connected')
+        wormholeTransfer = new WohEthSol(etherSource, solTarget, tokenTransfer)
       } else {
-        wormholeTransfer = new WohSolEth(
-          sourceWallet.ether as any,
-          targetWallet.sol as any,
-          tokenTransfer,
-        )
+        if (!solSource || !etherTarget)
+          throw new Error('Wallet is not connected')
+        wormholeTransfer = new WohSolEth(solSource, etherTarget, tokenTransfer)
       }
 
       const txId = await wormholeTransfer.transfer(amount, onUpdate)

@@ -74,12 +74,16 @@ const SourceWallet = () => {
       if (currentSourceChain === CHAIN_ID_SOLANA) {
         sourceWallet = window.sentre.wallet
         targetWallet = getSourceWallet(MetamaskWallet.walletType)
+        console.log(accounts, 'slslslslslsls')
         sourceToken = await Promise.all(
           Object.values(accounts)
             .filter(({ amount }) => !!amount)
             .map(async ({ mint, amount }) => {
               const tokenInfo = await tokenProvider.findByAddress(mint)
-              if (!tokenInfo) return
+
+              if (!tokenInfo) {
+                return
+              }
               const tempToken = {
                 balance: amount,
                 decimals: tokenInfo?.decimals,
@@ -90,6 +94,7 @@ const SourceWallet = () => {
                 address: tokenInfo?.address,
                 amount: utils.undecimalize(amount, tokenInfo?.decimals),
               }
+              console.log(tempToken, 'sslslslssourcetoken')
               return tempToken
             }),
         )
