@@ -96,13 +96,6 @@ class WohSolEth extends WormholeProvider {
     //   originAsset.chainId,
     //   originAsset.assetAddress,
     // )
-    console.log(
-      context,
-      wrappedMintAddress,
-      originAsset,
-      uint8ArrayToHex(originAsset.assetAddress),
-      'go herreeee',
-    )
 
     return {
       // attested: originAsset.isWrapped,
@@ -146,8 +139,6 @@ class WohSolEth extends WormholeProvider {
       context.tokenInfo.decimals,
     )
 
-    console.log(wrappedMintAddress, 'sksksksk')
-
     const sourceAddress = await this.srcWallet.getAddress()
     const dstAddress = await splt.deriveAssociatedAddress(
       sourceAddress,
@@ -163,19 +154,6 @@ class WohSolEth extends WormholeProvider {
     }
     const vaaCompatibleAddress = hexToUint8Array(hexString)
     const srcVaaAddress = hexToUint8Array(srchexString)
-
-    console.log(
-      connection,
-      context.srcBridgeAddress,
-      context.srcTokenBridgeAddress,
-      payerAddress,
-      dstAddress,
-      context.tokenInfo.address,
-      amountTransfer,
-      wrappedMintAddress,
-      CHAIN_ID_ETH,
-      chainId,
-    )
 
     const transferReceipt = this.isNative()
       ? await transferNativeSol(
@@ -208,16 +186,13 @@ class WohSolEth extends WormholeProvider {
     // )
     // await connection.confirmTransaction(txId)
     const info = await connection.getTransaction(txId)
-    console.log('Heeeeesskskskkskse', info)
     if (!info) {
       throw new Error('An error occurred while fetching the transaction info')
     }
     const sequence = parseSequenceFromLogSolana(info)
-    console.log('lay duoc sequence', sequence)
     const emitterAddress = await getEmitterAddressSolana(
       context.srcTokenBridgeAddress,
     )
-    console.log('lay duoc emiiter add', info)
     return {
       sequence,
       emitterAddress,
@@ -271,7 +246,6 @@ class WohSolEth extends WormholeProvider {
       targetProvider.getSigner(),
       vaaBytes,
     )
-    console.log(tx, 'tx Wrap toke')
     return tx.transactionHash
   }
 

@@ -59,16 +59,12 @@ export const sendTransaction = async (
   connection: Connection,
 ): Promise<string> => {
   const tx = transaction.serialize()
-  console.log('11')
   const txId = await connection.sendRawTransaction(tx, {
     skipPreflight: true,
     preflightCommitment: 'confirmed',
   })
-  console.log(txId, '22')
   const value = await connection.confirmTransaction(txId, 'confirmed')
-  console.log(value)
   if (value.value.err) throw new Error(`${value.value.err} at ${txId}`)
-  console.log('33')
   return txId
 }
 

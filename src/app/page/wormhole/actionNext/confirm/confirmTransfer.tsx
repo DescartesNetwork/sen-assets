@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { Button, Checkbox, Col, Row, Space, Typography } from 'antd'
@@ -16,12 +16,17 @@ import {
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
 import { asyncWait } from 'shared/util'
-import { StepTransfer, TransferState } from 'app/constant/types/wormhole'
+import {
+  StepTransfer,
+  TransferState,
+  WohTokenInfo,
+} from 'app/constant/types/wormhole'
 import { updateWohHistory } from 'app/model/wohHistory.controller'
 import WohSolEth from 'app/lib/wormhole/wohSolEth'
-import { CHAIN_ID_SOLANA, CHAIN_ID_ETH } from '@certusone/wormhole-sdk'
-import { useAccount, useMint } from '@senhub/providers'
+import { CHAIN_ID_SOLANA, CHAIN_ID_ETH, ChainId } from '@certusone/wormhole-sdk'
+import { useAccount, useMint, useWallet } from '@senhub/providers'
 import { utils } from '@senswap/sen-js'
+import useMintDecimals from 'shared/hooks/useMintDecimals'
 // import { useSolWallet } from 'app/lib/wormhole/helper/solana'
 
 const ConfirmAction = ({
@@ -41,47 +46,27 @@ const ConfirmAction = ({
     },
   } = useSelector((state: AppState) => state)
   const [acceptable, setAcceptable] = useState(false)
+  const [srcChainId, setSrcChainId] = useState<ChainId>()
   const { accounts } = useAccount()
   const { tokenProvider } = useMint()
+  const decimal = useMintDecimals(tokenAddress) || 0
+  const {
+    wallet: { address: walletAddress },
+  } = useWallet()
   const loading = waiting || !!processId
 
-  const onUpdate = async (stateTransfer: TransferState) => {
-    if (stateTransfer.transferData.nextStep === StepTransfer.WaitSigned) {
-      await asyncWait(5000)
-      if (stateTransfer.context.srcChainId === CHAIN_ID_ETH) {
-        await dispatch(fetchEtherTokens())
+  const onUpdate = useCallback(
+    async (stateTransfer: TransferState) => {
+      if (stateTransfer.transferData.nextStep === StepTransfer.WaitSigned) {
+        await asyncWait(5000)
+        setSrcChainId(stateTransfer.context.srcChainId)
       }
-      if (stateTransfer.context.srcChainId === CHAIN_ID_SOLANA) {
-        const sourceToken: any = await Promise.all(
-          Object.values(accounts)
-            .filter(({ amount }) => !!amount)
-            .map(async ({ mint, amount }) => {
-              const tokenInfo = await tokenProvider.findByAddress(mint)
 
-              if (!tokenInfo) {
-                return
-              }
-              const tempToken = {
-                balance: amount,
-                decimals: tokenInfo?.decimals,
-                logo: tokenInfo?.logoURI,
-                name: tokenInfo?.name,
-                symbol: tokenInfo?.symbol,
-                token_address: tokenInfo?.address,
-                address: tokenInfo?.address,
-                amount: utils.undecimalize(amount, tokenInfo?.decimals),
-              }
-              console.log(tempToken, 'sslslslssourcetoken')
-              return tempToken
-            }),
-        )
-        await dispatch(fetchSolTokens(sourceToken))
-      }
-    }
-
-    await dispatch(setProcess({ id: stateTransfer.context.id }))
-    await dispatch(updateWohHistory({ stateTransfer }))
-  }
+      await dispatch(setProcess({ id: stateTransfer.context.id }))
+      await dispatch(updateWohHistory({ stateTransfer }))
+    },
+    [dispatch],
+  )
 
   const onTransfer = async () => {
     await dispatch(setWaiting({ waiting: true }))
@@ -104,6 +89,7 @@ const ConfirmAction = ({
       }
 
       const txId = await wormholeTransfer.transfer(amount, onUpdate)
+
       notifySuccess('Transfer', txId)
       dispatch(clearProcess())
       return onClose(false)
@@ -114,6 +100,42 @@ const ConfirmAction = ({
       await dispatch(setWaiting({ waiting: false }))
     }
   }
+
+  const onUpdateSourceToken = useCallback(async () => {
+    if (srcChainId === CHAIN_ID_ETH) return await dispatch(fetchEtherTokens())
+    if (srcChainId === CHAIN_ID_SOLANA) {
+      const sourceTokens: Record<string, WohTokenInfo> = {}
+      const tokenInfos = await Promise.all(
+        Object.values(accounts)
+          .filter(({ amount }) => !!amount)
+          .map(async ({ mint, amount }) => {
+            const tokenInfo = await tokenProvider.findByAddress(mint)
+            if (!tokenInfo) return
+            return { accAmount: amount, ...tokenInfo }
+          }),
+      )
+      for (const token of tokenInfos) {
+        if (!token) continue
+        const tempToken = {
+          balance: token.accAmount.toString(),
+          decimals: token.decimals,
+          logo: token.logoURI || '',
+          name: token.name,
+          symbol: token.symbol,
+          address: token.address,
+          amount: Number(
+            utils.undecimalize(token.accAmount, token.decimals || 0),
+          ),
+        }
+        sourceTokens[token.address] = tempToken
+      }
+      await dispatch(fetchSolTokens({ sourceTokens }))
+    }
+  }, [accounts, dispatch, srcChainId, tokenProvider])
+
+  useEffect(() => {
+    onUpdateSourceToken()
+  }, [onUpdateSourceToken])
 
   return (
     <Row gutter={[8, 8]} justify="center">

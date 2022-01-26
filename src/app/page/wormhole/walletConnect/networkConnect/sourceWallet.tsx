@@ -13,16 +13,12 @@ import {
   connectSourceWallet,
   connectTargetWallet,
   disconnectSourceWallet,
-  setSourceToken,
 } from 'app/model/wormhole.controller'
 import session from 'shared/session'
 import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
 import { notifyError } from 'app/helper'
-import { utils, WalletInterface } from '@senswap/sen-js'
-import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
+import { utils } from '@senswap/sen-js'
 import { useAccount, useMint } from '@senhub/providers'
-import { WohTokenInfo } from 'app/constant/types/wormhole'
-import { ChainID } from '@certusone/wormhole-sdk/lib/cjs/proto/publicrpc/v1/publicrpc'
 
 const SourceWallet = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -74,7 +70,6 @@ const SourceWallet = () => {
       if (currentSourceChain === CHAIN_ID_SOLANA) {
         sourceWallet = window.sentre.wallet
         targetWallet = getSourceWallet(MetamaskWallet.walletType)
-        console.log(accounts, 'slslslslslsls')
         sourceToken = await Promise.all(
           Object.values(accounts)
             .filter(({ amount }) => !!amount)
@@ -94,7 +89,6 @@ const SourceWallet = () => {
                 address: tokenInfo?.address,
                 amount: utils.undecimalize(amount, tokenInfo?.decimals),
               }
-              console.log(tempToken, 'sslslslssourcetoken')
               return tempToken
             }),
         )

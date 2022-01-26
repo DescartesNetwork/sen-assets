@@ -111,19 +111,10 @@ export const fetchEtherTokens = createAsyncThunk<Partial<WohState>>(
 
 export const fetchSolTokens = createAsyncThunk<
   Partial<WohState>,
-  { sourceToken: [] }
->(`${NAME}/fetchSourceTokens`, ({ sourceToken }) => {
-  const tokens: Record<string, WohTokenInfo> = {}
-  let tokenAddress = ''
-  for (const token of sourceToken as any) {
-    if (!token) continue
-    if (!tokenAddress) {
-      tokenAddress = token.address
-    }
-    tokens[token?.address] = token
-  }
+  { sourceTokens: Record<string, WohTokenInfo> }
+>(`${NAME}/fetchSolTokens`, ({ sourceTokens }) => {
   return {
-    sourceTokens: tokens,
+    sourceTokens,
   }
 })
 
@@ -181,7 +172,7 @@ export const restoreTransfer = createAsyncThunk<
   { state: { wormhole: WohState } }
 >(`${NAME}/restoreTransfer`, async ({ transferState }, { getState }) => {
   const { sourceWallet } = window.wormhole
-  if (!sourceWallet.ether) throw new Error('Wallet is not connected')
+  if (!sourceWallet?.ether) throw new Error('Wallet is not connected')
   const { wormhole } = getState()
   const {
     context: { id, tokenInfo },
@@ -282,6 +273,10 @@ const slice = createSlice({
       )
       .addCase(
         setWaiting.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        fetchSolTokens.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })
