@@ -59,9 +59,8 @@ export const createSolEtherContext = (
   tokenInfo: WohTokenInfo,
 ): WormholeContext => {
   const solNetWork: SolNetWork = getSolNetwork()
-  const etherNetwork: EtherNetwork = getEtherNetwork()
   const solContext = getSolContext()
-  const etherContext = getEtherContext()
+  const { chainId, tokenBridgeAddress, bridgeAddress } = getEtherContext()
   return {
     id: new Date().getTime() + '' + Math.random(),
     time: new Date().getTime(),
@@ -70,9 +69,9 @@ export const createSolEtherContext = (
     srcTokenBridgeAddress: solContext.tokenBridgeAddress,
     srcBridgeAddress: solContext.bridgeAddress,
     // Sol network
-    targetChainId: etherContext.chainId,
-    targetTokenBridgeAddress: etherContext.tokenBridgeAddress,
-    targetBridgeAddress: etherContext.bridgeAddress,
+    targetChainId: chainId,
+    targetTokenBridgeAddress: tokenBridgeAddress,
+    targetBridgeAddress: bridgeAddress,
     // Wormhole
     wormholeRpc: WORMHOLE_RPC_HOST[solNetWork],
     // Token

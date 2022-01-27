@@ -1,22 +1,10 @@
 import {
-  approveEth,
-  attestFromEth,
   CHAIN_ID_ETH,
   CHAIN_ID_SOLANA,
-  createWrappedOnSolana,
-  getEmitterAddressEth,
-  getForeignAssetSolana,
-  getOriginalAssetEth,
   hexToUint8Array,
-  parseSequenceFromLogEth,
-  postVaaSolana,
-  redeemOnSolana,
-  transferFromEth,
   transferFromSolana,
-  transferFromEthNative,
   WSOL_ADDRESS,
   getOriginalAssetSol,
-  getForeignAssetEth,
   attestFromSolana,
   parseSequenceFromLogSolana,
   transferNativeSol,
@@ -27,15 +15,9 @@ import {
   getEmitterAddressSolana,
   ChainId,
 } from '@certusone/wormhole-sdk'
-import { account, utils, WalletInterface } from '@senswap/sen-js'
-import { Connection, Keypair, PublicKey } from '@solana/web3.js'
-import { Token } from '@solana/spl-token'
+import { utils, WalletInterface } from '@senswap/sen-js'
 
-import {
-  getAssociatedAddress,
-  getEtherNetwork,
-  sendTransaction,
-} from './helper/utils'
+import { sendTransaction } from './helper/utils'
 import { WormholeProvider } from './provider'
 import { IEtherWallet } from '../etherWallet/walletInterface'
 import {
@@ -43,14 +25,7 @@ import {
   WohTokenInfo,
   TransferData,
 } from 'app/constant/types/wormhole'
-import { createEtherSolContext, createSolEtherContext } from './context'
-import { INFURA_API_WSS_URL, WETH_ADDRESS } from './constant/ethConfig'
-import { ethers } from 'ethers'
-import { fetchForeignAssetEtherFromSol } from './helper/ether'
-import { original } from '@reduxjs/toolkit'
-import { ChainID } from '@certusone/wormhole-sdk/lib/cjs/proto/publicrpc/v1/publicrpc'
-
-const zeroAdd = '0x0000000000000000000000000000000000000000'
+import { createSolEtherContext } from './context'
 
 class WohSolEth extends WormholeProvider {
   private srcWallet: WalletInterface
@@ -77,31 +52,16 @@ class WohSolEth extends WormholeProvider {
     wrappedMintAddress: string | null
   }> => {
     const { context } = this.getState()
-    const provider = await this.targetWallet.getProvider()
     const originAsset = await getOriginalAssetSol(
       this.getConnection(),
       context.srcTokenBridgeAddress,
       context.tokenInfo.address,
     )
-
     const wrappedMintAddress = uint8ArrayToHex(originAsset.assetAddress)
-
-    // console.log(
-    //   uint8ArrayToHex(originAsset.assetAddress),
-    //   'sksskssdsjdaisjdajk',
-    // )
-    // const wrappedMintAddress = await getForeignAssetEth(
-    //   context.targetTokenBridgeAddress,
-    //   provider,
-    //   originAsset.chainId,
-    //   originAsset.assetAddress,
-    // )
-
     return {
-      // attested: originAsset.isWrapped,
-      chainId: originAsset.chainId,
       attested: !!wrappedMintAddress,
       wrappedMintAddress,
+      chainId: originAsset.chainId,
     }
   }
 
@@ -123,38 +83,28 @@ class WohSolEth extends WormholeProvider {
   }
 
   protected submitTransfer = async () => {
+    // Create inputs
     const { transferData, context } = this.getState()
-    let { wrappedMintAddress, chainId } = await this.isAttested()
-    if (!wrappedMintAddress) throw new Error('Attest the token first')
-
-    // get provider
-    const splt = window.sentre.splt
-    const provider = await this.srcWallet.getProvider()
+    const { splt } = window.sentre
     const connection = this.getConnection()
     const payerAddress = await this.srcWallet.getAddress()
     const targetAddress = await this.targetWallet.getAddress()
-    // const signer = provider.getSigner()
     const amountTransfer = utils.decimalize(
       transferData.amount,
       context.tokenInfo.decimals,
     )
-
-    const sourceAddress = await this.srcWallet.getAddress()
+    let { wrappedMintAddress, chainId } = await this.isAttested()
+    if (!wrappedMintAddress) throw new Error('Attest the token first')
     const dstAddress = await splt.deriveAssociatedAddress(
-      sourceAddress,
+      payerAddress,
       context.tokenInfo.address,
     )
     const hexString = nativeToHexString(targetAddress, CHAIN_ID_ETH)
     if (!hexString) {
       throw new Error('Invalid recipient')
     }
-    const srchexString = nativeToHexString(sourceAddress, CHAIN_ID_SOLANA)
-    if (!srchexString) {
-      throw new Error('Invalid recipient')
-    }
     const vaaCompatibleAddress = hexToUint8Array(hexString)
-    const srcVaaAddress = hexToUint8Array(srchexString)
-
+    // transfer
     const transferReceipt = this.isNative()
       ? await transferNativeSol(
           connection,
@@ -174,17 +124,12 @@ class WohSolEth extends WormholeProvider {
           context.tokenInfo.address,
           amountTransfer,
           vaaCompatibleAddress,
-          2,
+          CHAIN_ID_ETH,
           hexToUint8Array(wrappedMintAddress),
           chainId,
         )
     const signedTx = await this.srcWallet.signTransaction(transferReceipt)
     const txId = await sendTransaction(signedTx, connection)
-    // await this.srcWallet.signTransaction(transferReceipt)
-    // const txid = await connection.sendRawTransaction(
-    //   transferReceipt.serialize(),
-    // )
-    // await connection.confirmTransaction(txId)
     const info = await connection.getTransaction(txId)
     if (!info) {
       throw new Error('An error occurred while fetching the transaction info')
@@ -204,7 +149,6 @@ class WohSolEth extends WormholeProvider {
     const { context } = this.getState()
     const signer = await this.srcWallet.getAddress()
     const connection = await this.getConnection()
-
     // Send attest
     const receipt = await attestFromSolana(
       this.getConnection(),
@@ -213,13 +157,6 @@ class WohSolEth extends WormholeProvider {
       signer,
       context.tokenInfo.address,
     )
-
-    // receipt.partialSign(keypair) Note here to check in priority way
-    // this.srcWallet.rawSignTransaction(receipt)
-    // const txid = await this.getConnection().sendRawTransaction(
-    //   receipt.serialize(),
-    // )
-    // await connection.confirmTransaction(txid)
     const signedTx = await this.srcWallet.signTransaction(receipt)
     const txId = await sendTransaction(signedTx, connection)
     const info = await connection.getTransaction(txId)
@@ -231,16 +168,13 @@ class WohSolEth extends WormholeProvider {
       context.srcTokenBridgeAddress,
     )
     return { sequence, emitterAddress }
-
-    // receipt.sign()
-    // const sequence = parseSequenceFromLogSolana(receipt)
   }
 
   protected wrapToken = async (vaaHex: string) => {
     const { context } = this.getState()
     const vaaBytes = hexToUint8Array(vaaHex)
     const targetProvider = await this.targetWallet.getProvider()
-
+    // Wrap token
     const tx = await createWrappedOnEth(
       context.targetTokenBridgeAddress,
       targetProvider.getSigner(),
@@ -254,13 +188,6 @@ class WohSolEth extends WormholeProvider {
     const vaaBytes = hexToUint8Array(vaaHex)
     const targetProvider = await this.targetWallet.getProvider()
 
-    // await postVaaSolana(
-    //   this.getConnection(),
-    //   this.targetWallet.signTransaction,
-    //   context.targetBridgeAddress,
-    //   payerAddress,
-    //   Buffer.from(vaaBytes),
-    // )
     const tx = await redeemOnEth(
       context.targetTokenBridgeAddress,
       targetProvider.getSigner(),

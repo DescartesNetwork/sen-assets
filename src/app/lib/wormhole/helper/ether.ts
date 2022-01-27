@@ -283,6 +283,5 @@ export const fetchForeignAssetEtherFromSol = async (
     solContext.tokenBridgeAddress,
     solTokenAddress,
   )
-
   return uint8ArrayToHex(originAsset.assetAddress)
 }

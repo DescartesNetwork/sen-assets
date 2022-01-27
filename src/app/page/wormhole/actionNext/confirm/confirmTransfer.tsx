@@ -1,5 +1,8 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { CHAIN_ID_SOLANA, CHAIN_ID_ETH, ChainId } from '@certusone/wormhole-sdk'
+import { useAccount, useMint } from '@senhub/providers'
+import { utils } from '@senswap/sen-js'
 
 import { Button, Checkbox, Col, Row, Space, Typography } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
@@ -23,11 +26,6 @@ import {
 } from 'app/constant/types/wormhole'
 import { updateWohHistory } from 'app/model/wohHistory.controller'
 import WohSolEth from 'app/lib/wormhole/wohSolEth'
-import { CHAIN_ID_SOLANA, CHAIN_ID_ETH, ChainId } from '@certusone/wormhole-sdk'
-import { useAccount, useMint, useWallet } from '@senhub/providers'
-import { utils } from '@senswap/sen-js'
-import useMintDecimals from 'shared/hooks/useMintDecimals'
-// import { useSolWallet } from 'app/lib/wormhole/helper/solana'
 
 const ConfirmAction = ({
   onClose = () => {},
@@ -49,10 +47,6 @@ const ConfirmAction = ({
   const [srcChainId, setSrcChainId] = useState<ChainId>()
   const { accounts } = useAccount()
   const { tokenProvider } = useMint()
-  const decimal = useMintDecimals(tokenAddress) || 0
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
   const loading = waiting || !!processId
 
   const onUpdate = useCallback(

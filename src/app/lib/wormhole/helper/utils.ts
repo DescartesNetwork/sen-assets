@@ -63,8 +63,10 @@ export const sendTransaction = async (
     skipPreflight: true,
     preflightCommitment: 'confirmed',
   })
-  const value = await connection.confirmTransaction(txId, 'confirmed')
-  if (value.value.err) throw new Error(`${value.value.err} at ${txId}`)
+  const {
+    value: { err },
+  } = await connection.confirmTransaction(txId, 'confirmed')
+  if (err) throw new Error(`${err} at ${txId}`)
   return txId
 }
 

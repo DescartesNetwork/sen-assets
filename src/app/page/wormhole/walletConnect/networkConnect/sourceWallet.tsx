@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import detectEthereumProvider from '@metamask/detect-provider'
+import { utils } from '@senswap/sen-js'
+import { useAccount, useMint } from '@senhub/providers'
 
 import { Col, Row } from 'antd'
 import Network, { NetworkConnect } from './network'
@@ -17,8 +19,6 @@ import {
 import session from 'shared/session'
 import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
 import { notifyError } from 'app/helper'
-import { utils } from '@senswap/sen-js'
-import { useAccount, useMint } from '@senhub/providers'
 
 const SourceWallet = () => {
   const dispatch = useDispatch<AppDispatch>()

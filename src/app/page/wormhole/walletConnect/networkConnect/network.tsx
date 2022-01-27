@@ -1,3 +1,5 @@
+import { ChainId, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
+
 import {
   Avatar,
   Button,
@@ -13,13 +15,10 @@ import IonIcon from 'shared/antd/ionicon'
 
 import { WORMHOLE_NETWORK } from 'app/lib/wormhole/constant/wormhole'
 import { shortenAddress } from 'shared/util'
-import { ChainId, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import METAMASK from 'app/static/images/metamask.png'
 import COIN98 from 'app/static/images/coin98.png'
 import MetamaskWallet from 'app/lib/etherWallet/metamask'
 import Coin98Wallet from 'app/lib/etherWallet/coin98'
-import { useEffect, useState } from 'react'
-import { net } from 'shared/runtime'
 
 export type WalletOptionProps = {
   onClick?: () => void
