@@ -15,6 +15,7 @@ import {
   transferFromEthNative,
 } from '@certusone/wormhole-sdk'
 import { account, utils, WalletInterface } from '@senswap/sen-js'
+import { PublicKey, TransactionInstruction } from '@solana/web3.js'
 
 import {
   getAssociatedAddress,
