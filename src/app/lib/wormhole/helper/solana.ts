@@ -5,8 +5,9 @@ import {
   parseSequenceFromLogSolana,
 } from '@certusone/wormhole-sdk'
 import { Connection } from '@solana/web3.js'
+
 import { StepTransfer, TransferState } from 'app/constant/types/wormhole'
-import { provider, web3ProviderEther } from 'app/lib/etherWallet/ethersConfig'
+import { web3ProviderEther } from 'app/lib/etherWallet/ethersConfig'
 
 export const getSolConnection = () => {
   const nodeUrl = window.sentre.splt.nodeUrl
@@ -19,18 +20,20 @@ export const restoreSol = async (
   const cloneState: TransferState = JSON.parse(JSON.stringify(state))
   const { transferData, context } = cloneState
   const txHash = transferData.txHash
+
   if (!txHash) throw new Error('Invalid txHash')
 
-  // const value = await provider.getTransactionReceipt(txHash)
-  const value = await window.sentre.splt.connection.getTransaction(txHash)
+  const { connection } = window.sentre.splt
+  const value = await connection.getTransaction(txHash)
+
   if (!value) return cloneState
+
   const sequence = parseSequenceFromLogSolana(value)
   const emitterAddress = await getEmitterAddressSolana(
     context.srcTokenBridgeAddress,
   )
 
   transferData.sequence = sequence
-
   transferData.emitterAddress = emitterAddress
 
   try {
@@ -40,6 +43,7 @@ export const restoreSol = async (
       emitterAddress,
       sequence,
     )
+
     transferData.vaaHex = Buffer.from(vaaBytes).toString('hex')
 
     const isRedeemed = await getIsTransferCompletedEth(
@@ -47,6 +51,7 @@ export const restoreSol = async (
       web3ProviderEther,
       vaaBytes,
     )
+
     if (isRedeemed) transferData.nextStep = StepTransfer.Finish
     else transferData.nextStep = StepTransfer.WaitSigned
   } catch (error) {

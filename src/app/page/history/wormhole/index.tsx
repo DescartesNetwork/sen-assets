@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { account } from '@senswap/sen-js'
 
 import { Button, Col, Row, Table } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
@@ -9,7 +10,6 @@ import { AppDispatch, AppState } from 'app/model'
 import { fetchWohHistory } from 'app/model/wohHistory.controller'
 import { notifyError } from 'app/helper'
 import { TransferState } from 'app/constant/types/wormhole'
-import { account } from '@senswap/sen-js'
 
 const ROW_PER_PAGE = 4
 

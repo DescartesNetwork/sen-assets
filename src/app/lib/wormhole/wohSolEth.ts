@@ -57,6 +57,7 @@ class WohSolEth extends WormholeProvider {
       context.tokenInfo.address,
     )
     const wrappedMintAddress = uint8ArrayToHex(originAsset.assetAddress)
+
     return {
       attested: !!wrappedMintAddress,
       wrappedMintAddress,
@@ -78,6 +79,7 @@ class WohSolEth extends WormholeProvider {
       txId: '',
       txHash: '',
     }
+
     return data
   }
 
@@ -137,6 +139,7 @@ class WohSolEth extends WormholeProvider {
     const emitterAddress = await getEmitterAddressSolana(
       context.srcTokenBridgeAddress,
     )
+
     return {
       sequence,
       emitterAddress,
@@ -166,6 +169,7 @@ class WohSolEth extends WormholeProvider {
     const emitterAddress = await getEmitterAddressSolana(
       context.srcTokenBridgeAddress,
     )
+
     return { sequence, emitterAddress }
   }
 
@@ -179,6 +183,7 @@ class WohSolEth extends WormholeProvider {
       targetProvider.getSigner(),
       vaaBytes,
     )
+
     return tx.transactionHash
   }
 
@@ -192,6 +197,7 @@ class WohSolEth extends WormholeProvider {
       targetProvider.getSigner(),
       vaaBytes,
     )
+
     return tx.transactionHash
   }
 }

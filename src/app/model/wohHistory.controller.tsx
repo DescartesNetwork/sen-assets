@@ -1,12 +1,11 @@
-import { CHAIN_ID_SOLANA, uint8ArrayToNative } from '@certusone/wormhole-sdk'
+import { CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { account } from '@senswap/sen-js'
-import { PublicKey } from '@solana/web3.js'
 
 import { TransferState } from 'app/constant/types/wormhole'
 import { Solana } from 'app/lib/stat/adapters/solana/client'
 import { restoreEther } from 'app/lib/wormhole/helper/ether'
-import { getSolConnection, restoreSol } from 'app/lib/wormhole/helper/solana'
+import { restoreSol } from 'app/lib/wormhole/helper/solana'
 import { EtherScan } from 'app/lib/wormhole/transaction/etherScan/etherScan'
 
 /**
@@ -66,6 +65,7 @@ export const fetchWohHistory = createAsyncThunk<
     for (const data of history) {
       historyState[data.context.id] = data
     }
+
     if (!force) {
       Object.assign(historyState, currentState)
     }

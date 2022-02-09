@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 
 import { Button } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
@@ -21,13 +22,9 @@ import {
   WormholeStatus,
 } from 'app/constant/types/wormhole'
 import { updateWohHistory } from 'app/model/wohHistory.controller'
-import { fetchEtherTokenInfo } from 'app/lib/wormhole/helper/ether'
-import { CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
-import { useMint } from '@senhub/providers'
 import WohSolEth from 'app/lib/wormhole/wohSolEth'
 
 const ColumAction = ({ transferState }: { transferState: TransferState }) => {
-  const { tokenProvider } = useMint()
   const dispatch = useDispatch<AppDispatch>()
   const {
     wormhole: { processId },

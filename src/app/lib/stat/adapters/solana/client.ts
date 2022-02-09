@@ -9,6 +9,7 @@ import {
   PublicKey,
   TransactionResponse,
 } from '@solana/web3.js'
+
 import {
   StepTransfer,
   TransferData,
@@ -22,11 +23,13 @@ import {
 import { createSolEtherContext } from 'app/lib/wormhole/context'
 import { getSolNetwork } from 'app/lib/wormhole/helper/utils'
 import supplementary from 'os/providers/tokenProvider/supplementary'
-
 import { OptionsFetchSignature } from '../../constants/transaction'
 
 const DEFAULT_LIMIT = 700
 const TRANSACTION_LIMIT = 200
+const SOL_HISTORY_LIMIT = 4
+const SOL_INSTRUCTION_INDEX = 5
+const NOMAL_INSTRUCTION_INDEX = 2
 
 type ParsedTransaction = {
   targetChain: number
@@ -49,6 +52,7 @@ export class Solana {
       limit,
       before: lastSignature,
     }
+
     return this.conn.getSignaturesForAddress(address, options)
   }
 
@@ -70,6 +74,7 @@ export class Solana {
       //@ts-ignore
       confirmedTransactions = confirmedTransactions.concat(transGroup)
     }
+
     return confirmedTransactions
   }
 
@@ -105,32 +110,31 @@ export class Solana {
       if (confirmedSignatureInfos?.length < DEFAULT_LIMIT) break
     }
     const confirmedTransactions = await this.fetchConfirmTransaction(signatures)
+
     return confirmedTransactions
   }
 
-  // This function can return a value in this type : Promise<TransferState[]>
   async getTransferHistory(address: string, lastSig?: string) {
     let listSignature = await this.fetchSignatures(
       account.fromAddress(address),
       lastSig,
     )
     let newLastSig
-    // await connection.getTransaction(a[0].signature)
     const history: TransferState[] = []
     for (let i = 0; i < listSignature.length; i++) {
       try {
-        if (history.length >= 4) {
-          newLastSig = listSignature[i - 1].signature
+        if (history.length >= SOL_HISTORY_LIMIT) {
+          newLastSig = listSignature[i - 1]?.signature
           return { history, lastSig: newLastSig }
         }
         const transferState = await this.createTransferState(
-          listSignature[i].signature,
+          listSignature[i]?.signature,
           address,
         )
         if (transferState) history.push(transferState)
       } catch (error) {}
     }
-    // await Promise.all(listSignature.map(async (sig) => {}))
+
     return { history, lastSig: newLastSig }
   }
 
@@ -144,7 +148,9 @@ export class Solana {
   ): Promise<TransferState | undefined> {
     const trx = await this.getTransactionInfo(sig)
     const params = await this.parseTransParam(trx)
+
     if (!params || params.targetChain !== CHAIN_ID_ETH || !params.token) return
+
     const tokenPr = new TokenListProvider()
     const tokenRaw = await tokenPr.resolve()
     const tokenList = tokenRaw
@@ -180,6 +186,7 @@ export class Solana {
     const ethWallet = await window.wormhole.sourceWallet.ether?.getAddress()
 
     if (!ethWallet) throw new Error('Wallet is not connected')
+
     const context = createSolEtherContext(tokenInfo)
     context.id = sig
     context.time = new Date(Number(trx?.blockTime) * 1000).getTime()
@@ -195,6 +202,7 @@ export class Solana {
       txId: '',
       txHash: trx?.transaction?.signatures[0] as any,
     }
+
     return {
       context,
       transferData,
@@ -205,33 +213,36 @@ export class Solana {
     trx: TransactionResponse | null,
   ): Promise<ParsedTransaction | undefined> {
     const solNetWork: SolNetWork = getSolNetwork()
-    const { indexToProgramIds } = trx?.transaction.message as any
+    const { indexToProgramIds, instructions } = trx?.transaction.message as any
     const programIndexSolBridge =
-      trx?.transaction.message.instructions[5]?.programIdIndex
+      instructions[SOL_INSTRUCTION_INDEX]?.programIdIndex
     const programIndexNomalBridge =
-      trx?.transaction.message.instructions[2]?.programIdIndex
+      instructions[NOMAL_INSTRUCTION_INDEX]?.programIdIndex
+    const solTokenBridge = indexToProgramIds
+      .get(programIndexSolBridge)
+      ?.toBase58()
     const conditions =
-      indexToProgramIds.get(programIndexSolBridge)?.toBase58() ===
-        SOL_TOKEN_BRIDGE_ADDRESS[solNetWork] ||
+      solTokenBridge === SOL_TOKEN_BRIDGE_ADDRESS[solNetWork] ||
       indexToProgramIds.get(programIndexNomalBridge)?.toBase58() ===
         SOL_TOKEN_BRIDGE_ADDRESS[solNetWork]
+    const metaToken: any = trx?.meta
+    const preTokenBalance =
+      metaToken?.preTokenBalances[0].uiTokenAmount.uiAmount
+    const postTokenBalance =
+      metaToken?.postTokenBalances[0].uiTokenAmount.uiAmount
+
     if (!conditions) {
       return
     }
-    let amount =
-      (trx?.meta as any)?.preTokenBalances[0].uiTokenAmount.uiAmount -
-      (trx?.meta as any)?.postTokenBalances[0].uiTokenAmount.uiAmount
-    if (
-      indexToProgramIds.get(programIndexSolBridge)?.toBase58() ===
-      SOL_TOKEN_BRIDGE_ADDRESS[solNetWork]
-    ) {
-      amount =
-        (trx?.meta as any)?.postTokenBalances[0].uiTokenAmount.uiAmount -
-        (trx?.meta as any)?.preTokenBalances[0].uiTokenAmount.uiAmount
+
+    let amount = preTokenBalance - postTokenBalance
+    if (solTokenBridge === SOL_TOKEN_BRIDGE_ADDRESS[solNetWork]) {
+      amount = postTokenBalance - preTokenBalance
     }
+
     return {
       amount,
-      token: (trx?.meta as any)?.preTokenBalances[0].mint,
+      token: metaToken?.preTokenBalances[0].mint,
       targetChain: CHAIN_ID_ETH,
     }
   }
