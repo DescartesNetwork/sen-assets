@@ -111,7 +111,7 @@ const ConfirmAction = ({
       for (const token of tokenInfos) {
         if (!token) continue
         const tempToken = {
-          balance: token.accAmount.toString(),
+          balance: Number(token.accAmount.toString()),
           decimals: token.decimals,
           logo: token.logoURI || '',
           name: token.name,

@@ -6,7 +6,7 @@ import ColumAction from './columnAction'
 import HistoryStatus from './columnStatus'
 import NetworkName from 'app/components/network/networkName'
 
-import { shortenAddress } from 'shared/util'
+import { numeric, shortenAddress } from 'shared/util'
 import { TransferState, WormholeContext } from 'app/constant/types/wormhole'
 
 export const WORMHOLE_COLUMNS = [
@@ -54,7 +54,8 @@ export const WORMHOLE_COLUMNS = [
     render: (data: TransferState) => {
       return (
         <Typography.Text>
-          {data?.transferData?.amount} {data?.context?.tokenInfo?.symbol}
+          {numeric(data?.transferData?.amount).format('0,0.[0000]') || 0}{' '}
+          {data?.context?.tokenInfo?.symbol}
         </Typography.Text>
       )
     },

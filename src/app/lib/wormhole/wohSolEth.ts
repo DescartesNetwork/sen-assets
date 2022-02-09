@@ -1,9 +1,7 @@
 import {
   CHAIN_ID_ETH,
-  CHAIN_ID_SOLANA,
   hexToUint8Array,
   transferFromSolana,
-  WSOL_ADDRESS,
   getOriginalAssetSol,
   attestFromSolana,
   parseSequenceFromLogSolana,
@@ -26,6 +24,7 @@ import {
   TransferData,
 } from 'app/constant/types/wormhole'
 import { createSolEtherContext } from './context'
+import { SOL_ADDRESS } from '../stat/constants/sol'
 
 class WohSolEth extends WormholeProvider {
   private srcWallet: WalletInterface
@@ -43,7 +42,7 @@ class WohSolEth extends WormholeProvider {
   }
 
   private isNative = () => {
-    return this.context?.tokenInfo.address === WSOL_ADDRESS
+    return this.context?.tokenInfo.address === SOL_ADDRESS
   }
 
   protected isAttested = async (): Promise<{

@@ -9,6 +9,7 @@ import { AppDispatch, AppState } from 'app/model'
 import { fetchWohHistory } from 'app/model/wohHistory.controller'
 import { notifyError } from 'app/helper'
 import { TransferState } from 'app/constant/types/wormhole'
+import { account } from '@senswap/sen-js'
 
 const ROW_PER_PAGE = 4
 
@@ -21,27 +22,32 @@ const WormholeHistory = () => {
   } = useSelector((state: AppState) => state)
 
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
-  const [fromBlk, setFromBlk] = useState<number>()
-  const [fetchedDays, setFetchedDays] = useState<number>(0)
+  const [lastSig, setLastSig] = useState<string>('')
   const [sortedHistory, setSortedHistory] = useState<TransferState[]>()
 
   /* toLowerCase sourceWalletAddress to avoid unnecessary rerenders caused by sensitive case */
   const nomalizeSourceAddr = useMemo(() => {
-    return sourceWalletAddress?.toLowerCase()
+    if (!account.isAddress(sourceWalletAddress)) {
+      //@ts-ignore
+      return sourceWalletAddress?.toLowerCase()
+    }
+    return sourceWalletAddress
   }, [sourceWalletAddress])
 
   const fetchBridgeHistory = useCallback(async () => {
     if (!nomalizeSourceAddr) return
     try {
       setIsLoading(true)
-      const { fromBlock, count } = await dispatch(
+      setAmountRow(ROW_PER_PAGE)
+      const { newLastSig } = await dispatch(
         fetchWohHistory({
           address: nomalizeSourceAddr,
-          minNeededTrx: ROW_PER_PAGE,
+          force: true,
         }),
       ).unwrap()
-      setFromBlk(fromBlock)
-      setFetchedDays(count)
+      if (newLastSig) {
+        setLastSig(newLastSig)
+      }
     } catch (er) {
       notifyError(er)
     } finally {
@@ -58,17 +64,22 @@ const WormholeHistory = () => {
     try {
       setIsLoading(true)
       if (Object.keys(wohHistory).length < amountRow + ROW_PER_PAGE) {
-        const { fromBlock, count } = await dispatch(
+        if (account.isAddress(nomalizeSourceAddr)) {
+          const { newLastSig } = await dispatch(
+            fetchWohHistory({
+              address: nomalizeSourceAddr,
+              lastSig,
+            }),
+          ).unwrap()
+          if (newLastSig) setLastSig(newLastSig)
+          return
+        }
+        await dispatch(
           fetchWohHistory({
-            address: sourceWalletAddress,
-            minNeededTrx:
-              amountRow + ROW_PER_PAGE - Object.keys(wohHistory).length,
-            fromBLK: fromBlk,
-            fetchedDays: fetchedDays,
+            address: nomalizeSourceAddr,
+            force: true,
           }),
         ).unwrap()
-        setFromBlk(fromBlock)
-        setFetchedDays(count)
       }
     } catch (er) {
       notifyError(er)
@@ -99,9 +110,7 @@ const WormholeHistory = () => {
       </Col>
       <Col>
         <Button
-          disabled={
-            fetchedDays >= 30 || isLoading === true || !sourceWalletAddress
-          }
+          disabled={isLoading === true || !sourceWalletAddress}
           onClick={onHandleViewMore}
           type="text"
           icon={<IonIcon name="chevron-down-outline" />}
