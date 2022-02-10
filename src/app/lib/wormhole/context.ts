@@ -61,6 +61,7 @@ export const createSolEtherContext = (
   const solNetWork: SolNetWork = getSolNetwork()
   const solContext = getSolContext()
   const { chainId, tokenBridgeAddress, bridgeAddress } = getEtherContext()
+
   return {
     id: new Date().getTime() + '' + Math.random(),
     time: new Date().getTime(),

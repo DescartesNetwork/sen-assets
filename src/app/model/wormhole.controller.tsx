@@ -226,6 +226,27 @@ export const clearProcess = createAsyncThunk<
 })
 
 /**
+ * Actions
+ */
+
+export const changeSourceAndTargetChain = createAsyncThunk<
+  Partial<WohState>,
+  { chainID: ChainId; isReverse?: boolean }
+>(`${NAME}/changeSourceAndTargetChain`, ({ chainID, isReverse }) => {
+  const sourceChain = !isReverse
+    ? chainID
+    : chainID === CHAIN_ID_SOLANA
+    ? CHAIN_ID_ETH
+    : CHAIN_ID_SOLANA
+  const targetChain =
+    sourceChain === CHAIN_ID_SOLANA ? CHAIN_ID_ETH : CHAIN_ID_SOLANA
+  return {
+    sourceChain,
+    targetChain,
+  }
+})
+
+/**
  * Usual procedure
  */
 
@@ -277,6 +298,10 @@ const slice = createSlice({
       )
       .addCase(
         fetchSolTokens.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        changeSourceAndTargetChain.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

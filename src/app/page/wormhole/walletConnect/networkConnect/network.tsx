@@ -137,7 +137,6 @@ const Network = ({
           style={{ marginLeft: -4 }}
           className="custom-selector"
           dropdownStyle={{ lineHeight: 'normal' }}
-          disabled={disabled}
         >
           {WORMHOLE_NETWORK.map((network) => (
             <Select.Option
@@ -154,7 +153,7 @@ const Network = ({
                   <Typography.Text style={{ fontWeight: 600 }}>
                     {network.name}
                   </Typography.Text>
-                  {address && (
+                  {address && network.chainID === chainId && (
                     <Typography.Text style={{ fontSize: 12 }}>
                       {shortenAddress(address)}
                     </Typography.Text>

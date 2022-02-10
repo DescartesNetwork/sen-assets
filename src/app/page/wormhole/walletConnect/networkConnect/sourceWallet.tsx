@@ -5,16 +5,18 @@ import detectEthereumProvider from '@metamask/detect-provider'
 import { utils } from '@senswap/sen-js'
 import { useAccount, useMint } from '@senhub/providers'
 
-import { Col, Row } from 'antd'
+import { Col, Row, Tag } from 'antd'
 import Network, { NetworkConnect } from './network'
 
 import MetamaskWallet from 'app/lib/etherWallet/metamask'
 import Coin98Wallet from 'app/lib/etherWallet/coin98'
 import { AppDispatch, AppState } from 'app/model'
 import {
+  changeSourceAndTargetChain,
   connectSourceWallet,
   connectTargetWallet,
   disconnectSourceWallet,
+  setSourceToken,
 } from 'app/model/wormhole.controller'
 import session from 'shared/session'
 import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
@@ -64,77 +66,21 @@ const SourceWallet = () => {
   // connect source wallet
   const onConnect = useCallback(
     async (type: string = '') => {
-      let sourceWallet: any
-      let sourceToken: any = []
-      let targetWallet: any
-      if (currentSourceChain === CHAIN_ID_SOLANA) {
-        sourceWallet = window.sentre.wallet
-        targetWallet = getSourceWallet(MetamaskWallet.walletType)
-        sourceToken = await Promise.all(
-          Object.values(accounts)
-            .filter(({ amount }) => !!amount)
-            .map(async ({ mint, amount }) => {
-              const tokenInfo = await tokenProvider.findByAddress(mint)
-
-              if (!tokenInfo) {
-                return
-              }
-              const tempToken = {
-                balance: amount,
-                decimals: tokenInfo?.decimals,
-                logo: tokenInfo?.logoURI,
-                name: tokenInfo?.name,
-                symbol: tokenInfo?.symbol,
-                token_address: tokenInfo?.address,
-                address: tokenInfo?.address,
-                amount: utils.undecimalize(amount, tokenInfo?.decimals),
-              }
-              return tempToken
-            }),
-        )
-        try {
-          await dispatch(
-            connectSourceWallet({
-              wallet: sourceWallet,
-              chainID: currentSourceChain,
-              sourceToken,
-            }),
-          ).unwrap()
-          dispatch(
-            connectTargetWallet({
-              wallet: targetWallet,
-              targetChain: CHAIN_ID_ETH,
-            }),
-          )
-          return targetWallet.connect()
-        } catch (er) {
-          notifyError(er)
-          return sourceWallet.disconnect()
-        }
-      } else {
-        sourceWallet = getSourceWallet(type)
-        targetWallet = window.sentre.wallet
-        try {
-          await dispatch(
-            connectSourceWallet({
-              wallet: sourceWallet,
-              chainID: currentSourceChain,
-            }),
-          ).unwrap()
-          dispatch(
-            connectTargetWallet({
-              wallet: targetWallet,
-              targetChain: CHAIN_ID_SOLANA,
-            }),
-          )
-          return sourceWallet.connect()
-        } catch (er) {
-          notifyError(er)
-          return sourceWallet.disconnect()
-        }
+      let sourceWallet = getSourceWallet(type)
+      try {
+        await dispatch(
+          connectSourceWallet({
+            wallet: sourceWallet,
+            chainID: currentSourceChain,
+          }),
+        ).unwrap()
+        return sourceWallet.connect()
+      } catch (er) {
+        notifyError(er)
+        return sourceWallet.disconnect()
       }
     },
-    [accounts, currentSourceChain, dispatch, getSourceWallet, tokenProvider],
+    [currentSourceChain, dispatch, getSourceWallet],
   )
 
   const onDisconnect = useCallback(async () => {
@@ -152,8 +98,61 @@ const SourceWallet = () => {
     }
   }, [currentSourceChain, dispatch, getSourceWallet])
 
-  const onChooseWallet = (value: ChainId) => {
-    setCurrentSourceChain(value)
+  const onChooseWallet = async (value: ChainId) => {
+    let wallet: any
+    if (currentSourceChain !== CHAIN_ID_SOLANA && !!session.get(WOH_WALLET)) {
+      wallet = getSourceWallet()
+    } else {
+      wallet = window.sentre.wallet
+    }
+    if (wallet) {
+      await dispatch(disconnectSourceWallet())
+      wallet.disconnect()
+    }
+    if (value === CHAIN_ID_SOLANA) {
+      const sourceToken: any = await Promise.all(
+        Object.values(accounts)
+          .filter(({ amount }) => !!amount)
+          .map(async ({ mint, amount }) => {
+            const tokenInfo = await tokenProvider.findByAddress(mint)
+
+            if (!tokenInfo) {
+              return
+            }
+            const tempToken = {
+              balance: amount,
+              decimals: tokenInfo?.decimals,
+              logo: tokenInfo?.logoURI,
+              name: tokenInfo?.name,
+              symbol: tokenInfo?.symbol,
+              token_address: tokenInfo?.address,
+              address: tokenInfo?.address,
+              amount: utils.undecimalize(amount, tokenInfo?.decimals),
+            }
+            return tempToken
+          }),
+      )
+      try {
+        await dispatch(
+          connectSourceWallet({
+            wallet: window.sentre.wallet,
+            chainID: value,
+            sourceToken,
+          }),
+        ).unwrap()
+        // dispatch(
+        //   connectTargetWallet({
+        //     wallet: targetWallet,
+        //     targetChain: CHAIN_ID_ETH,
+        //   }),
+        // )
+        // return targetWallet.connect()
+      } catch (er) {
+        notifyError(er)
+        // return sourceWallet.disconnect()
+      }
+    }
+    await dispatch(changeSourceAndTargetChain({ chainID: value }))
   }
 
   // reconnect source wallet
@@ -187,6 +186,51 @@ const SourceWallet = () => {
     setCurrentSourceChain(sourceChain)
   }, [sourceChain, sourceWalletAddress])
 
+  const autoConnectSolWallet = useCallback(
+    async (value) => {
+      const sourceToken: any = await Promise.all(
+        Object.values(accounts)
+          .filter(({ amount }) => !!amount)
+          .map(async ({ mint, amount }) => {
+            const tokenInfo = await tokenProvider.findByAddress(mint)
+
+            if (!tokenInfo) {
+              return
+            }
+            const tempToken = {
+              balance: amount,
+              decimals: tokenInfo?.decimals,
+              logo: tokenInfo?.logoURI,
+              name: tokenInfo?.name,
+              symbol: tokenInfo?.symbol,
+              token_address: tokenInfo?.address,
+              address: tokenInfo?.address,
+              amount: utils.undecimalize(amount, tokenInfo?.decimals),
+            }
+            return tempToken
+          }),
+      )
+      try {
+        await dispatch(
+          connectSourceWallet({
+            wallet: window.sentre.wallet,
+            chainID: value,
+            sourceToken,
+          }),
+        ).unwrap()
+      } catch (er) {
+        return notifyError(er)
+      }
+    },
+    [accounts, dispatch, tokenProvider],
+  )
+
+  useEffect(() => {
+    if (sourceChain === CHAIN_ID_SOLANA) {
+      autoConnectSolWallet(sourceChain)
+    }
+  }, [autoConnectSolWallet, sourceChain])
+
   return (
     <Row gutter={[16, 16]}>
       <Col flex="auto">
@@ -197,14 +241,31 @@ const SourceWallet = () => {
           disabled={disableSelect}
         />
       </Col>
-      <Col>
-        <NetworkConnect
-          chainId={currentSourceChain}
-          connected={!!sourceWalletAddress}
-          onConnect={onConnect}
-          onDisconnect={onDisconnect}
-        />
-      </Col>
+      {currentSourceChain !== CHAIN_ID_SOLANA ? (
+        <Col>
+          <NetworkConnect
+            chainId={currentSourceChain}
+            connected={!!sourceWalletAddress}
+            onConnect={onConnect}
+            onDisconnect={onDisconnect}
+          />
+        </Col>
+      ) : (
+        <Col>
+          <Tag
+            style={{
+              margin: 0,
+              borderRadius: 4,
+              background: 'rgba(249, 87, 94, 0.1)',
+              color: '#F9575E',
+              textTransform: 'capitalize',
+              border: 'none',
+            }}
+          >
+            {sourceWalletAddress ? 'Connected' : 'Not Connected'}
+          </Tag>
+        </Col>
+      )}
     </Row>
   )
 }
