@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 
 import { Col, Row, Tag } from 'antd'
 import Network, { NetworkConnect } from './network'
@@ -10,7 +11,6 @@ import {
   connectTargetWallet,
   disconnectTargetWallet,
 } from 'app/model/wormhole.controller'
-import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import session from 'shared/session'
 import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
 import MetamaskWallet from 'app/lib/etherWallet/metamask'
@@ -23,7 +23,7 @@ const TargetWallet = () => {
     wormhole: { targetWalletAddress, targetChain },
   } = useSelector((state: AppState) => state)
 
-  const getSourceWallet = useCallback((fallback: string = '') => {
+  const getTargetWallet = useCallback((fallback: string = '') => {
     const walletType = session.get(WOH_WALLET) || fallback
     if (walletType === MetamaskWallet.walletType) return new MetamaskWallet()
     if (walletType === Coin98Wallet.walletType) return new Coin98Wallet()
@@ -34,7 +34,7 @@ const TargetWallet = () => {
 
   const onConnect = useCallback(
     async (type: string = '') => {
-      const targetWallet = getSourceWallet(type)
+      const targetWallet = getTargetWallet(type)
       try {
         await dispatch(
           connectTargetWallet({
@@ -47,23 +47,23 @@ const TargetWallet = () => {
         notifyError(er)
       }
     },
-    [dispatch, getSourceWallet],
+    [dispatch, getTargetWallet],
   )
 
   const onDisconnect = useCallback(async () => {
     try {
-      const wallet = getSourceWallet()
+      const wallet = getTargetWallet()
       await dispatch(disconnectTargetWallet())
       return wallet.disconnect()
     } catch (er) {
       return notifyError(er)
     }
-  }, [dispatch, getSourceWallet])
+  }, [dispatch, getTargetWallet])
 
   const onChooseWallet = async (value: ChainId) => {
     let wallet: any
     if (targetChain !== CHAIN_ID_SOLANA && !!session.get(WOH_WALLET)) {
-      wallet = getSourceWallet()
+      wallet = getTargetWallet()
     } else {
       wallet = window.sentre.wallet
     }

@@ -14,7 +14,7 @@ import {
   fetchEtherTokens,
   setWaiting,
   setProcess,
-  fetchSolTokens,
+  updateSolTokens,
 } from 'app/model/wormhole.controller'
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
@@ -72,14 +72,25 @@ const ConfirmAction = ({
       const { ether: etherTarget, sol: solTarget } = targetWallet
 
       let wormholeTransfer
-      if (sourceChain !== CHAIN_ID_SOLANA) {
-        if (!etherSource || !solTarget)
-          throw new Error('Wallet is not connected')
-        wormholeTransfer = new WohEthSol(etherSource, solTarget, tokenTransfer)
-      } else {
-        if (!solSource || !etherTarget)
-          throw new Error('Wallet is not connected')
-        wormholeTransfer = new WohSolEth(solSource, etherTarget, tokenTransfer)
+      switch (sourceChain) {
+        case CHAIN_ID_SOLANA:
+          if (!solSource || !etherTarget)
+            throw new Error('Wallet is not connected')
+          wormholeTransfer = new WohSolEth(
+            solSource,
+            etherTarget,
+            tokenTransfer,
+          )
+          break
+        default:
+          if (!etherSource || !solTarget)
+            throw new Error('Wallet is not connected')
+          wormholeTransfer = new WohEthSol(
+            etherSource,
+            solTarget,
+            tokenTransfer,
+          )
+          break
       }
 
       const txId = await wormholeTransfer.transfer(amount, onUpdate)
@@ -123,7 +134,7 @@ const ConfirmAction = ({
         }
         sourceTokens[token.address] = tempToken
       }
-      await dispatch(fetchSolTokens({ sourceTokens }))
+      await dispatch(updateSolTokens({ sourceTokens }))
     }
   }, [accounts, dispatch, srcChainId, tokenProvider])
 
