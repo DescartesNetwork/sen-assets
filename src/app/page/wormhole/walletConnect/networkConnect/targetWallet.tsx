@@ -52,7 +52,6 @@ const TargetWallet = () => {
 
   const onDisconnect = useCallback(async () => {
     try {
-      console.log(session.get(WOH_WALLET))
       const wallet = getSourceWallet()
       await dispatch(disconnectTargetWallet())
       return wallet.disconnect()

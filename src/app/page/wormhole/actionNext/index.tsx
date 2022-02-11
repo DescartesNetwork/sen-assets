@@ -16,12 +16,6 @@ const WormAction = () => {
 
   const setVisible = (visible: boolean) =>
     dispatch(setVisibleProcess({ visible }))
-  console.log(
-    targetWalletAddress,
-    amount,
-    !Number(amount),
-    !Number(amount) && !targetWalletAddress,
-  )
 
   return (
     <Row>

@@ -1,6 +1,5 @@
 import {
   CHAIN_ID_ETH,
-  CHAIN_ID_SOLANA,
   hexToUint8Array,
   transferFromSolana,
   WSOL_ADDRESS,

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
-import detectEthereumProvider from '@metamask/detect-provider'
+import { ChainId, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { utils } from '@senswap/sen-js'
 import { useAccount, useMint } from '@senhub/providers'
 
@@ -15,7 +14,6 @@ import {
   changeSourceAndTargetChain,
   connectSourceWallet,
   disconnectSourceWallet,
-  setSourceToken,
 } from 'app/model/wormhole.controller'
 import session from 'shared/session'
 import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
@@ -71,7 +69,6 @@ const SourceWallet = () => {
 
   const onDisconnect = useCallback(async () => {
     try {
-      console.log(session.get(WOH_WALLET))
       const wallet = getSourceWallet()
       await dispatch(disconnectSourceWallet())
       return wallet.disconnect()

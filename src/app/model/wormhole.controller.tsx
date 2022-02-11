@@ -1,10 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
-import { WalletInterface } from '@senswap/sen-js'
 import { ChainId } from '@certusone/wormhole-sdk'
 
 import { fetchTokenEther } from 'app/lib/wormhole/helper/ether'
-import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
 import { WohTokenInfo, TransferState } from 'app/constant/types/wormhole'
 
 /**
