@@ -61,6 +61,7 @@ class WohSolEth extends WormholeProvider {
     return {
       attested: !!wrappedMintAddress,
       wrappedMintAddress,
+      // The ancestor chain of token
       chainId: originAsset.chainId,
     }
   }
@@ -129,8 +130,10 @@ class WohSolEth extends WormholeProvider {
           hexToUint8Array(wrappedMintAddress),
           chainId,
         )
+    console.log(transferData, context, 'ngueyenen')
     const signedTx = await this.srcWallet.signTransaction(transferReceipt)
     const txId = await sendTransaction(signedTx, connection)
+    console.log('xuong toi day')
     const info = await connection.getTransaction(txId)
     if (!info) {
       throw new Error('An error occurred while fetching the transaction info')

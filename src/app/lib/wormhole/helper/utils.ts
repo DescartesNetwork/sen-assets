@@ -14,8 +14,9 @@ import {
 import WohEthSol from '../wohEthSol'
 import storage from 'shared/storage'
 import PDB from 'shared/pdb'
+import { Net } from 'shared/runtime'
 
-export const getSolNetwork = () => {
+export const getSolNetwork = (): Net => {
   const solNetwork = storage.get('network') || 'mainnet'
   return solNetwork
 }
@@ -59,14 +60,19 @@ export const sendTransaction = async (
   connection: Connection,
 ): Promise<string> => {
   const tx = transaction.serialize()
+
   const txId = await connection.sendRawTransaction(tx, {
     skipPreflight: true,
     preflightCommitment: 'confirmed',
   })
+  console.log('Helelelle')
   const {
     value: { err },
   } = await connection.confirmTransaction(txId, 'confirmed')
-  if (err) throw new Error(`${err} at ${txId}`)
+  if (err) {
+    console.log(err, txId)
+    throw new Error(`${err} at ${txId}`)
+  }
   return txId
 }
 

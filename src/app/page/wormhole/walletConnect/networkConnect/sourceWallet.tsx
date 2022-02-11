@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { ChainId, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
+import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { utils } from '@senswap/sen-js'
 import { useAccount, useMint } from '@senhub/providers'
+import detectEthereumProvider from '@metamask/detect-provider'
 
 import { Col, Row, Tag } from 'antd'
 import Network, { NetworkConnect } from './network'
@@ -18,20 +19,19 @@ import {
 import session from 'shared/session'
 import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
 import { notifyError } from 'app/helper'
+import { fetchTokenEther } from 'app/lib/wormhole/helper/ether'
+import { WohTokenInfo } from 'app/constant/types/wormhole'
 
 const SourceWallet = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
     wormhole: { sourceWalletAddress, sourceChain },
   } = useSelector((state: AppState) => state)
-  const [currentSourceAddress, setCurrentSourceAddress] =
-    useState(sourceWalletAddress)
-  const [currentSourceChain, setCurrentSourceChain] = useState(sourceChain)
-  const [disableSelect, setDisableSelect] = useState(false)
   const { accounts } = useAccount()
   const { tokenProvider } = useMint()
+  const [hasProvider, setHasProvider] = useState(false)
 
-  const getSourceWallet = useCallback((fallback: string = '') => {
+  const getSourceEtherWallet = useCallback((fallback: string = '') => {
     const walletType = session.get(WOH_WALLET) || fallback
     if (walletType === MetamaskWallet.walletType) return new MetamaskWallet()
     if (walletType === Coin98Wallet.walletType) return new Coin98Wallet()
@@ -40,22 +40,30 @@ const SourceWallet = () => {
     )
   }, [])
 
-  useEffect(() => {
-    setDisableSelect(false)
-    if (sourceWalletAddress) {
-      setDisableSelect(true)
+  // check provider
+  const checkProvider = useCallback(async () => {
+    if (sourceChain === CHAIN_ID_ETH) {
+      const detectedProvider = await detectEthereumProvider()
+      setHasProvider(!!detectedProvider)
     }
-  }, [sourceWalletAddress])
+  }, [sourceChain])
+
+  useEffect(() => {
+    checkProvider()
+  }, [checkProvider])
 
   // connect source wallet
   const onConnect = useCallback(
     async (type: string = '') => {
-      const sourceWallet = getSourceWallet(type)
+      const sourceWallet = getSourceEtherWallet(type)
+      const address = await sourceWallet.getAddress()
+      const sourceToken = await fetchTokenEther(address)
       try {
         await dispatch(
           connectSourceWallet({
             wallet: sourceWallet,
-            chainID: currentSourceChain,
+            chainID: sourceChain,
+            sourceToken,
           }),
         ).unwrap()
         return sourceWallet.connect()
@@ -64,53 +72,51 @@ const SourceWallet = () => {
         return sourceWallet.disconnect()
       }
     },
-    [currentSourceChain, dispatch, getSourceWallet],
+    [sourceChain, dispatch, getSourceEtherWallet],
   )
 
   const onDisconnect = useCallback(async () => {
     try {
-      const wallet = getSourceWallet()
+      const wallet = getSourceEtherWallet()
       await dispatch(disconnectSourceWallet())
       return wallet.disconnect()
     } catch (er) {
       return notifyError(er)
     }
-  }, [dispatch, getSourceWallet])
+  }, [dispatch, getSourceEtherWallet])
 
   const onChooseWallet = async (value: ChainId) => {
-    let wallet: any
-    if (currentSourceChain !== CHAIN_ID_SOLANA && !!session.get(WOH_WALLET)) {
-      wallet = getSourceWallet()
-    } else {
-      wallet = window.sentre.wallet
-    }
-    if (wallet) {
-      await dispatch(disconnectSourceWallet())
-      wallet.disconnect()
-    }
-    if (value === CHAIN_ID_SOLANA) {
-      const sourceToken: any = await Promise.all(
-        Object.values(accounts)
-          .filter(({ amount }) => !!amount)
-          .map(async ({ mint, amount }) => {
-            const tokenInfo = await tokenProvider.findByAddress(mint)
+    let targetChain: ChainId = CHAIN_ID_SOLANA
 
-            if (!tokenInfo) {
-              return
-            }
-            const tempToken = {
-              balance: amount,
-              decimals: tokenInfo?.decimals,
-              logo: tokenInfo?.logoURI,
-              name: tokenInfo?.name,
-              symbol: tokenInfo?.symbol,
-              token_address: tokenInfo?.address,
-              address: tokenInfo?.address,
-              amount: utils.undecimalize(amount, tokenInfo?.decimals),
-            }
-            return tempToken
-          }),
+    if (value === CHAIN_ID_SOLANA) {
+      targetChain = CHAIN_ID_ETH
+      const sourceToken: WohTokenInfo[] = []
+      const hasBalanceAccounts = Object.values(accounts).filter(
+        ({ amount }) => !!amount,
       )
+      for (let i = 0; i < hasBalanceAccounts.length; i++) {
+        const tokenInfo = await tokenProvider.findByAddress(
+          hasBalanceAccounts[i].mint,
+        )
+
+        if (!tokenInfo) {
+          continue
+        }
+        const tempToken: WohTokenInfo = {
+          decimals: tokenInfo?.decimals,
+          logo: tokenInfo?.logoURI || '',
+          name: tokenInfo?.name,
+          symbol: tokenInfo?.symbol,
+          address: tokenInfo?.address,
+          amount: Number(
+            utils.undecimalize(
+              hasBalanceAccounts[i].amount,
+              tokenInfo?.decimals,
+            ),
+          ),
+        }
+        sourceToken.push(tempToken)
+      }
       try {
         await dispatch(
           connectSourceWallet({
@@ -121,79 +127,96 @@ const SourceWallet = () => {
         ).unwrap()
       } catch (er) {
         notifyError(er)
-        return wallet.disconnect()
       }
     }
-    await dispatch(changeSourceAndTargetChain({ chainID: value }))
+    await dispatch(
+      changeSourceAndTargetChain({
+        sourceChain: value,
+        targetChain,
+      }),
+    )
   }
 
-  useEffect(() => {
-    setCurrentSourceAddress(sourceWalletAddress)
-    setCurrentSourceChain(sourceChain)
-  }, [sourceChain, sourceWalletAddress])
-
-  const autoConnectSolWallet = useCallback(
-    async (value) => {
-      const sourceToken: any = await Promise.all(
-        Object.values(accounts)
-          .filter(({ amount }) => !!amount)
-          .map(async ({ mint, amount }) => {
-            const tokenInfo = await tokenProvider.findByAddress(mint)
-
-            if (!tokenInfo) {
-              return
-            }
-            const tempToken = {
-              balance: amount,
-              decimals: tokenInfo?.decimals,
-              logo: tokenInfo?.logoURI,
-              name: tokenInfo?.name,
-              symbol: tokenInfo?.symbol,
-              token_address: tokenInfo?.address,
-              address: tokenInfo?.address,
-              amount: utils.undecimalize(amount, tokenInfo?.decimals),
-            }
-            return tempToken
-          }),
+  const autoConnectSolWallet = useCallback(async () => {
+    const sourceToken: WohTokenInfo[] = []
+    const hasBalanceAccounts = Object.values(accounts).filter(
+      ({ amount }) => !!amount,
+    )
+    for (let i = 0; i < hasBalanceAccounts.length; i++) {
+      const tokenInfo = await tokenProvider.findByAddress(
+        hasBalanceAccounts[i].mint,
       )
-      try {
-        await dispatch(
+
+      if (!tokenInfo) {
+        continue
+      }
+      const tempToken: WohTokenInfo = {
+        decimals: tokenInfo?.decimals,
+        logo: tokenInfo?.logoURI || '',
+        name: tokenInfo?.name,
+        symbol: tokenInfo?.symbol,
+        address: tokenInfo?.address,
+        amount: Number(
+          utils.undecimalize(hasBalanceAccounts[i].amount, tokenInfo?.decimals),
+        ),
+      }
+      sourceToken.push(tempToken)
+    }
+    try {
+      await dispatch(
+        connectSourceWallet({
+          wallet: window.sentre.wallet,
+          chainID: CHAIN_ID_SOLANA,
+          sourceToken,
+        }),
+      ).unwrap()
+    } catch (er) {
+      return notifyError(er)
+    }
+  }, [accounts, dispatch, tokenProvider])
+
+  const autoConnectEtherWallet = useCallback(async () => {
+    const walletType = session.get(WOH_WALLET)
+    if (!hasProvider || !walletType)
+      return await dispatch(disconnectSourceWallet())
+    const wallet = getSourceEtherWallet()
+    const address = await wallet.getAddress()
+    const sourceToken = await fetchTokenEther(address)
+    try {
+      if (wallet)
+        dispatch(
           connectSourceWallet({
-            wallet: window.sentre.wallet,
-            chainID: value,
+            wallet,
+            chainID: CHAIN_ID_ETH,
             sourceToken,
           }),
-        ).unwrap()
-      } catch (er) {
-        return notifyError(er)
-      }
-    },
-    [accounts, dispatch, tokenProvider],
-  )
+        )
+    } catch (er: any) {
+      return window.notify({ type: 'error', description: er.message })
+    }
+  }, [dispatch, getSourceEtherWallet, hasProvider])
 
   useEffect(() => {
-    ;(async () => {
-      await dispatch(disconnectSourceWallet())
-      if (sourceChain === CHAIN_ID_SOLANA) {
-        autoConnectSolWallet(sourceChain)
-      }
-    })()
-  }, [autoConnectSolWallet, sourceChain, dispatch])
+    if (sourceChain === CHAIN_ID_SOLANA) {
+      autoConnectSolWallet()
+    }
+    if (sourceChain === CHAIN_ID_ETH) {
+      autoConnectEtherWallet()
+    }
+  }, [autoConnectEtherWallet, autoConnectSolWallet, dispatch, sourceChain])
 
   return (
     <Row gutter={[16, 16]}>
       <Col flex="auto">
         <Network
-          address={currentSourceAddress}
-          chainId={currentSourceChain}
+          address={sourceWalletAddress}
+          chainId={sourceChain}
           onChange={onChooseWallet}
-          disabled={disableSelect}
         />
       </Col>
-      {currentSourceChain !== CHAIN_ID_SOLANA ? (
+      {sourceChain !== CHAIN_ID_SOLANA ? (
         <Col>
           <NetworkConnect
-            chainId={currentSourceChain}
             connected={!!sourceWalletAddress}
             onConnect={onConnect}
             onDisconnect={onDisconnect}

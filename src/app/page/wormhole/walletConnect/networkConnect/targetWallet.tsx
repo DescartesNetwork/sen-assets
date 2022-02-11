@@ -1,6 +1,7 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
+import detectEthereumProvider from '@metamask/detect-provider'
 
 import { Col, Row, Tag } from 'antd'
 import Network, { NetworkConnect } from './network'
@@ -22,8 +23,9 @@ const TargetWallet = () => {
   const {
     wormhole: { targetWalletAddress, targetChain },
   } = useSelector((state: AppState) => state)
+  const [hasProvider, setHasProvider] = useState(false)
 
-  const getTargetWallet = useCallback((fallback: string = '') => {
+  const getTargetEtherWallet = useCallback((fallback: string = '') => {
     const walletType = session.get(WOH_WALLET) || fallback
     if (walletType === MetamaskWallet.walletType) return new MetamaskWallet()
     if (walletType === Coin98Wallet.walletType) return new Coin98Wallet()
@@ -32,9 +34,21 @@ const TargetWallet = () => {
     )
   }, [])
 
+  // check provider
+  const checkProvider = useCallback(async () => {
+    if (targetChain === CHAIN_ID_ETH) {
+      const detectedProvider = await detectEthereumProvider()
+      setHasProvider(!!detectedProvider)
+    }
+  }, [targetChain])
+
+  useEffect(() => {
+    checkProvider()
+  }, [checkProvider])
+
   const onConnect = useCallback(
     async (type: string = '') => {
-      const targetWallet = getTargetWallet(type)
+      const targetWallet = getTargetEtherWallet(type)
       try {
         await dispatch(
           connectTargetWallet({
@@ -47,31 +61,23 @@ const TargetWallet = () => {
         notifyError(er)
       }
     },
-    [dispatch, getTargetWallet],
+    [dispatch, getTargetEtherWallet],
   )
 
   const onDisconnect = useCallback(async () => {
     try {
-      const wallet = getTargetWallet()
+      const wallet = getTargetEtherWallet()
       await dispatch(disconnectTargetWallet())
       return wallet.disconnect()
     } catch (er) {
       return notifyError(er)
     }
-  }, [dispatch, getTargetWallet])
+  }, [dispatch, getTargetEtherWallet])
 
   const onChooseWallet = async (value: ChainId) => {
-    let wallet: any
-    if (targetChain !== CHAIN_ID_SOLANA && !!session.get(WOH_WALLET)) {
-      wallet = getTargetWallet()
-    } else {
-      wallet = window.sentre.wallet
-    }
-    if (wallet) {
-      await dispatch(disconnectTargetWallet())
-      wallet.disconnect()
-    }
+    let sourceChain = CHAIN_ID_SOLANA
     if (value === CHAIN_ID_SOLANA) {
+      sourceChain = CHAIN_ID_ETH
       try {
         await dispatch(
           connectTargetWallet({
@@ -85,34 +91,49 @@ const TargetWallet = () => {
     }
 
     await dispatch(
-      changeSourceAndTargetChain({ chainID: value, isReverse: true }),
+      changeSourceAndTargetChain({ sourceChain, targetChain: value }),
     )
   }
 
-  const autoConnectSolWallet = useCallback(
-    async (value) => {
-      try {
-        await dispatch(
+  const autoConnectSolWallet = useCallback(async () => {
+    try {
+      await dispatch(
+        connectTargetWallet({
+          wallet: window.sentre.wallet,
+          targetChain: CHAIN_ID_SOLANA,
+        }),
+      ).unwrap()
+    } catch (er) {
+      return notifyError(er)
+    }
+  }, [dispatch])
+
+  const autoConnectEtherWallet = useCallback(async () => {
+    const walletType = session.get(WOH_WALLET)
+    if (!hasProvider || !walletType)
+      return await dispatch(disconnectTargetWallet())
+    const wallet = getTargetEtherWallet()
+    try {
+      if (wallet)
+        dispatch(
           connectTargetWallet({
-            wallet: window.sentre.wallet,
-            targetChain: value,
+            wallet,
+            targetChain: CHAIN_ID_ETH,
           }),
-        ).unwrap()
-      } catch (er) {
-        return notifyError(er)
-      }
-    },
-    [dispatch],
-  )
+        )
+    } catch (er: any) {
+      return window.notify({ type: 'error', description: er.message })
+    }
+  }, [dispatch, getTargetEtherWallet, hasProvider])
 
   useEffect(() => {
-    ;(async () => {
-      await dispatch(disconnectTargetWallet())
-      if (targetChain === CHAIN_ID_SOLANA) {
-        autoConnectSolWallet(targetChain)
-      }
-    })()
-  }, [autoConnectSolWallet, dispatch, targetChain])
+    if (targetChain === CHAIN_ID_SOLANA) {
+      autoConnectSolWallet()
+    }
+    if (targetChain === CHAIN_ID_ETH) {
+      autoConnectEtherWallet()
+    }
+  }, [autoConnectEtherWallet, autoConnectSolWallet, targetChain])
 
   return (
     <Row gutter={[16, 16]} align="middle">
@@ -126,7 +147,6 @@ const TargetWallet = () => {
       {targetChain !== CHAIN_ID_SOLANA ? (
         <Col>
           <NetworkConnect
-            chainId={targetChain}
             connected={!!targetWalletAddress}
             onConnect={onConnect}
             onDisconnect={onDisconnect}

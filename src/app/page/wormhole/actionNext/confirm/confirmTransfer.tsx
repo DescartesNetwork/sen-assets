@@ -82,7 +82,8 @@ const ConfirmAction = ({
             tokenTransfer,
           )
           break
-        default:
+
+        case CHAIN_ID_ETH:
           if (!etherSource || !solTarget)
             throw new Error('Wallet is not connected')
           wormholeTransfer = new WohEthSol(
@@ -91,6 +92,8 @@ const ConfirmAction = ({
             tokenTransfer,
           )
           break
+        default:
+          throw new Error('Wallet is not connected!')
       }
 
       const txId = await wormholeTransfer.transfer(amount, onUpdate)

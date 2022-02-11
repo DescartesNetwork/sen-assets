@@ -1,7 +1,6 @@
 import { ChainId } from '@certusone/wormhole-sdk'
 
 export type WohTokenInfo = {
-  balance: string
   decimals: number
   logo: string
   name: string

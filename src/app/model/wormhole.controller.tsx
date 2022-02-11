@@ -56,7 +56,7 @@ const initialState: WohState = {
 
 export const connectSourceWallet = createAsyncThunk<
   Partial<WohState>,
-  { wallet: any; chainID: ChainId; sourceToken?: [] }
+  { wallet: any; chainID: ChainId; sourceToken: WohTokenInfo[] }
 >(`${NAME}/connectSourceWallet`, async ({ wallet, chainID, sourceToken }) => {
   switch (chainID) {
     case CHAIN_ID_SOLANA:
@@ -66,23 +66,14 @@ export const connectSourceWallet = createAsyncThunk<
       window.wormhole.sourceWallet.ether = wallet
       break
     default:
-      break
-  }
-  if (chainID !== CHAIN_ID_SOLANA) {
-    window.wormhole.sourceWallet.ether = wallet
-  } else {
+      throw new Error('Wallet is not connected')
   }
 
   const address = await wallet.getAddress()
-  // fetch wallet's tokens
-  let tokenList: any = sourceToken
-  if (!sourceToken) {
-    tokenList = await fetchTokenEther(address)
-  }
   // select fist token
   let tokenAddress = ''
   const tokens: Record<string, WohTokenInfo> = {}
-  for (const token of tokenList) {
+  for (const token of sourceToken) {
     if (!token) continue
     if (!tokenAddress) {
       tokenAddress = token.address
@@ -140,18 +131,14 @@ export const disconnectSourceWallet = createAsyncThunk<
   }
 })
 
-export const disconnectTargetWallet = createAsyncThunk<
-  WohState,
-  void,
-  { state: any }
->(`${NAME}/disconnectTargetWallet`, async (_, { getState }) => {
-  const state = getState().wormhole
-
-  return {
-    ...state,
-    targetWalletAddress: '',
-  }
-})
+export const disconnectTargetWallet = createAsyncThunk<Partial<WohState>>(
+  `${NAME}/disconnectTargetWallet`,
+  () => {
+    return {
+      targetWalletAddress: '',
+    }
+  },
+)
 
 export const connectTargetWallet = createAsyncThunk<
   { targetWalletAddress: string; targetChain: ChainId },
@@ -165,7 +152,7 @@ export const connectTargetWallet = createAsyncThunk<
       window.wormhole.targetWallet.ether = wallet
       break
     default:
-      break
+      throw new Error('Wallet is not connected')
   }
   const address = await wallet.getAddress()
 
@@ -258,18 +245,11 @@ export const clearProcess = createAsyncThunk<
 
 export const changeSourceAndTargetChain = createAsyncThunk<
   Partial<WohState>,
-  { chainID: ChainId; isReverse?: boolean }
->(`${NAME}/changeSourceAndTargetChain`, ({ chainID, isReverse }) => {
-  const sourceChain = !isReverse
-    ? chainID
-    : chainID === CHAIN_ID_SOLANA
-    ? CHAIN_ID_ETH
-    : CHAIN_ID_SOLANA
-  const targetChain =
-    sourceChain === CHAIN_ID_SOLANA ? CHAIN_ID_ETH : CHAIN_ID_SOLANA
+  { sourceChain: ChainId; targetChain: ChainId }
+>(`${NAME}/changeSourceAndTargetChain`, ({ sourceChain, targetChain }) => {
   return {
-    sourceChain,
-    targetChain,
+    sourceChain: sourceChain,
+    targetChain: targetChain,
   }
 })
 

@@ -1,4 +1,4 @@
-import { ChainId, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
+import { ChainId } from '@certusone/wormhole-sdk'
 
 import {
   Avatar,
@@ -49,12 +49,10 @@ export const WalletOption = ({
 }
 
 export const NetworkConnect = ({
-  chainId,
   connected,
   onConnect = () => {},
   onDisconnect = () => {},
 }: {
-  chainId: ChainId
   connected: boolean
   onConnect?: (type?: string) => void
   onDisconnect?: () => void
@@ -68,48 +66,34 @@ export const NetworkConnect = ({
 
   return (
     <Row>
-      {chainId === CHAIN_ID_SOLANA ? (
-        <Button
-          size="small"
-          type="primary"
-          onClick={() => {
-            onConnect()
-          }}
-        >
+      <Popover
+        content={
+          <Row gutter={[16, 16]} style={{ maxWidth: 256 }}>
+            <Col span={24}>
+              <Typography.Title level={5}>Ethereum Connection</Typography.Title>
+            </Col>
+            <Col span={24}>
+              <WalletOption
+                onClick={() => onConnect(MetamaskWallet.walletType)}
+                src={METAMASK}
+                title="Metamask"
+              />
+            </Col>
+            <Col span={24}>
+              <WalletOption
+                onClick={() => onConnect(Coin98Wallet.walletType)}
+                src={COIN98}
+                title="Coin98"
+              />
+            </Col>
+          </Row>
+        }
+        trigger="click"
+      >
+        <Button size="small" type="primary">
           Connect
         </Button>
-      ) : (
-        <Popover
-          content={
-            <Row gutter={[16, 16]} style={{ maxWidth: 256 }}>
-              <Col span={24}>
-                <Typography.Title level={5}>
-                  Ethereum Connection
-                </Typography.Title>
-              </Col>
-              <Col span={24}>
-                <WalletOption
-                  onClick={() => onConnect(MetamaskWallet.walletType)}
-                  src={METAMASK}
-                  title="Metamask"
-                />
-              </Col>
-              <Col span={24}>
-                <WalletOption
-                  onClick={() => onConnect(Coin98Wallet.walletType)}
-                  src={COIN98}
-                  title="Coin98"
-                />
-              </Col>
-            </Row>
-          }
-          trigger="click"
-        >
-          <Button size="small" type="primary">
-            Connect
-          </Button>
-        </Popover>
-      )}
+      </Popover>
     </Row>
   )
 }
@@ -118,12 +102,10 @@ const Network = ({
   chainId,
   address,
   onChange = () => {},
-  disabled,
 }: {
   chainId: ChainId
   address: string
   onChange?: (chainId: ChainId) => void
-  disabled?: boolean
 }) => {
   return (
     <Row>
