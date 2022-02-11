@@ -129,6 +129,17 @@ export const disconnectSourceWallet = createAsyncThunk<
     sourceWalletAddress: '',
     sourceTokens: {},
     tokenAddress: '',
+  }
+})
+
+export const disconnectTargetWallet = createAsyncThunk<
+  WohState,
+  void,
+  { state: any }
+>(`${NAME}/disconnectTargetWallet`, async (_, { getState }) => {
+  const state = getState().wormhole
+  return {
+    ...state,
     targetWalletAddress: '',
   }
 })
@@ -302,6 +313,10 @@ const slice = createSlice({
       )
       .addCase(
         changeSourceAndTargetChain.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        disconnectTargetWallet.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

@@ -1,7 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { account } from '@senswap/sen-js'
-import { useWallet } from '@senhub/providers'
 
 import { Col, Row, Tag } from 'antd'
 import Network, { NetworkConnect } from './network'
@@ -10,7 +8,7 @@ import { AppDispatch, AppState } from 'app/model'
 import {
   changeSourceAndTargetChain,
   connectTargetWallet,
-  disconnectSourceWallet,
+  disconnectTargetWallet,
 } from 'app/model/wormhole.controller'
 import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import session from 'shared/session'
@@ -22,14 +20,8 @@ import { notifyError } from 'app/helper'
 const TargetWallet = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
-    wormhole: {
-      targetWalletAddress,
-      targetChain,
-      sourceWalletAddress,
-      sourceChain,
-    },
+    wormhole: { targetWalletAddress, targetChain },
   } = useSelector((state: AppState) => state)
-  const [disableSelect, setDisableSelect] = useState(false)
 
   const getSourceWallet = useCallback((fallback: string = '') => {
     const walletType = session.get(WOH_WALLET) || fallback
@@ -44,12 +36,13 @@ const TargetWallet = () => {
     async (type: string = '') => {
       const targetWallet = getSourceWallet(type)
       try {
-        dispatch(
+        await dispatch(
           connectTargetWallet({
             wallet: targetWallet,
             targetChain: CHAIN_ID_ETH,
           }),
         )
+        return targetWallet.connect()
       } catch (er) {
         notifyError(er)
       }
@@ -59,18 +52,14 @@ const TargetWallet = () => {
 
   const onDisconnect = useCallback(async () => {
     try {
-      let wallet: any
-      if (targetChain === CHAIN_ID_SOLANA) {
-        wallet = window.sentre.wallet
-      } else {
-        wallet = getSourceWallet()
-      }
-      await dispatch(disconnectSourceWallet())
+      console.log(session.get(WOH_WALLET))
+      const wallet = getSourceWallet()
+      await dispatch(disconnectTargetWallet())
       return wallet.disconnect()
     } catch (er) {
       return notifyError(er)
     }
-  }, [dispatch, getSourceWallet, targetChain])
+  }, [dispatch, getSourceWallet])
 
   const onChooseWallet = async (value: ChainId) => {
     let wallet: any
@@ -80,7 +69,7 @@ const TargetWallet = () => {
       wallet = window.sentre.wallet
     }
     if (wallet) {
-      await dispatch(disconnectSourceWallet())
+      await dispatch(disconnectTargetWallet())
       wallet.disconnect()
     }
     if (value === CHAIN_ID_SOLANA) {
@@ -118,10 +107,13 @@ const TargetWallet = () => {
   )
 
   useEffect(() => {
-    if (targetChain === CHAIN_ID_SOLANA) {
-      autoConnectSolWallet(targetChain)
-    }
-  }, [autoConnectSolWallet, targetChain])
+    ;(async () => {
+      await dispatch(disconnectTargetWallet())
+      if (targetChain === CHAIN_ID_SOLANA) {
+        autoConnectSolWallet(targetChain)
+      }
+    })()
+  }, [autoConnectSolWallet, dispatch, targetChain])
 
   return (
     <Row gutter={[16, 16]} align="middle">
@@ -130,7 +122,6 @@ const TargetWallet = () => {
           address={targetWalletAddress}
           chainId={targetChain}
           onChange={onChooseWallet}
-          disabled={disableSelect}
         />
       </Col>
       {targetChain !== CHAIN_ID_SOLANA ? (

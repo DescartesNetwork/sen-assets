@@ -9,13 +9,19 @@ import { setVisibleProcess } from 'app/model/wormhole.controller'
 const WormAction = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
-    wormhole: { amount, processId, visible, waiting },
+    wormhole: { amount, processId, visible, waiting, targetWalletAddress },
   } = useSelector((state: AppState) => state)
 
   const loading = waiting || !!processId
 
   const setVisible = (visible: boolean) =>
     dispatch(setVisibleProcess({ visible }))
+  console.log(
+    targetWalletAddress,
+    amount,
+    !Number(amount),
+    !Number(amount) && !targetWalletAddress,
+  )
 
   return (
     <Row>
@@ -31,7 +37,7 @@ const WormAction = () => {
           </Button>
         ) : (
           <Button
-            disabled={!Number(amount)}
+            disabled={!Number(amount) || !targetWalletAddress}
             type="primary"
             onClick={() => setVisible(true)}
             block
