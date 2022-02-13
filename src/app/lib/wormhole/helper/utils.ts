@@ -60,19 +60,14 @@ export const sendTransaction = async (
   connection: Connection,
 ): Promise<string> => {
   const tx = transaction.serialize()
-
   const txId = await connection.sendRawTransaction(tx, {
     skipPreflight: true,
     preflightCommitment: 'confirmed',
   })
-  console.log('Helelelle')
   const {
     value: { err },
   } = await connection.confirmTransaction(txId, 'confirmed')
-  if (err) {
-    console.log(err, txId)
-    throw new Error(`${err} at ${txId}`)
-  }
+  if (err) throw new Error(`${err} at ${txId}`)
   return txId
 }
 

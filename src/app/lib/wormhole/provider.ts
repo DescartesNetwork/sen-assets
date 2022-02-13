@@ -57,7 +57,6 @@ export class WormholeProvider {
 
     if (transferData.nextStep === StepTransfer.Transfer) {
       const { emitterAddress, sequence, txHash } = await this.submitTransfer()
-
       context.id = txHash
       transferData.txHash = txHash
       transferData.emitterAddress = emitterAddress
