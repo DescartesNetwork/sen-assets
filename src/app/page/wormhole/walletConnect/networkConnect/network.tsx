@@ -1,3 +1,5 @@
+import { ChainId } from '@certusone/wormhole-sdk'
+
 import {
   Avatar,
   Button,
@@ -13,7 +15,6 @@ import IonIcon from 'shared/antd/ionicon'
 
 import { WORMHOLE_NETWORK } from 'app/lib/wormhole/constant/wormhole'
 import { shortenAddress } from 'shared/util'
-import { ChainId } from '@certusone/wormhole-sdk'
 import METAMASK from 'app/static/images/metamask.png'
 import COIN98 from 'app/static/images/coin98.png'
 import MetamaskWallet from 'app/lib/etherWallet/metamask'
@@ -64,34 +65,36 @@ export const NetworkConnect = ({
     )
 
   return (
-    <Popover
-      content={
-        <Row gutter={[16, 16]} style={{ maxWidth: 256 }}>
-          <Col span={24}>
-            <Typography.Title level={5}>Ethereum Connection</Typography.Title>
-          </Col>
-          <Col span={24}>
-            <WalletOption
-              onClick={() => onConnect(MetamaskWallet.walletType)}
-              src={METAMASK}
-              title="Metamask"
-            />
-          </Col>
-          <Col span={24}>
-            <WalletOption
-              onClick={() => onConnect(Coin98Wallet.walletType)}
-              src={COIN98}
-              title="Coin98"
-            />
-          </Col>
-        </Row>
-      }
-      trigger="click"
-    >
-      <Button size="small" type="primary">
-        Connect
-      </Button>
-    </Popover>
+    <Row>
+      <Popover
+        content={
+          <Row gutter={[16, 16]} style={{ maxWidth: 256 }}>
+            <Col span={24}>
+              <Typography.Title level={5}>Ethereum Connection</Typography.Title>
+            </Col>
+            <Col span={24}>
+              <WalletOption
+                onClick={() => onConnect(MetamaskWallet.walletType)}
+                src={METAMASK}
+                title="Metamask"
+              />
+            </Col>
+            <Col span={24}>
+              <WalletOption
+                onClick={() => onConnect(Coin98Wallet.walletType)}
+                src={COIN98}
+                title="Coin98"
+              />
+            </Col>
+          </Row>
+        }
+        trigger="click"
+      >
+        <Button size="small" type="primary">
+          Connect
+        </Button>
+      </Popover>
+    </Row>
   )
 }
 
@@ -116,7 +119,6 @@ const Network = ({
           style={{ marginLeft: -4 }}
           className="custom-selector"
           dropdownStyle={{ lineHeight: 'normal' }}
-          disabled
         >
           {WORMHOLE_NETWORK.map((network) => (
             <Select.Option
@@ -133,7 +135,7 @@ const Network = ({
                   <Typography.Text style={{ fontWeight: 600 }}>
                     {network.name}
                   </Typography.Text>
-                  {address && (
+                  {address && network.chainID === chainId && (
                     <Typography.Text style={{ fontSize: 12 }}>
                       {shortenAddress(address)}
                     </Typography.Text>

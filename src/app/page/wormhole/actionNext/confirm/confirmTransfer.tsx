@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { CHAIN_ID_SOLANA, CHAIN_ID_ETH } from '@certusone/wormhole-sdk'
+import { utils } from '@senswap/sen-js'
 
 import { Button, Checkbox, Col, Row, Space, Typography } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
@@ -11,12 +13,18 @@ import {
   fetchEtherTokens,
   setWaiting,
   setProcess,
+  updateSolTokens,
 } from 'app/model/wormhole.controller'
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
 import { asyncWait } from 'shared/util'
-import { StepTransfer, TransferState } from 'app/constant/types/wormhole'
+import {
+  StepTransfer,
+  TransferState,
+  WohTokenInfo,
+} from 'app/constant/types/wormhole'
 import { updateWohHistory } from 'app/model/wohHistory.controller'
+import WohSolEth from 'app/lib/wormhole/wohSolEth'
 
 const ConfirmAction = ({
   onClose = () => {},
@@ -25,19 +33,19 @@ const ConfirmAction = ({
 }) => {
   const dispatch = useDispatch<AppDispatch>()
   const {
-    wormhole: { sourceTokens, tokenAddress, amount, processId, waiting },
+    wormhole: {
+      sourceTokens,
+      tokenAddress,
+      amount,
+      processId,
+      waiting,
+      sourceChain,
+      sourceWalletAddress,
+    },
   } = useSelector((state: AppState) => state)
   const [acceptable, setAcceptable] = useState(false)
-  const loading = waiting || !!processId
 
-  const onUpdate = async (stateTransfer: TransferState) => {
-    if (stateTransfer.transferData.nextStep === StepTransfer.WaitSigned) {
-      await asyncWait(5000)
-      await dispatch(fetchEtherTokens())
-    }
-    await dispatch(setProcess({ id: stateTransfer.context.id }))
-    await dispatch(updateWohHistory({ stateTransfer }))
-  }
+  const loading = waiting || !!processId
 
   const onTransfer = async () => {
     await dispatch(setWaiting({ waiting: true }))
@@ -45,16 +53,36 @@ const ConfirmAction = ({
       //Transfer
       const { sourceWallet, targetWallet } = window.wormhole
       const tokenTransfer = sourceTokens[tokenAddress]
-      if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
-        throw new Error('Wallet is not connected')
+      const { ether: etherSource, sol: solSource } = sourceWallet
+      const { ether: etherTarget, sol: solTarget } = targetWallet
 
-      let wormholeTransfer = new WohEthSol(
-        sourceWallet.ether,
-        targetWallet.sol,
-        tokenTransfer,
-      )
+      let wormholeTransfer
+      switch (sourceChain) {
+        case CHAIN_ID_SOLANA:
+          if (!solSource || !etherTarget)
+            throw new Error('Wallet is not connected')
+          wormholeTransfer = new WohSolEth(
+            solSource,
+            etherTarget,
+            tokenTransfer,
+          )
+          break
+
+        case CHAIN_ID_ETH:
+          if (!etherSource || !solTarget)
+            throw new Error('Wallet is not connected')
+          wormholeTransfer = new WohEthSol(
+            etherSource,
+            solTarget,
+            tokenTransfer,
+          )
+          break
+        default:
+          throw new Error('Wallet is not connected!')
+      }
 
       const txId = await wormholeTransfer.transfer(amount, onUpdate)
+
       notifySuccess('Transfer', txId)
       dispatch(clearProcess())
       return onClose(false)
@@ -65,6 +93,42 @@ const ConfirmAction = ({
       await dispatch(setWaiting({ waiting: false }))
     }
   }
+
+  const onUpdateSourceToken = useCallback(async () => {
+    if (sourceChain === CHAIN_ID_ETH) {
+      return await dispatch(fetchEtherTokens())
+    }
+
+    if (sourceChain === CHAIN_ID_SOLANA) {
+      const { splt } = window.sentre
+      const accountAddress = await splt.deriveAssociatedAddress(
+        sourceWalletAddress,
+        tokenAddress,
+      )
+      const accountData = await splt.getAccountData(accountAddress)
+      const tokenTransfer = sourceTokens[tokenAddress]
+      const newSourceTokens: Record<string, WohTokenInfo> = JSON.parse(
+        JSON.stringify(sourceTokens),
+      )
+      newSourceTokens[tokenAddress].amount = Number(
+        utils.undecimalize(accountData.amount, tokenTransfer.decimals),
+      )
+      await dispatch(updateSolTokens({ sourceTokens: newSourceTokens }))
+    }
+  }, [dispatch, sourceChain, sourceTokens, sourceWalletAddress, tokenAddress])
+
+  const onUpdate = useCallback(
+    async (stateTransfer: TransferState) => {
+      if (stateTransfer.transferData.nextStep === StepTransfer.WaitSigned) {
+        await asyncWait(5000)
+        await onUpdateSourceToken()
+      }
+
+      await dispatch(setProcess({ id: stateTransfer.context.id }))
+      await dispatch(updateWohHistory({ stateTransfer }))
+    },
+    [dispatch, onUpdateSourceToken],
+  )
 
   return (
     <Row gutter={[8, 8]} justify="center">

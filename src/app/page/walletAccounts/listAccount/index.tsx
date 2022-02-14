@@ -11,6 +11,10 @@ import Sol from './solCard'
 
 import { selectAccount } from 'app/model/account.controller'
 import { AppDispatch, AppState } from 'app/model'
+import conf from 'os/configs/sol.config'
+import { getSolNetwork } from 'app/lib/wormhole/helper/utils'
+
+const sntrMeta = conf[getSolNetwork()]
 
 const ListAccount = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -27,9 +31,10 @@ const ListAccount = () => {
       for (const addr in accounts) {
         const acc = accounts[addr]
         const token = await tokenProvider.findByAddress(acc.mint)
+        const sntr = await tokenProvider.findByAddress(sntrMeta.sntrAddress)
         if (token) {
           // check prioritize
-          if (token.symbol === 'SEN') prioritizeAccount.push(addr)
+          if (token.symbol === sntr?.symbol) prioritizeAccount.push(addr)
           else listAccount.unshift(addr)
           continue
         }

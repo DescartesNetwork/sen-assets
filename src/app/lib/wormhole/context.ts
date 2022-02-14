@@ -1,13 +1,13 @@
 import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 
 import { WohTokenInfo, WormholeContext } from 'app/constant/types/wormhole'
+import { Net } from 'shared/runtime'
 import {
   EtherNetwork,
   ETH_BRIDGE_ADDRESS,
   ETH_TOKEN_BRIDGE_ADDRESS,
 } from './constant/ethConfig'
 import {
-  SolNetWork,
   SOL_BRIDGE_ADDRESS,
   SOL_TOKEN_BRIDGE_ADDRESS,
 } from './constant/solConfig'
@@ -24,7 +24,7 @@ export const getEtherContext = () => {
 }
 
 export const getSolContext = () => {
-  const solNetWork: SolNetWork = getSolNetwork()
+  const solNetWork: Net = getSolNetwork()
   return {
     chainId: CHAIN_ID_SOLANA,
     tokenBridgeAddress: SOL_TOKEN_BRIDGE_ADDRESS[solNetWork],
@@ -35,7 +35,7 @@ export const getSolContext = () => {
 export const createEtherSolContext = (
   tokenInfo: WohTokenInfo,
 ): WormholeContext => {
-  const solNetWork: SolNetWork = getSolNetwork()
+  const solNetWork: Net = getSolNetwork()
   const etherContext = getEtherContext()
   return {
     id: new Date().getTime() + '' + Math.random(),
@@ -48,6 +48,31 @@ export const createEtherSolContext = (
     targetChainId: CHAIN_ID_SOLANA,
     targetTokenBridgeAddress: SOL_TOKEN_BRIDGE_ADDRESS[solNetWork],
     targetBridgeAddress: SOL_BRIDGE_ADDRESS[solNetWork],
+    // Wormhole
+    wormholeRpc: WORMHOLE_RPC_HOST[solNetWork],
+    // Token
+    tokenInfo: tokenInfo,
+  }
+}
+
+export const createSolEtherContext = (
+  tokenInfo: WohTokenInfo,
+): WormholeContext => {
+  const solNetWork: Net = getSolNetwork()
+  const solContext = getSolContext()
+  const { chainId, tokenBridgeAddress, bridgeAddress } = getEtherContext()
+
+  return {
+    id: new Date().getTime() + '' + Math.random(),
+    time: new Date().getTime(),
+    // Source network
+    srcChainId: solContext.chainId,
+    srcTokenBridgeAddress: solContext.tokenBridgeAddress,
+    srcBridgeAddress: solContext.bridgeAddress,
+    // Eth network
+    targetChainId: chainId,
+    targetTokenBridgeAddress: tokenBridgeAddress,
+    targetBridgeAddress: bridgeAddress,
     // Wormhole
     wormholeRpc: WORMHOLE_RPC_HOST[solNetWork],
     // Token

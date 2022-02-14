@@ -1,4 +1,4 @@
-import { getSignedVAA } from '@certusone/wormhole-sdk'
+import { ChainId, getSignedVAA } from '@certusone/wormhole-sdk'
 import { Connection } from '@solana/web3.js'
 import {
   AttestData,
@@ -134,6 +134,7 @@ export class WormholeProvider {
   protected isAttested = async (): Promise<{
     attested: boolean
     wrappedMintAddress: string | null
+    chainId?: ChainId
   }> => {
     throw new Error('Invalid function isAttested')
   }
