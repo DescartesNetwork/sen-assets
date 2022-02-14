@@ -96,7 +96,6 @@ const ConfirmAction = ({
 
   const onUpdateSourceToken = useCallback(async () => {
     if (sourceChain === CHAIN_ID_ETH) {
-      console.log('this')
       return await dispatch(fetchEtherTokens())
     }
 
