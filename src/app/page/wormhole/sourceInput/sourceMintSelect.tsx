@@ -13,6 +13,8 @@ const SourceMintSelect = () => {
   const onChange = (tokenAddress: string) =>
     dispatch(setSourceToken({ tokenAddress }))
 
+  console.log(sourceTokens, 'ngieueueu')
+
   return (
     <Select
       onChange={onChange}
@@ -35,11 +37,11 @@ const SourceMintSelect = () => {
                   background: randomColor(token.address, 0.8),
                 }}
               >
-                {token.symbol.substring(0, 2)}
+                {token.symbol.substring(0, 2) || token.address.substring(0, 2)}
               </Avatar>
               <Space direction="vertical" size={0}>
                 <Typography.Text style={{ color: '#7A7B85' }}>
-                  {token.symbol}
+                  {token.symbol || token.address.substring(0, 4)}
                 </Typography.Text>
               </Space>
             </Space>
