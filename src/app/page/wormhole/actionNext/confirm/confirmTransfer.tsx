@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { CHAIN_ID_SOLANA, CHAIN_ID_ETH } from '@certusone/wormhole-sdk'
-import { useAccount, useMint } from '@senhub/providers'
 import { utils } from '@senswap/sen-js'
 
 import { Button, Checkbox, Col, Row, Space, Typography } from 'antd'
