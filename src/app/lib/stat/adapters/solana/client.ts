@@ -16,13 +16,11 @@ import {
   TransferState,
   WohTokenInfo,
 } from 'app/constant/types/wormhole'
-import {
-  SolNetWork,
-  SOL_TOKEN_BRIDGE_ADDRESS,
-} from 'app/lib/wormhole/constant/solConfig'
+import { SOL_TOKEN_BRIDGE_ADDRESS } from 'app/lib/wormhole/constant/solConfig'
 import { createSolEtherContext } from 'app/lib/wormhole/context'
 import { getSolNetwork } from 'app/lib/wormhole/helper/utils'
 import supplementary from 'os/providers/tokenProvider/supplementary'
+import { Net } from 'shared/runtime'
 import { OptionsFetchSignature } from '../../constants/transaction'
 
 const DEFAULT_LIMIT = 700
@@ -159,7 +157,6 @@ export class Solana {
       .concat(supplementary)
 
     let tokenInfo: WohTokenInfo = {
-      balance: params.amount,
       decimals: 0,
       logo: '',
       name: 'No Name',
@@ -173,7 +170,6 @@ export class Solana {
     )
     if (!!rawTokenInfo) {
       tokenInfo = {
-        balance: params.amount,
         decimals: rawTokenInfo?.decimals,
         logo: rawTokenInfo?.logoURI || '',
         name: rawTokenInfo?.name,
@@ -212,7 +208,7 @@ export class Solana {
   async parseTransParam(
     trx: TransactionResponse | null,
   ): Promise<ParsedTransaction | undefined> {
-    const solNetWork: SolNetWork = getSolNetwork()
+    const solNetWork: Net = getSolNetwork()
     const { indexToProgramIds, instructions } = trx?.transaction.message as any
     const programIndexSolBridge =
       instructions[SOL_INSTRUCTION_INDEX]?.programIdIndex

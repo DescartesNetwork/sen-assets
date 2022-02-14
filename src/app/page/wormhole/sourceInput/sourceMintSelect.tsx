@@ -2,14 +2,17 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useWallet } from '@senhub/providers'
 import { utils } from '@senswap/sen-js'
-import { CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
+import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 
 import { Space, Select, Divider, Typography, Avatar } from 'antd'
 
 import { AppDispatch, AppState } from 'app/model'
 import { randomColor } from 'shared/util'
-import { fetchSolTokens, setSourceToken } from 'app/model/wormhole.controller'
+import { updateSolTokens, setSourceToken } from 'app/model/wormhole.controller'
 import { SOL_ADDRESS } from 'app/lib/stat/constants/sol'
+import { web3Http } from 'app/lib/etherWallet/web3Config'
+import { ETH_ADDRESS } from 'app/lib/wormhole/constant/ethConfig'
+import { getEtherNetwork } from 'app/lib/wormhole/helper/utils'
 
 const SourceMintSelect = () => {
   const dispatch = useDispatch<AppDispatch>()
@@ -43,9 +46,39 @@ const SourceMintSelect = () => {
         name: 'Sol nav',
         symbol: 'Sol',
       }
-      await dispatch(fetchSolTokens({ sourceTokens: cloneSourceToken }))
+      await dispatch(updateSolTokens({ sourceTokens: cloneSourceToken }))
     })()
   }, [dispatch, lamports, sourceChain, sourceTokens])
+
+  useEffect(() => {
+    ;(async () => {
+      let ethBalance = ''
+      if (!!sourceWalletAddress) {
+        ethBalance = await web3Http.eth.getBalance(
+          web3Http.utils.toChecksumAddress(sourceWalletAddress),
+        )
+      }
+      const ethAddress = ETH_ADDRESS[getEtherNetwork()]
+      if (
+        !!sourceTokens[ethAddress] ||
+        !ethBalance ||
+        sourceChain !== CHAIN_ID_ETH
+      )
+        return null
+      const cloneSourceToken = JSON.parse(JSON.stringify(sourceTokens))
+
+      cloneSourceToken[ethAddress] = {
+        address: ethAddress,
+        amount: Number(utils.undecimalize(BigInt(ethBalance), 18)),
+        balance: `${ethBalance}`,
+        decimals: 18,
+        logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/FeGn77dhg1KXRRFeSwwMiykZnZPw5JXW6naf2aQgZDQf/logo.png',
+        name: 'Eth nav',
+        symbol: 'ETH',
+      }
+      await dispatch(updateSolTokens({ sourceTokens: cloneSourceToken }))
+    })()
+  }, [dispatch, sourceChain, sourceTokens, sourceWalletAddress])
 
   return (
     <Select
