@@ -89,7 +89,6 @@ export const fetchEtherTokenInfo = async (
 ): Promise<WohTokenInfo> => {
   const data = await Moralis.fetchInfoAToken(address)
   return {
-    balance: 0,
     decimals: data?.decimals,
     logo: data?.logo,
     name: data?.name,
@@ -135,7 +134,6 @@ export const createTransferState = async (
   if (!params || params.targetChain !== CHAIN_ID_SOLANA) return
 
   let tokenInfo: WohTokenInfo = {
-    balance: params.amount,
     decimals: 18,
     logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs/logo.png',
     name: 'Ethereum',

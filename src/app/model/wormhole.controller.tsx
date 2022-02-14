@@ -1,11 +1,13 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
-import { WalletInterface } from '@senswap/sen-js'
 import { ChainId } from '@certusone/wormhole-sdk'
 
 import { fetchTokenEther } from 'app/lib/wormhole/helper/ether'
-import { IEtherWallet } from 'app/lib/etherWallet/walletInterface'
 import { WohTokenInfo, TransferState } from 'app/constant/types/wormhole'
+import { web3Http } from 'app/lib/etherWallet/web3Config'
+import { ETH_ADDRESS } from 'app/lib/wormhole/constant/ethConfig'
+import { getEtherNetwork } from 'app/lib/wormhole/helper/utils'
+import { utils } from '@senswap/sen-js'
 
 /**
  * Interface & Utility
@@ -58,24 +60,24 @@ const initialState: WohState = {
 
 export const connectSourceWallet = createAsyncThunk<
   Partial<WohState>,
-  { wallet: any; chainID: ChainId; sourceToken?: [] }
+  { wallet: any; chainID: ChainId; sourceToken: WohTokenInfo[] }
 >(`${NAME}/connectSourceWallet`, async ({ wallet, chainID, sourceToken }) => {
-  if (chainID !== CHAIN_ID_SOLANA) {
-    window.wormhole.sourceWallet.ether = wallet
-  } else {
-    window.wormhole.sourceWallet.sol = wallet
+  switch (chainID) {
+    case CHAIN_ID_SOLANA:
+      window.wormhole.sourceWallet.sol = wallet
+      break
+    case CHAIN_ID_ETH:
+      window.wormhole.sourceWallet.ether = wallet
+      break
+    default:
+      throw new Error('Wallet is not connected')
   }
 
   const address = await wallet.getAddress()
-  // fetch wallet's tokens
-  let tokenList: any = sourceToken
-  if (!sourceToken) {
-    tokenList = await fetchTokenEther(address)
-  }
   // select fist token
   let tokenAddress = ''
   const tokens: Record<string, WohTokenInfo> = {}
-  for (const token of tokenList) {
+  for (const token of sourceToken) {
     if (!token) continue
     if (!tokenAddress) {
       tokenAddress = token.address
@@ -103,16 +105,36 @@ export const fetchEtherTokens = createAsyncThunk<Partial<WohState>>(
     for (const token of tokenList) {
       tokens[token.address] = token
     }
+    let ethBalance = ''
+    if (!!address) {
+      ethBalance = await web3Http.eth.getBalance(
+        web3Http.utils.toChecksumAddress(address),
+      )
+      const ethAddress = ETH_ADDRESS[getEtherNetwork()]
+      if (!ethBalance)
+        return {
+          sourceTokens: tokens,
+        }
+
+      tokens[ethAddress] = {
+        address: ethAddress,
+        amount: Number(utils.undecimalize(BigInt(ethBalance), 18)),
+        decimals: 18,
+        logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/FeGn77dhg1KXRRFeSwwMiykZnZPw5JXW6naf2aQgZDQf/logo.png',
+        name: 'Eth nav',
+        symbol: 'ETH',
+      }
+    }
     return {
       sourceTokens: tokens,
     }
   },
 )
 
-export const fetchSolTokens = createAsyncThunk<
+export const updateSolTokens = createAsyncThunk<
   Partial<WohState>,
   { sourceTokens: Record<string, WohTokenInfo> }
->(`${NAME}/fetchSolTokens`, ({ sourceTokens }) => {
+>(`${NAME}/updateSolTokens`, ({ sourceTokens }) => {
   return {
     sourceTokens,
   }
@@ -124,6 +146,7 @@ export const disconnectSourceWallet = createAsyncThunk<
   { state: any }
 >(`${NAME}/disconnectSourceWallet`, async (_, { getState }) => {
   const state = getState().wormhole
+
   return {
     ...state,
     sourceWalletAddress: '',
@@ -133,16 +156,31 @@ export const disconnectSourceWallet = createAsyncThunk<
   }
 })
 
+export const disconnectTargetWallet = createAsyncThunk<Partial<WohState>>(
+  `${NAME}/disconnectTargetWallet`,
+  () => {
+    return {
+      targetWalletAddress: '',
+    }
+  },
+)
+
 export const connectTargetWallet = createAsyncThunk<
   { targetWalletAddress: string; targetChain: ChainId },
   { wallet: any; targetChain: ChainId }
 >(`${NAME}/connectTargetWallet`, async ({ wallet, targetChain }) => {
-  if (targetChain !== CHAIN_ID_SOLANA) {
-    window.wormhole.targetWallet.ether = wallet
-  } else {
-    window.wormhole.targetWallet.sol = wallet
+  switch (targetChain) {
+    case CHAIN_ID_SOLANA:
+      window.wormhole.targetWallet.sol = wallet
+      break
+    case CHAIN_ID_ETH:
+      window.wormhole.targetWallet.ether = wallet
+      break
+    default:
+      throw new Error('Wallet is not connected')
   }
   const address = await wallet.getAddress()
+
   return { targetWalletAddress: address, targetChain }
 })
 
@@ -154,6 +192,7 @@ export const setSourceToken = createAsyncThunk<
   const { wormhole } = getState()
   const newTokenAddress = tokenAddress || wormhole.tokenAddress
   const newAmount = amount === undefined ? wormhole.amount : amount
+
   return { ...wormhole, tokenAddress: newTokenAddress, amount: newAmount }
 })
 
@@ -226,6 +265,20 @@ export const clearProcess = createAsyncThunk<
 })
 
 /**
+ * Actions
+ */
+
+export const changeSourceAndTargetChain = createAsyncThunk<
+  Partial<WohState>,
+  { sourceChain: ChainId; targetChain: ChainId }
+>(`${NAME}/changeSourceAndTargetChain`, ({ sourceChain, targetChain }) => {
+  return {
+    sourceChain: sourceChain,
+    targetChain: targetChain,
+  }
+})
+
+/**
  * Usual procedure
  */
 
@@ -276,7 +329,15 @@ const slice = createSlice({
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(
-        fetchSolTokens.fulfilled,
+        updateSolTokens.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        changeSourceAndTargetChain.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        disconnectTargetWallet.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

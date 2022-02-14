@@ -14,8 +14,9 @@ import {
 import WohEthSol from '../wohEthSol'
 import storage from 'shared/storage'
 import PDB from 'shared/pdb'
+import { Net } from 'shared/runtime'
 
-export const getSolNetwork = () => {
+export const getSolNetwork = (): Net => {
   const solNetwork = storage.get('network') || 'mainnet'
   return solNetwork
 }

@@ -37,6 +37,7 @@ const ColumnStatus = ({ data }: { data: TransferState }) => {
         style={{
           margin: 0,
           borderRadius: 4,
+          backgroundColor: 'rgba(20, 224, 65, 0.1)',
         }}
         color="processing"
       >

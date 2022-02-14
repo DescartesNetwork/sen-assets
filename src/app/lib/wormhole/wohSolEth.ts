@@ -61,6 +61,7 @@ class WohSolEth extends WormholeProvider {
     return {
       attested: !!wrappedMintAddress,
       wrappedMintAddress,
+      // The ancestor chain of token
       chainId: originAsset.chainId,
     }
   }

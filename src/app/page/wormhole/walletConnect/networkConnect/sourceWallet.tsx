@@ -5,35 +5,32 @@ import detectEthereumProvider from '@metamask/detect-provider'
 import { utils } from '@senswap/sen-js'
 import { useAccount, useMint } from '@senhub/providers'
 
-import { Col, Row } from 'antd'
+import { Col, Row, Tag } from 'antd'
 import Network, { NetworkConnect } from './network'
 
 import MetamaskWallet from 'app/lib/etherWallet/metamask'
 import Coin98Wallet from 'app/lib/etherWallet/coin98'
 import { AppDispatch, AppState } from 'app/model'
 import {
+  changeSourceAndTargetChain,
   connectSourceWallet,
-  connectTargetWallet,
   disconnectSourceWallet,
 } from 'app/model/wormhole.controller'
 import session from 'shared/session'
 import { WOH_WALLET } from 'app/lib/wormhole/constant/wormhole'
 import { notifyError } from 'app/helper'
+import { fetchTokenEther } from 'app/lib/wormhole/helper/ether'
+import { WohTokenInfo } from 'app/constant/types/wormhole'
 
 const SourceWallet = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
     wormhole: { sourceWalletAddress, sourceChain },
   } = useSelector((state: AppState) => state)
-  const [hasProvider, setHasProvider] = useState(false)
-  const [currentSourceAddress, setCurrentSourceAddress] =
-    useState(sourceWalletAddress)
-  const [currentSourceChain, setCurrentSourceChain] = useState(sourceChain)
-  const [disableSelect, setDisableSelect] = useState(false)
   const { accounts } = useAccount()
   const { tokenProvider } = useMint()
-
-  const getSourceWallet = useCallback((fallback: string = '') => {
+  const [hasProvider, setHasProvider] = useState(false)
+  const getSourceEtherWallet = useCallback((fallback: string = '') => {
     const walletType = session.get(WOH_WALLET) || fallback
     if (walletType === MetamaskWallet.walletType) return new MetamaskWallet()
     if (walletType === Coin98Wallet.walletType) return new Coin98Wallet()
@@ -54,157 +51,192 @@ const SourceWallet = () => {
     checkProvider()
   }, [checkProvider])
 
-  useEffect(() => {
-    setDisableSelect(false)
-    if (sourceWalletAddress) {
-      setDisableSelect(true)
-    }
-  }, [sourceWalletAddress])
-
   // connect source wallet
   const onConnect = useCallback(
     async (type: string = '') => {
-      let sourceWallet: any
-      let sourceToken: any = []
-      let targetWallet: any
-      if (currentSourceChain === CHAIN_ID_SOLANA) {
-        sourceWallet = window.sentre.wallet
-        targetWallet = getSourceWallet(MetamaskWallet.walletType)
-        sourceToken = await Promise.all(
-          Object.values(accounts)
-            .filter(({ amount }) => !!amount)
-            .map(async ({ mint, amount }) => {
-              const tokenInfo = await tokenProvider.findByAddress(mint)
-
-              if (!tokenInfo) {
-                return
-              }
-              const tempToken = {
-                balance: amount,
-                decimals: tokenInfo?.decimals,
-                logo: tokenInfo?.logoURI,
-                name: tokenInfo?.name,
-                symbol: tokenInfo?.symbol,
-                token_address: tokenInfo?.address,
-                address: tokenInfo?.address,
-                amount: utils.undecimalize(amount, tokenInfo?.decimals),
-              }
-              return tempToken
-            }),
-        )
-        try {
-          await dispatch(
-            connectSourceWallet({
-              wallet: sourceWallet,
-              chainID: currentSourceChain,
-              sourceToken,
-            }),
-          ).unwrap()
-          dispatch(
-            connectTargetWallet({
-              wallet: targetWallet,
-              targetChain: CHAIN_ID_ETH,
-            }),
-          )
-          return targetWallet.connect()
-        } catch (er) {
-          notifyError(er)
-          return sourceWallet.disconnect()
-        }
-      } else {
-        sourceWallet = getSourceWallet(type)
-        targetWallet = window.sentre.wallet
-        try {
-          await dispatch(
-            connectSourceWallet({
-              wallet: sourceWallet,
-              chainID: currentSourceChain,
-            }),
-          ).unwrap()
-          dispatch(
-            connectTargetWallet({
-              wallet: targetWallet,
-              targetChain: CHAIN_ID_SOLANA,
-            }),
-          )
-          return sourceWallet.connect()
-        } catch (er) {
-          notifyError(er)
-          return sourceWallet.disconnect()
-        }
+      const sourceWallet = getSourceEtherWallet(type)
+      const address = await sourceWallet.getAddress()
+      const sourceToken = await fetchTokenEther(address)
+      try {
+        await dispatch(
+          connectSourceWallet({
+            wallet: sourceWallet,
+            chainID: sourceChain,
+            sourceToken,
+          }),
+        ).unwrap()
+        return sourceWallet.connect()
+      } catch (er) {
+        notifyError(er)
+        return sourceWallet.disconnect()
       }
     },
-    [accounts, currentSourceChain, dispatch, getSourceWallet, tokenProvider],
+    [sourceChain, dispatch, getSourceEtherWallet],
   )
 
   const onDisconnect = useCallback(async () => {
     try {
-      let wallet: any
-      if (currentSourceChain === CHAIN_ID_SOLANA) {
-        wallet = window.sentre.wallet
-      } else {
-        wallet = getSourceWallet()
-      }
+      const wallet = getSourceEtherWallet()
       await dispatch(disconnectSourceWallet())
       return wallet.disconnect()
     } catch (er) {
       return notifyError(er)
     }
-  }, [currentSourceChain, dispatch, getSourceWallet])
+  }, [dispatch, getSourceEtherWallet])
 
-  const onChooseWallet = (value: ChainId) => {
-    setCurrentSourceChain(value)
+  const onChooseWallet = async (value: ChainId) => {
+    let targetChain: ChainId = CHAIN_ID_SOLANA
+
+    if (value === CHAIN_ID_SOLANA) {
+      targetChain = CHAIN_ID_ETH
+      const sourceToken: WohTokenInfo[] = []
+      const hasBalanceAccounts = Object.values(accounts).filter(
+        ({ amount }) => !!amount,
+      )
+      for (let i = 0; i < hasBalanceAccounts.length; i++) {
+        const tokenInfo = await tokenProvider.findByAddress(
+          hasBalanceAccounts[i].mint,
+        )
+
+        if (!tokenInfo) {
+          continue
+        }
+        const tempToken: WohTokenInfo = {
+          decimals: tokenInfo?.decimals,
+          logo: tokenInfo?.logoURI || '',
+          name: tokenInfo?.name,
+          symbol: tokenInfo?.symbol,
+          address: tokenInfo?.address,
+          amount: Number(
+            utils.undecimalize(
+              hasBalanceAccounts[i].amount,
+              tokenInfo?.decimals,
+            ),
+          ),
+        }
+        sourceToken.push(tempToken)
+      }
+      try {
+        await dispatch(
+          connectSourceWallet({
+            wallet: window.sentre.wallet,
+            chainID: value,
+            sourceToken,
+          }),
+        ).unwrap()
+      } catch (er) {
+        notifyError(er)
+      }
+    }
+    await dispatch(
+      changeSourceAndTargetChain({
+        sourceChain: value,
+        targetChain,
+      }),
+    )
   }
 
-  // reconnect source wallet
-  useEffect(() => {
-    const walletType = session.get(WOH_WALLET)
-    if (!hasProvider || !walletType) return
-    const sourceWallet: any = getSourceWallet()
-    const targetWallet: any = window.sentre.wallet
+  const autoConnectSolWallet = useCallback(async () => {
+    const sourceToken: WohTokenInfo[] = []
+    const hasBalanceAccounts = Object.values(accounts).filter(
+      ({ amount }) => !!amount,
+    )
+    for (let i = 0; i < hasBalanceAccounts.length; i++) {
+      const tokenInfo = await tokenProvider.findByAddress(
+        hasBalanceAccounts[i].mint,
+      )
+
+      if (!tokenInfo) {
+        continue
+      }
+      const tempToken: WohTokenInfo = {
+        decimals: tokenInfo?.decimals,
+        logo: tokenInfo?.logoURI || '',
+        name: tokenInfo?.name,
+        symbol: tokenInfo?.symbol,
+        address: tokenInfo?.address,
+        amount: Number(
+          utils.undecimalize(hasBalanceAccounts[i].amount, tokenInfo?.decimals),
+        ),
+      }
+      sourceToken.push(tempToken)
+    }
     try {
-      if (sourceWallet) {
+      await dispatch(
+        connectSourceWallet({
+          wallet: window.sentre.wallet,
+          chainID: CHAIN_ID_SOLANA,
+          sourceToken,
+        }),
+      ).unwrap()
+    } catch (er) {
+      return notifyError(er)
+    }
+  }, [accounts, dispatch, tokenProvider])
+
+  const autoConnectEtherWallet = useCallback(async () => {
+    const walletType = session.get(WOH_WALLET)
+    if (!hasProvider || !walletType)
+      return await dispatch(disconnectSourceWallet())
+    const wallet = getSourceEtherWallet()
+    const address = await wallet.getAddress()
+    const sourceToken = await fetchTokenEther(address)
+    try {
+      if (wallet)
         dispatch(
           connectSourceWallet({
-            wallet: sourceWallet,
-            chainID: currentSourceChain,
+            wallet,
+            chainID: CHAIN_ID_ETH,
+            sourceToken,
           }),
         )
-        dispatch(
-          connectTargetWallet({
-            wallet: targetWallet,
-            targetChain: CHAIN_ID_SOLANA,
-          }),
-        )
-      }
     } catch (er: any) {
       return window.notify({ type: 'error', description: er.message })
     }
-  }, [currentSourceChain, dispatch, getSourceWallet, hasProvider])
+  }, [dispatch, getSourceEtherWallet, hasProvider])
 
   useEffect(() => {
-    setCurrentSourceAddress(sourceWalletAddress)
-    setCurrentSourceChain(sourceChain)
-  }, [sourceChain, sourceWalletAddress])
+    if (sourceChain === CHAIN_ID_SOLANA) {
+      autoConnectSolWallet()
+    }
+    if (sourceChain === CHAIN_ID_ETH) {
+      autoConnectEtherWallet()
+    }
+  }, [autoConnectEtherWallet, autoConnectSolWallet, dispatch, sourceChain])
 
   return (
     <Row gutter={[16, 16]}>
       <Col flex="auto">
         <Network
-          address={currentSourceAddress}
-          chainId={currentSourceChain}
+          address={sourceWalletAddress}
+          chainId={sourceChain}
           onChange={onChooseWallet}
-          disabled={disableSelect}
         />
       </Col>
-      <Col>
-        <NetworkConnect
-          chainId={currentSourceChain}
-          connected={!!sourceWalletAddress}
-          onConnect={onConnect}
-          onDisconnect={onDisconnect}
-        />
-      </Col>
+      {sourceChain !== CHAIN_ID_SOLANA ? (
+        <Col>
+          <NetworkConnect
+            connected={!!sourceWalletAddress}
+            onConnect={onConnect}
+            onDisconnect={onDisconnect}
+          />
+        </Col>
+      ) : (
+        <Col>
+          <Tag
+            style={{
+              margin: 0,
+              borderRadius: 4,
+              background: 'rgba(249, 87, 94, 0.1)',
+              color: '#F9575E',
+              textTransform: 'capitalize',
+              border: 'none',
+            }}
+          >
+            {sourceWalletAddress ? 'Connected' : 'Not Connected'}
+          </Tag>
+        </Col>
+      )}
     </Row>
   )
 }
