@@ -19,7 +19,7 @@ export const restoreSol = async (
 ): Promise<TransferState> => {
   const cloneState: TransferState = JSON.parse(JSON.stringify(state))
   const { transferData, context } = cloneState
-  const txHash = transferData.txHash
+  const { txHash } = transferData
 
   if (!txHash) throw new Error('Invalid txHash')
 

@@ -31,13 +31,13 @@ export const fetchWohHistory = createAsyncThunk<
   {
     address: string
     lastSig?: string
-    force?: boolean
+    isFirstFetch?: boolean
   },
   { state: { wohHistory: State } }
 >(
   `${NAME}/fetchWohHistory`,
   async (
-    { address, lastSig, force },
+    { address, lastSig, isFirstFetch },
     { getState },
   ): Promise<FetchWormholeParams> => {
     const currentState = getState().wohHistory
@@ -66,7 +66,7 @@ export const fetchWohHistory = createAsyncThunk<
       historyState[data.context.id] = data
     }
 
-    if (!force) {
+    if (!isFirstFetch) {
       Object.assign(historyState, currentState)
     }
 

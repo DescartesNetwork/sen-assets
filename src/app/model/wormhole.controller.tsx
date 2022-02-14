@@ -1,14 +1,13 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { ChainId } from '@certusone/wormhole-sdk'
+import { utils } from '@senswap/sen-js'
 
 import { fetchTokenEther } from 'app/lib/wormhole/helper/ether'
 import { WohTokenInfo, TransferState } from 'app/constant/types/wormhole'
 import { web3Http } from 'app/lib/etherWallet/web3Config'
 import { ETH_ADDRESS } from 'app/lib/wormhole/constant/ethConfig'
 import { getEtherNetwork } from 'app/lib/wormhole/helper/utils'
-import { utils } from '@senswap/sen-js'
-
 /**
  * Interface & Utility
  */
@@ -152,7 +151,6 @@ export const disconnectSourceWallet = createAsyncThunk<
     sourceWalletAddress: '',
     sourceTokens: {},
     tokenAddress: '',
-    targetWalletAddress: '',
   }
 })
 

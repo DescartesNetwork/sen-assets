@@ -1,6 +1,5 @@
 import { CHAIN_ID_ETH } from '@certusone/wormhole-sdk'
 import { account } from '@senswap/sen-js'
-import { TokenListProvider } from '@solana/spl-token-registry'
 import {
   ConfirmedSignatureInfo,
   SignaturesForAddressOptions,
@@ -19,9 +18,9 @@ import {
 import { SOL_TOKEN_BRIDGE_ADDRESS } from 'app/lib/wormhole/constant/solConfig'
 import { createSolEtherContext } from 'app/lib/wormhole/context'
 import { getSolNetwork } from 'app/lib/wormhole/helper/utils'
-import supplementary from 'os/providers/tokenProvider/supplementary'
 import { Net } from 'shared/runtime'
 import { OptionsFetchSignature } from '../../constants/transaction'
+import { getTokenList } from './customedTokenList'
 
 const DEFAULT_LIMIT = 700
 const TRANSACTION_LIMIT = 200
@@ -113,20 +112,20 @@ export class Solana {
   }
 
   async getTransferHistory(address: string, lastSig?: string) {
-    let listSignature = await this.fetchSignatures(
+    let signatureList = await this.fetchSignatures(
       account.fromAddress(address),
       lastSig,
     )
-    let newLastSig
+    let newLastSig: string = ''
     const history: TransferState[] = []
-    for (let i = 0; i < listSignature.length; i++) {
+    for (let i = 0; i < signatureList.length; i++) {
       try {
         if (history.length >= SOL_HISTORY_LIMIT) {
-          newLastSig = listSignature[i - 1]?.signature
+          newLastSig = signatureList[i - 1]?.signature
           return { history, lastSig: newLastSig }
         }
         const transferState = await this.createTransferState(
-          listSignature[i]?.signature,
+          signatureList[i]?.signature,
           address,
         )
         if (transferState) history.push(transferState)
@@ -146,15 +145,9 @@ export class Solana {
   ): Promise<TransferState | undefined> {
     const trx = await this.getTransactionInfo(sig)
     const params = await this.parseTransParam(trx)
+    const tokenList = await getTokenList()
 
     if (!params || params.targetChain !== CHAIN_ID_ETH || !params.token) return
-
-    const tokenPr = new TokenListProvider()
-    const tokenRaw = await tokenPr.resolve()
-    const tokenList = tokenRaw
-      .filterByClusterSlug('mainnet-beta')
-      .getList()
-      .concat(supplementary)
 
     let tokenInfo: WohTokenInfo = {
       decimals: 0,
@@ -196,7 +189,7 @@ export class Solana {
       sequence: '',
       vaaHex: '',
       txId: '',
-      txHash: trx?.transaction?.signatures[0] as any,
+      txHash: trx?.transaction?.signatures[0] || '',
     }
 
     return {

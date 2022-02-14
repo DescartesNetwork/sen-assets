@@ -42,7 +42,7 @@ const WormholeHistory = () => {
       const { newLastSig } = await dispatch(
         fetchWohHistory({
           address: nomalizeSourceAddr,
-          force: true,
+          isFirstFetch: true,
         }),
       ).unwrap()
       if (newLastSig) {
@@ -77,7 +77,7 @@ const WormholeHistory = () => {
         await dispatch(
           fetchWohHistory({
             address: nomalizeSourceAddr,
-            force: true,
+            isFirstFetch: true,
           }),
         ).unwrap()
       }
