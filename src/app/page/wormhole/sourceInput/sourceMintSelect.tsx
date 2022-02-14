@@ -13,8 +13,6 @@ const SourceMintSelect = () => {
   const onChange = (tokenAddress: string) =>
     dispatch(setSourceToken({ tokenAddress }))
 
-  console.log(sourceTokens, 'ngieueueu')
-
   return (
     <Select
       onChange={onChange}
