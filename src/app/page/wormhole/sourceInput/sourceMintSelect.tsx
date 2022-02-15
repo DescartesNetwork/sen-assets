@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useWallet } from '@senhub/providers'
-import { utils } from '@senswap/sen-js'
+import { account, utils } from '@senswap/sen-js'
 import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 
 import { Space, Select, Divider, Typography, Avatar } from 'antd'
@@ -52,19 +52,14 @@ const SourceMintSelect = () => {
 
   useEffect(() => {
     ;(async () => {
-      let ethBalance = ''
-      if (!!sourceWalletAddress) {
-        ethBalance = await web3Http.eth.getBalance(
-          web3Http.utils.toChecksumAddress(sourceWalletAddress),
-        )
+      if (!sourceWalletAddress || account.isAddress(sourceWalletAddress)) {
+        return
       }
-      const ethAddress = ETH_ADDRESS[getEtherNetwork()]
-      if (
-        !!sourceTokens[ethAddress] ||
-        !ethBalance ||
-        sourceChain !== CHAIN_ID_ETH
+      const ethBalance = await web3Http.eth.getBalance(
+        web3Http.utils.toChecksumAddress(sourceWalletAddress),
       )
-        return null
+      const ethAddress = ETH_ADDRESS[getEtherNetwork()]
+      if (!!sourceTokens[ethAddress] || !ethBalance) return
       const cloneSourceToken = JSON.parse(JSON.stringify(sourceTokens))
 
       cloneSourceToken[ethAddress] = {

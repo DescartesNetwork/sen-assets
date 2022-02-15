@@ -1,6 +1,6 @@
 import { CHAIN_ID_ETH } from '@certusone/wormhole-sdk'
-import { account } from '@senswap/sen-js'
-import { TransactionResponse } from '@solana/web3.js'
+import { utils } from '@senswap/sen-js'
+import { ParsedConfirmedTransaction, ParsedInstruction } from '@solana/web3.js'
 
 import {
   StepTransfer,
@@ -11,13 +11,13 @@ import {
 import { SOL_TOKEN_BRIDGE_ADDRESS } from 'app/lib/wormhole/constant/solConfig'
 import { createSolEtherContext } from 'app/lib/wormhole/context'
 import { getSolNetwork } from 'app/lib/wormhole/helper/utils'
+import TokenProvider from 'os/providers/tokenProvider'
 import { Net } from 'shared/runtime'
 import { Solana } from '../../adapters/solana/client'
-import { getTokenList } from '../../adapters/solana/customedTokenList'
+import { ParsedInfoTransfer } from '../../constants/transaction'
+import { TransLogService } from '../translog'
 
-const SOL_HISTORY_LIMIT = 4
-const SOL_INSTRUCTION_INDEX = 5
-const NOMAL_INSTRUCTION_INDEX = 2
+const SECOND_LIMIT = 2592000
 
 type ParsedTransaction = {
   targetChain: number
@@ -27,38 +27,37 @@ type ParsedTransaction = {
 
 export default class WormholeHistory {
   private solana: Solana = new Solana()
+  private tokenProvider = new TokenProvider()
+  private transLogService = new TransLogService()
 
-  async getTransferHistory(address: string, lastSig?: string) {
-    let signatureList = await this.solana.fetchSignatures(
-      account.fromAddress(address),
-      lastSig,
-    )
-    let newLastSig: string = ''
+  async getTransferHistory(address: string) {
     const history: TransferState[] = []
-    for (let i = 0; i < signatureList.length; i++) {
-      try {
-        if (history.length >= SOL_HISTORY_LIMIT) {
-          newLastSig = signatureList[i - 1]?.signature
-          return { history, lastSig: newLastSig }
-        }
+    const currentTime = new Date().getTime() / 1000
+    const detailedTransactions = await this.solana.fetchTransactions(address, {
+      secondFrom: currentTime - SECOND_LIMIT,
+      secondTo: currentTime,
+    })
+
+    await Promise.all(
+      detailedTransactions.map(async (transaction) => {
         const transferState = await this.createTransferState(
-          signatureList[i]?.signature,
+          transaction,
           address,
         )
-        if (transferState) history.push(transferState)
-      } catch (error) {}
-    }
+        if (!!transferState) history.push(transferState)
+      }),
+    )
 
-    return { history, lastSig: newLastSig }
+    return { history }
   }
 
   async createTransferState(
-    sig: string,
+    trx: ParsedConfirmedTransaction,
     address: string,
   ): Promise<TransferState | undefined> {
-    const trx = await this.solana.getTransactionInfo(sig)
-    const params = await this.parseTransParam(trx)
-    const tokenList = await getTokenList()
+    const params = this.parseTransParam(trx)
+    if (params) {
+    }
 
     if (!params || params.targetChain !== CHAIN_ID_ETH || !params.token) return
 
@@ -71,9 +70,7 @@ export default class WormholeHistory {
       amount: params.amount,
     }
 
-    const rawTokenInfo = tokenList.find(
-      (element) => element.address === params.token,
-    )
+    const rawTokenInfo = await this.tokenProvider.findByAddress(params.token)
     if (!!rawTokenInfo) {
       tokenInfo = {
         decimals: rawTokenInfo?.decimals,
@@ -90,7 +87,7 @@ export default class WormholeHistory {
     if (!ethWallet) throw new Error('Wallet is not connected')
 
     const context = createSolEtherContext(tokenInfo)
-    context.id = sig
+    context.id = trx.transaction.signatures[0]
     context.time = new Date(Number(trx?.blockTime) * 1000).getTime()
 
     const transferData: TransferData = {
@@ -111,40 +108,50 @@ export default class WormholeHistory {
     }
   }
 
-  async parseTransParam(
-    trx: TransactionResponse | null,
-  ): Promise<ParsedTransaction | undefined> {
+  parseTransParam(
+    trx: ParsedConfirmedTransaction,
+  ): ParsedTransaction | undefined {
+    if (!trx.meta) return
+    // filter transaction with wormholeProgramId
     const solNetWork: Net = getSolNetwork()
-    const { indexToProgramIds, instructions } = trx?.transaction.message as any
-    const programIndexSolBridge =
-      instructions[SOL_INSTRUCTION_INDEX]?.programIdIndex
-    const programIndexNomalBridge =
-      instructions[NOMAL_INSTRUCTION_INDEX]?.programIdIndex
-    const solTokenBridge = indexToProgramIds
-      .get(programIndexSolBridge)
-      ?.toBase58()
-    const conditions =
-      solTokenBridge === SOL_TOKEN_BRIDGE_ADDRESS[solNetWork] ||
-      indexToProgramIds.get(programIndexNomalBridge)?.toBase58() ===
-        SOL_TOKEN_BRIDGE_ADDRESS[solNetWork]
-    const metaToken: any = trx?.meta
-    const preTokenBalance =
-      metaToken?.preTokenBalances[0].uiTokenAmount.uiAmount
-    const postTokenBalance =
-      metaToken?.postTokenBalances[0].uiTokenAmount.uiAmount
+    const wormholeProgramId = SOL_TOKEN_BRIDGE_ADDRESS[solNetWork]
+    const { instructions } = trx.transaction.message
+    const programIds = instructions.map((data) => data.programId.toBase58())
+    if (!programIds.includes(wormholeProgramId)) return
 
-    if (!conditions) {
-      return
-    }
+    const { message } = trx.transaction
+    const { postTokenBalances, preTokenBalances, postBalances, preBalances } =
+      trx.meta
 
-    let amount = preTokenBalance - postTokenBalance
-    if (solTokenBridge === SOL_TOKEN_BRIDGE_ADDRESS[solNetWork]) {
-      amount = postTokenBalance - preTokenBalance
-    }
+    // get transaction brigde wormhole
+    const actionTransferWoh = (instructions as ParsedInstruction[]).find(
+      (data) => {
+        const parsedData = data as ParsedInstruction
+        if (parsedData?.parsed?.type !== 'approve') return false
+        return parsedData.program === 'spl-token'
+      },
+    )
+    if (!actionTransferWoh) return
+    const transferInfo: ParsedInfoTransfer = actionTransferWoh.parsed.info
+
+    const mapAccountInfo = this.transLogService.parseAccountInfo(
+      message.accountKeys,
+      postTokenBalances || [],
+      preTokenBalances || [],
+      postBalances,
+      preBalances,
+    )
+    const tokenInfo = mapAccountInfo.get(transferInfo.source)
+    if (!tokenInfo || !Number(transferInfo.amount)) return
+
+    const { mint, decimals } = tokenInfo
+    const amount = Number(
+      utils.undecimalize(BigInt(transferInfo.amount), decimals),
+    )
 
     return {
       amount,
-      token: metaToken?.preTokenBalances[0].mint,
+      token: mint,
       targetChain: CHAIN_ID_ETH,
     }
   }

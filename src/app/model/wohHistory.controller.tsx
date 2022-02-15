@@ -1,12 +1,12 @@
-import { CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
+import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import { account } from '@senswap/sen-js'
 
 import { TransferState } from 'app/constant/types/wormhole'
 import WormholeHistory from 'app/lib/stat/logic/assets/wormhole'
 import { restoreEther } from 'app/lib/wormhole/helper/ether'
 import { restoreSol } from 'app/lib/wormhole/helper/solana'
 import { EtherScan } from 'app/lib/wormhole/transaction/etherScan/etherScan'
+import { WohState } from './wormhole.controller'
 
 /**
  * Interface & Utility
@@ -16,7 +16,6 @@ export type State = Record<string, TransferState>
 
 export type FetchWormholeParams = {
   historyState: State
-  newLastSig?: string
 }
 
 const NAME = 'wohHistory'
@@ -30,30 +29,34 @@ export const fetchWohHistory = createAsyncThunk<
   FetchWormholeParams,
   {
     address: string
-    lastSig?: string
     isFirstFetch?: boolean
   },
-  { state: { wohHistory: State } }
+  { state: { wohHistory: State; wormhole: WohState } }
 >(
   `${NAME}/fetchWohHistory`,
   async (
-    { address, lastSig, isFirstFetch },
+    { address, isFirstFetch },
     { getState },
   ): Promise<FetchWormholeParams> => {
-    const currentState = getState().wohHistory
+    const {
+      wohHistory,
+      wormhole: { sourceChain },
+    } = getState()
     let historyState: State = {}
     let trans
-    let newLastSig
 
-    if (account.isAddress(address)) {
-      const wormholeHistory = new WormholeHistory()
-      const { history, lastSig: signature } =
-        await wormholeHistory.getTransferHistory(address, lastSig)
-      trans = history
-      newLastSig = signature
-    } else {
-      const etherScan = new EtherScan()
-      trans = await etherScan.getTransferHistory(address)
+    switch (sourceChain) {
+      case CHAIN_ID_SOLANA:
+        const wormholeHistory = new WormholeHistory()
+        const { history } = await wormholeHistory.getTransferHistory(address)
+        trans = history
+        break
+      case CHAIN_ID_ETH:
+        const etherScan = new EtherScan()
+        trans = await etherScan.getTransferHistory(address)
+        break
+      default:
+        throw new Error('No source wallet address')
     }
 
     const history = trans.sort(function (a, b) {
@@ -65,10 +68,10 @@ export const fetchWohHistory = createAsyncThunk<
     }
 
     if (!isFirstFetch) {
-      Object.assign(historyState, currentState)
+      Object.assign(historyState, wohHistory)
     }
 
-    return { historyState, newLastSig }
+    return { historyState }
   },
 )
 
