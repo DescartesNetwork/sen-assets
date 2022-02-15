@@ -30,7 +30,7 @@ export default class WormholeHistory {
   private tokenProvider = new TokenProvider()
   private transLogService = new TransLogService()
 
-  async getTransferHistory(address: string) {
+  async getTransferHistory(address: string): Promise<TransferState[]> {
     const history: TransferState[] = []
     const currentTime = new Date().getTime() / 1000
     const detailedTransactions = await this.solana.fetchTransactions(address, {
@@ -48,7 +48,7 @@ export default class WormholeHistory {
       }),
     )
 
-    return { history }
+    return history
   }
 
   async createTransferState(
@@ -56,8 +56,6 @@ export default class WormholeHistory {
     address: string,
   ): Promise<TransferState | undefined> {
     const params = this.parseTransParam(trx)
-    if (params) {
-    }
 
     if (!params || params.targetChain !== CHAIN_ID_ETH || !params.token) return
 

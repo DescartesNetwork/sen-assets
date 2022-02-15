@@ -43,12 +43,13 @@ export const fetchWohHistory = createAsyncThunk<
       wormhole: { sourceChain },
     } = getState()
     let historyState: State = {}
-    let trans
+    let trans: TransferState[] = []
 
     switch (sourceChain) {
       case CHAIN_ID_SOLANA:
         const wormholeHistory = new WormholeHistory()
-        const { history } = await wormholeHistory.getTransferHistory(address)
+        const history: TransferState[] =
+          await wormholeHistory.getTransferHistory(address)
         trans = history
         break
       case CHAIN_ID_ETH:
