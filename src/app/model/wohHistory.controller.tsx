@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { account } from '@senswap/sen-js'
 
 import { TransferState } from 'app/constant/types/wormhole'
-import { Solana } from 'app/lib/stat/adapters/solana/client'
+import WormholeHistory from 'app/lib/stat/logic/assets/wormhole'
 import { restoreEther } from 'app/lib/wormhole/helper/ether'
 import { restoreSol } from 'app/lib/wormhole/helper/solana'
 import { EtherScan } from 'app/lib/wormhole/transaction/etherScan/etherScan'
@@ -46,11 +46,9 @@ export const fetchWohHistory = createAsyncThunk<
     let newLastSig
 
     if (account.isAddress(address)) {
-      const solana = new Solana()
-      const { history, lastSig: signature } = await solana.getTransferHistory(
-        address,
-        lastSig,
-      )
+      const wormholeHistory = new WormholeHistory()
+      const { history, lastSig: signature } =
+        await wormholeHistory.getTransferHistory(address, lastSig)
       trans = history
       newLastSig = signature
     } else {
