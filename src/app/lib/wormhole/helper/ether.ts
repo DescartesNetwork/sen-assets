@@ -41,7 +41,7 @@ const abiDecoder = require('abi-decoder')
 
 type ParsedTransaction = {
   targetChain: number
-  amount: string
+  amount: number
   token?: string
 }
 type TransParam = { name: string; type: string; value?: any }
@@ -116,7 +116,7 @@ export const parseTransParam = async (
   if (!targetChainInput) return
   if (name === 'wrapAndTransferETH' || !amount) {
     return {
-      amount: trans.value,
+      amount: Number(trans.value),
       targetChain: Number(targetChainInput),
     }
   }
@@ -139,7 +139,7 @@ export const createTransferState = async (
     name: 'Ethereum',
     symbol: 'ETH',
     address: WETH_ADDRESS[getEtherNetwork()],
-    amount: Number(params.amount),
+    amount: params.amount,
   }
   const token = params.token
   if (token) {

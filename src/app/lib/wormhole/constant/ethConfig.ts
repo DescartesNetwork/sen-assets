@@ -52,6 +52,11 @@ export const MORALIS_INFO: MoralisStructure = {
 export const INFURA_PROJECT_ID: String = '5eb1b92f2065414d9dd21858fac54257'
 export const INFURA_SECRET_KEY: String = 'ff3fa1218f644c85a7374e40014374f1'
 
+export const INFURA_PROJECT_ID_FOR_ETHERS: String =
+  '25599d49923545c7a7f823b2680bc472'
+export const INFURA_SECRET_KEY_FOR_ETHERS: String =
+  '87c55f20d33d4b209a33d875a4a47d31'
+
 export const INFURA_API_HTTP_URL: EtherConfigSet = {
   mainnet: `https://mainnet.infura.io/v3/${INFURA_PROJECT_ID}`,
   goerli: `https://goerli.infura.io/v3/${INFURA_PROJECT_ID}`,
@@ -68,6 +73,12 @@ export const WETH_ADDRESS: EthAddressConfig = {
   mainnet: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
   goerli: '0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6',
   ropsten: '0xc778417e063141139fce010982780140aa0cd5ab',
+}
+
+export const ETH_ADDRESS: EthAddressConfig = {
+  mainnet: '0x0000000000000000000000000000000000000000',
+  goerli: '0x0000000000000000000000000000000000000000',
+  ropsten: '0x0000000000000000000000000000000000000000',
 }
 
 export const MAINNET_ETHER_ADDRESS_PREFIX = '0x1'

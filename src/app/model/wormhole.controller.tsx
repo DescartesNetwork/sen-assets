@@ -1,10 +1,13 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import { ChainId } from '@certusone/wormhole-sdk'
+import { utils } from '@senswap/sen-js'
 
 import { fetchTokenEther } from 'app/lib/wormhole/helper/ether'
 import { WohTokenInfo, TransferState } from 'app/constant/types/wormhole'
-
+import { web3Http } from 'app/lib/etherWallet/web3Config'
+import { ETH_ADDRESS } from 'app/lib/wormhole/constant/ethConfig'
+import { getEtherNetwork } from 'app/lib/wormhole/helper/utils'
 /**
  * Interface & Utility
  */
@@ -100,6 +103,26 @@ export const fetchEtherTokens = createAsyncThunk<Partial<WohState>>(
     const tokens: Record<string, WohTokenInfo> = {}
     for (const token of tokenList) {
       tokens[token.address] = token
+    }
+    let ethBalance = ''
+    if (!!address) {
+      ethBalance = await web3Http.eth.getBalance(
+        web3Http.utils.toChecksumAddress(address),
+      )
+      const ethAddress = ETH_ADDRESS[getEtherNetwork()]
+      if (!ethBalance)
+        return {
+          sourceTokens: tokens,
+        }
+
+      tokens[ethAddress] = {
+        address: ethAddress,
+        amount: Number(utils.undecimalize(BigInt(ethBalance), 18)),
+        decimals: 18,
+        logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/FeGn77dhg1KXRRFeSwwMiykZnZPw5JXW6naf2aQgZDQf/logo.png',
+        name: 'Eth nav',
+        symbol: 'ETH',
+      }
     }
     return {
       sourceTokens: tokens,

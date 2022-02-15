@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
+import detectEthereumProvider from '@metamask/detect-provider'
 import { utils } from '@senswap/sen-js'
 import { useAccount, useMint } from '@senhub/providers'
-import detectEthereumProvider from '@metamask/detect-provider'
 
 import { Col, Row, Tag } from 'antd'
 import Network, { NetworkConnect } from './network'
@@ -30,7 +30,6 @@ const SourceWallet = () => {
   const { accounts } = useAccount()
   const { tokenProvider } = useMint()
   const [hasProvider, setHasProvider] = useState(false)
-
   const getSourceEtherWallet = useCallback((fallback: string = '') => {
     const walletType = session.get(WOH_WALLET) || fallback
     if (walletType === MetamaskWallet.walletType) return new MetamaskWallet()

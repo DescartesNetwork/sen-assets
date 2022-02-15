@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { CHAIN_ID_SOLANA, CHAIN_ID_ETH } from '@certusone/wormhole-sdk'
-import { utils } from '@senswap/sen-js'
+import { utils, account } from '@senswap/sen-js'
 
 import { Button, Checkbox, Col, Row, Space, Typography } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
@@ -25,6 +25,7 @@ import {
 } from 'app/constant/types/wormhole'
 import { updateWohHistory } from 'app/model/wohHistory.controller'
 import WohSolEth from 'app/lib/wormhole/wohSolEth'
+import { SOL_ADDRESS } from 'app/lib/stat/constants/sol'
 
 const ConfirmAction = ({
   onClose = () => {},
@@ -101,17 +102,28 @@ const ConfirmAction = ({
 
     if (sourceChain === CHAIN_ID_SOLANA) {
       const { splt } = window.sentre
-      const accountAddress = await splt.deriveAssociatedAddress(
-        sourceWalletAddress,
-        tokenAddress,
-      )
-      const accountData = await splt.getAccountData(accountAddress)
+      let amount = BigInt(0)
+      if (tokenAddress === SOL_ADDRESS) {
+        const accountData = await splt.connection.getBalance(
+          account.fromAddress(sourceWalletAddress),
+        )
+        amount = BigInt(accountData)
+      } else {
+        const accountAddress = await splt.deriveAssociatedAddress(
+          sourceWalletAddress,
+          tokenAddress,
+        )
+        const { amount: amountToken } = await splt.getAccountData(
+          accountAddress,
+        )
+        amount = amountToken
+      }
       const tokenTransfer = sourceTokens[tokenAddress]
       const newSourceTokens: Record<string, WohTokenInfo> = JSON.parse(
         JSON.stringify(sourceTokens),
       )
       newSourceTokens[tokenAddress].amount = Number(
-        utils.undecimalize(accountData.amount, tokenTransfer.decimals),
+        utils.undecimalize(amount, tokenTransfer.decimals),
       )
       await dispatch(updateSolTokens({ sourceTokens: newSourceTokens }))
     }

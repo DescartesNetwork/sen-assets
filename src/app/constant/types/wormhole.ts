@@ -6,7 +6,7 @@ export type WohTokenInfo = {
   name: string
   symbol: string
   address: string
-  amount: number
+  amount?: number
 }
 
 export type TransactionDataPerAddress = {
