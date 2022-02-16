@@ -22,7 +22,6 @@ const WormholeHistory = () => {
   } = useSelector((state: AppState) => state)
 
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
-  const [lastSig, setLastSig] = useState<string>('')
   const [sortedHistory, setSortedHistory] = useState<TransferState[]>()
 
   /* toLowerCase sourceWalletAddress to avoid unnecessary rerenders caused by sensitive case */
@@ -39,15 +38,12 @@ const WormholeHistory = () => {
     try {
       setIsLoading(true)
       setAmountRow(ROW_PER_PAGE)
-      const { newLastSig } = await dispatch(
+      await dispatch(
         fetchWohHistory({
           address: nomalizeSourceAddr,
           isFirstFetch: true,
         }),
       ).unwrap()
-      if (newLastSig) {
-        setLastSig(newLastSig)
-      }
     } catch (er) {
       notifyError(er)
     } finally {
@@ -61,31 +57,6 @@ const WormholeHistory = () => {
 
   const onHandleViewMore = async () => {
     setAmountRow(amountRow + ROW_PER_PAGE)
-    try {
-      setIsLoading(true)
-      if (Object.keys(wohHistory).length < amountRow + ROW_PER_PAGE) {
-        if (account.isAddress(nomalizeSourceAddr)) {
-          const { newLastSig } = await dispatch(
-            fetchWohHistory({
-              address: nomalizeSourceAddr,
-              lastSig,
-            }),
-          ).unwrap()
-          if (newLastSig) setLastSig(newLastSig)
-          return
-        }
-        await dispatch(
-          fetchWohHistory({
-            address: nomalizeSourceAddr,
-            isFirstFetch: true,
-          }),
-        ).unwrap()
-      }
-    } catch (er) {
-      notifyError(er)
-    } finally {
-      setIsLoading(false)
-    }
   }
 
   useEffect(() => {
@@ -110,7 +81,11 @@ const WormholeHistory = () => {
       </Col>
       <Col>
         <Button
-          disabled={isLoading === true || !sourceWalletAddress}
+          disabled={
+            isLoading === true ||
+            !sourceWalletAddress ||
+            amountRow >= Object.keys(wohHistory).length
+          }
           onClick={onHandleViewMore}
           type="text"
           icon={<IonIcon name="chevron-down-outline" />}

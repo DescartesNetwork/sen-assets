@@ -52,19 +52,14 @@ const SourceMintSelect = () => {
 
   useEffect(() => {
     ;(async () => {
-      let ethBalance = ''
-      if (!!sourceWalletAddress) {
-        ethBalance = await web3Http.eth.getBalance(
-          web3Http.utils.toChecksumAddress(sourceWalletAddress),
-        )
+      if (!sourceWalletAddress || sourceChain !== CHAIN_ID_ETH) {
+        return
       }
-      const ethAddress = ETH_ADDRESS[getEtherNetwork()]
-      if (
-        !!sourceTokens[ethAddress] ||
-        !ethBalance ||
-        sourceChain !== CHAIN_ID_ETH
+      const ethBalance = await web3Http.eth.getBalance(
+        web3Http.utils.toChecksumAddress(sourceWalletAddress),
       )
-        return null
+      const ethAddress = ETH_ADDRESS[getEtherNetwork()]
+      if (!!sourceTokens[ethAddress] || !ethBalance) return
       const cloneSourceToken = JSON.parse(JSON.stringify(sourceTokens))
 
       cloneSourceToken[ethAddress] = {
