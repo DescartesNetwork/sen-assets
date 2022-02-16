@@ -5,7 +5,7 @@ import { TransferState } from 'app/constant/types/wormhole'
 import WormholeHistory from 'app/lib/stat/logic/assets/wormhole'
 import { restoreEther } from 'app/lib/wormhole/helper/ether'
 import { restoreSol } from 'app/lib/wormhole/helper/solana'
-import { EtherScan } from 'app/lib/wormhole/transaction/etherScan/etherScan'
+import { Web3Tran } from 'app/lib/wormhole/helper/web3Tran'
 import { WohState } from './wormhole.controller'
 
 /**
@@ -53,8 +53,8 @@ export const fetchWohHistory = createAsyncThunk<
         trans = history
         break
       case CHAIN_ID_ETH:
-        const etherScan = new EtherScan()
-        trans = await etherScan.getTransferHistory(address)
+        const web3Tran = new Web3Tran()
+        trans = await web3Tran.getTransferHistory(address)
         break
       default:
         throw new Error('No source wallet address')
@@ -84,10 +84,11 @@ export const restoreWohHistory = createAsyncThunk<
   const data = getState().wohHistory
   const prevData = data[id]
   if (prevData.context.srcChainId === CHAIN_ID_SOLANA) {
-    return { [id]: await restoreSol(prevData) }
+    const newData = await restoreSol(prevData)
+    return { [id]: newData }
   }
 
-  let newData = await restoreEther(prevData)
+  const newData = await restoreEther(prevData)
   return { [id]: newData }
 })
 

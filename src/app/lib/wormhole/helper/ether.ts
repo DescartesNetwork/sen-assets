@@ -128,7 +128,7 @@ export const parseTransParam = async (
 }
 
 export const createTransferState = async (
-  trans: TxData,
+  trans: TransactionEtherInfo,
 ): Promise<TransferState | undefined> => {
   const params = await parseTransParam(trans)
   if (!params || params.targetChain !== CHAIN_ID_SOLANA) return
@@ -157,7 +157,7 @@ export const createTransferState = async (
   const context = createEtherSolContext(tokenInfo)
   context.id = trans.hash
 
-  context.time = new Date(Number(trans.timeStamp) * 1000).getTime()
+  context.time = new Date(Number(trans.block_timestamp) * 1000).getTime()
   const transferData: TransferData = {
     nextStep: StepTransfer.Unknown,
     amount: utils.undecimalize(BigInt(params.amount), tokenInfo.decimals),

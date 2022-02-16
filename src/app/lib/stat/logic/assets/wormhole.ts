@@ -33,10 +33,12 @@ export default class WormholeHistory {
   async getTransferHistory(address: string): Promise<TransferState[]> {
     const history: TransferState[] = []
     const currentTime = new Date().getTime() / 1000
-    const detailedTransactions = await this.solana.fetchTransactions(address, {
-      secondFrom: currentTime - SECOND_LIMIT,
-      secondTo: currentTime,
-    })
+    const detailedTransactions = (
+      await this.solana.fetchTransactions(address, {
+        secondFrom: currentTime - SECOND_LIMIT,
+        secondTo: currentTime,
+      })
+    ).filter((tran) => tran.meta?.err === null)
 
     await Promise.all(
       detailedTransactions.map(async (transaction) => {

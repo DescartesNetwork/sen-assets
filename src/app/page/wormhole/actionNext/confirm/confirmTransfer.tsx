@@ -27,6 +27,8 @@ import { updateWohHistory } from 'app/model/wohHistory.controller'
 import WohSolEth from 'app/lib/wormhole/wohSolEth'
 import { SOL_ADDRESS } from 'app/lib/stat/constants/sol'
 
+import './index.less'
+
 const ConfirmAction = ({
   onClose = () => {},
 }: {
@@ -146,10 +148,10 @@ const ConfirmAction = ({
     <Row gutter={[8, 8]} justify="center">
       <Col span={24} style={{ textAlign: 'justify' }}>
         <Space align="start">
-          <Typography.Text style={{ color: '#D72311' }}>
+          <Typography.Text className="red-color">
             <IonIcon name="alert-circle-outline" />
           </Typography.Text>
-          <Typography.Text style={{ color: '#D72311', fontSize: 12 }}>
+          <Typography.Text className="red-color" style={{ fontSize: 12 }}>
             You should wait until the process is complete or you can minimize
             this dialog. However, the process will be failed if you exit the Sen
             Assets, or change the network.
