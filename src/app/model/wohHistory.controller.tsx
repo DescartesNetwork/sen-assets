@@ -84,10 +84,11 @@ export const restoreWohHistory = createAsyncThunk<
   const data = getState().wohHistory
   const prevData = data[id]
   if (prevData.context.srcChainId === CHAIN_ID_SOLANA) {
-    return { [id]: await restoreSol(prevData) }
+    const newData = await restoreSol(prevData)
+    return { [id]: newData }
   }
 
-  let newData = await restoreEther(prevData)
+  const newData = await restoreEther(prevData)
   return { [id]: newData }
 })
 

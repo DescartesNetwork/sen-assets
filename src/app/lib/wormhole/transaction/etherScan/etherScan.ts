@@ -1,10 +1,10 @@
 import axios from 'axios'
-import { createTransferState } from 'app/lib/wormhole/helper/ether'
 
 import { TxData } from './constant'
 import { ENDPOINT_URLS, ES_API_KEY, LIMIT } from './config'
-import { TransferState } from 'app/constant/types/wormhole'
 import { getEtherNetwork } from '../../helper/utils'
+import { TransferState } from 'app/constant/types/wormhole'
+import { createTransferState } from '../../helper/ether'
 
 export class EtherScan {
   private apiKey: string

@@ -19,7 +19,7 @@ export type TransactionDataPerAddress = {
 export type TransactionEtherInfo = {
   blockHash: string | null
   blockNumber: number | null
-  block_timestamp?: string
+  block_timestamp: string
   from: string
   gas: number
   gasPrice: string
