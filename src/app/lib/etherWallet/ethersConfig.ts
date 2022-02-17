@@ -10,7 +10,7 @@ import { getEtherNetwork } from '../wormhole/helper/utils'
 import { ES_API_KEY } from '../wormhole/transaction/etherScan/config'
 
 export const provider = ethers.getDefaultProvider(getEtherNetwork(), {
-  etherscan: ES_API_KEY[0],
+  etherscan: ES_API_KEY[1],
   infura: {
     projectId: INFURA_PROJECT_ID_FOR_ETHERS,
     projectSecret: INFURA_SECRET_KEY_FOR_ETHERS,

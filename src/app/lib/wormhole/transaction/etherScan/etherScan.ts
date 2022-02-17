@@ -3,6 +3,8 @@ import axios from 'axios'
 import { TxData } from './constant'
 import { ENDPOINT_URLS, ES_API_KEY, LIMIT } from './config'
 import { getEtherNetwork } from '../../helper/utils'
+import { TransferState } from 'app/constant/types/wormhole'
+import { createTransferState } from '../../helper/ether'
 
 export class EtherScan {
   private apiKey: string
@@ -30,17 +32,17 @@ export class EtherScan {
     }
   }
 
-  // getTransferHistory = async (address: string): Promise<TransferState[]> => {
-  //   let listTx = await this.fetchListTx(address)
-  //   const history: TransferState[] = []
-  //   await Promise.all(
-  //     listTx.map(async (tx) => {
-  //       try {
-  //         const transferState = await createTransferState(tx)
-  //         if (transferState) history.push(transferState)
-  //       } catch (error) {}
-  //     }),
-  //   )
-  //   return history
-  // }
+  getTransferHistory = async (address: string): Promise<TransferState[]> => {
+    let listTx = await this.fetchListTx(address)
+    const history: TransferState[] = []
+    await Promise.all(
+      listTx.map(async (tx) => {
+        try {
+          const transferState = await createTransferState(tx)
+          if (transferState) history.push(transferState)
+        } catch (error) {}
+      }),
+    )
+    return history
+  }
 }
