@@ -5,7 +5,6 @@ import { TransferState } from 'app/constant/types/wormhole'
 import WormholeHistory from 'app/lib/stat/logic/assets/wormhole'
 import { restoreEther } from 'app/lib/wormhole/helper/ether'
 import { restoreSol } from 'app/lib/wormhole/helper/solana'
-import { Web3Tran } from 'app/lib/wormhole/helper/web3Tran'
 import { EtherScan } from 'app/lib/wormhole/transaction/etherScan/etherScan'
 import { WohState } from './wormhole.controller'
 
