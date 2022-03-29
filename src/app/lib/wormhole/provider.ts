@@ -1,4 +1,4 @@
-import { getSignedVAA } from '@certusone/wormhole-sdk'
+import { ChainId, getSignedVAA } from '@certusone/wormhole-sdk'
 import { Connection } from '@solana/web3.js'
 import {
   AttestData,
@@ -24,6 +24,11 @@ export class WormholeProvider {
     return JSON.parse(JSON.stringify(data)) || {}
   }
 
+  private getContext = () => {
+    if (!this.context) throw new Error('Invalid context')
+    return this.context
+  }
+
   restore = async (stateBackup: TransferState) => {
     const stateClone = JSON.parse(JSON.stringify(stateBackup))
     if (!stateBackup) throw new Error('Not find state transfer')
@@ -42,6 +47,7 @@ export class WormholeProvider {
     amount: string,
     onUpdate: (state: TransferState) => void,
   ) => {
+    const context = this.getContext()
     // init data transfer
     if (!this.transferData)
       this.transferData = await this.initTransferData(amount)
@@ -51,6 +57,7 @@ export class WormholeProvider {
 
     if (transferData.nextStep === StepTransfer.Transfer) {
       const { emitterAddress, sequence, txHash } = await this.submitTransfer()
+      context.id = txHash
       transferData.txHash = txHash
       transferData.emitterAddress = emitterAddress
       transferData.sequence = sequence
@@ -127,6 +134,7 @@ export class WormholeProvider {
   protected isAttested = async (): Promise<{
     attested: boolean
     wrappedMintAddress: string | null
+    chainId?: ChainId
   }> => {
     throw new Error('Invalid function isAttested')
   }

@@ -43,7 +43,7 @@ export class TransLogService {
     return transLogs
   }
 
-  private parseTransLog(
+  parseTransLog(
     confirmedTrans: ParsedConfirmedTransaction,
   ): TransLog | undefined {
     const { blockTime, meta, transaction } = confirmedTrans
@@ -74,7 +74,6 @@ export class TransLogService {
         [instructionData],
         mapAccount,
       )
-      return transLog
     }
     // smart contract transaction
     transLog.actionTransfers = this.parseListActionTransfer(
@@ -137,7 +136,7 @@ export class TransLogService {
     return actionTransfer
   }
 
-  private parseAccountInfo(
+  parseAccountInfo(
     accountKeys: Array<ParsedMessageAccount>,
     postTokenBalances: Array<TokenBalance>,
     preTokenBalances: Array<TokenBalance>,

@@ -16,7 +16,7 @@
     "axios": "^0.24.0",
     "bs58": "^4.0.1",
     "ethereum-input-data-decoder": "^0.3.5",
-    "ethers": "^5.5.1",
+    "ethers": "^5.5.4",
     "iconsax-react": "^0.0.7",
     "ipfs-core": "^0.11.1",
     "js-file-download": "^0.4.12",

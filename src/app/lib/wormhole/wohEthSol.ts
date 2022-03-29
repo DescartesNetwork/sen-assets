@@ -29,7 +29,7 @@ import {
   TransferData,
 } from 'app/constant/types/wormhole'
 import { createEtherSolContext } from './context'
-import { WETH_ADDRESS } from './constant/ethConfig'
+import { ETH_ADDRESS, WETH_ADDRESS } from './constant/ethConfig'
 
 class WohEthSol extends WormholeProvider {
   private srcWallet: IEtherWallet
@@ -47,7 +47,7 @@ class WohEthSol extends WormholeProvider {
   }
 
   private isNative = () => {
-    return this.context?.tokenInfo.address === WETH_ADDRESS[getEtherNetwork()]
+    return this.context?.tokenInfo.address === ETH_ADDRESS[getEtherNetwork()]
   }
 
   protected isAttested = async (): Promise<{
@@ -56,10 +56,17 @@ class WohEthSol extends WormholeProvider {
   }> => {
     const { context } = this.getState()
     const provider = await this.srcWallet.getProvider()
+    const etherNetwork = getEtherNetwork()
+
+    let tokenAddressChecking: string = context.tokenInfo.address
+    // Currently, haven't found ETH_ADDRESS yet, so WETH_ADDRESS is used here
+    if (tokenAddressChecking === ETH_ADDRESS[etherNetwork])
+      tokenAddressChecking = WETH_ADDRESS[etherNetwork]
+
     const originAsset = await getOriginalAssetEth(
       context.srcTokenBridgeAddress,
       provider,
-      context.tokenInfo.address,
+      tokenAddressChecking,
       CHAIN_ID_ETH,
     )
 

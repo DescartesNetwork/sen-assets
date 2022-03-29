@@ -1,6 +1,6 @@
 import {
   ConfirmedSignatureInfo,
-  ConfirmedSignaturesForAddress2Options,
+  SignaturesForAddressOptions,
   Connection,
   ParsedConfirmedTransaction,
   PublicKey,
@@ -16,17 +16,18 @@ export class Solana {
 
   //Search for all signatures from last Signature and earlier
   //So: If new collection (to now) -> last Signature = null
-  private async fetchSignatures(
+  async fetchSignatures(
     address: PublicKey,
     lastSignature?: string,
     limit: number = DEFAULT_LIMIT,
   ): Promise<Array<ConfirmedSignatureInfo>> {
     if (limit > DEFAULT_LIMIT) limit = DEFAULT_LIMIT
-    const options: ConfirmedSignaturesForAddress2Options = {
-      limit: limit,
+    const options: SignaturesForAddressOptions = {
+      limit,
       before: lastSignature,
     }
-    return this.conn.getConfirmedSignaturesForAddress2(address, options)
+
+    return this.conn.getSignaturesForAddress(address, options)
   }
 
   private async fetchConfirmTransaction(signatures: string[]) {
@@ -47,6 +48,7 @@ export class Solana {
       //@ts-ignore
       confirmedTransactions = confirmedTransactions.concat(transGroup)
     }
+
     return confirmedTransactions
   }
 
@@ -82,6 +84,11 @@ export class Solana {
       if (confirmedSignatureInfos?.length < DEFAULT_LIMIT) break
     }
     const confirmedTransactions = await this.fetchConfirmTransaction(signatures)
+
     return confirmedTransactions
+  }
+
+  async getTransactionInfo(sig: string) {
+    return await this.conn.getTransaction(sig)
   }
 }

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { account } from '@senswap/sen-js'
 
 import { Button, Col, Row, Table } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
@@ -21,27 +22,28 @@ const WormholeHistory = () => {
   } = useSelector((state: AppState) => state)
 
   const [amountRow, setAmountRow] = useState(ROW_PER_PAGE)
-  const [fromBlk, setFromBlk] = useState<number>()
-  const [fetchedDays, setFetchedDays] = useState<number>(0)
   const [sortedHistory, setSortedHistory] = useState<TransferState[]>()
 
   /* toLowerCase sourceWalletAddress to avoid unnecessary rerenders caused by sensitive case */
   const nomalizeSourceAddr = useMemo(() => {
-    return sourceWalletAddress?.toLowerCase()
+    if (!account.isAddress(sourceWalletAddress)) {
+      //@ts-ignore
+      return sourceWalletAddress?.toLowerCase()
+    }
+    return sourceWalletAddress
   }, [sourceWalletAddress])
 
   const fetchBridgeHistory = useCallback(async () => {
     if (!nomalizeSourceAddr) return
     try {
       setIsLoading(true)
-      const { fromBlock, count } = await dispatch(
+      setAmountRow(ROW_PER_PAGE)
+      await dispatch(
         fetchWohHistory({
           address: nomalizeSourceAddr,
-          minNeededTrx: ROW_PER_PAGE,
+          isFirstFetch: true,
         }),
       ).unwrap()
-      setFromBlk(fromBlock)
-      setFetchedDays(count)
     } catch (er) {
       notifyError(er)
     } finally {
@@ -55,26 +57,6 @@ const WormholeHistory = () => {
 
   const onHandleViewMore = async () => {
     setAmountRow(amountRow + ROW_PER_PAGE)
-    try {
-      setIsLoading(true)
-      if (Object.keys(wohHistory).length < amountRow + ROW_PER_PAGE) {
-        const { fromBlock, count } = await dispatch(
-          fetchWohHistory({
-            address: sourceWalletAddress,
-            minNeededTrx:
-              amountRow + ROW_PER_PAGE - Object.keys(wohHistory).length,
-            fromBLK: fromBlk,
-            fetchedDays: fetchedDays,
-          }),
-        ).unwrap()
-        setFromBlk(fromBlock)
-        setFetchedDays(count)
-      }
-    } catch (er) {
-      notifyError(er)
-    } finally {
-      setIsLoading(false)
-    }
   }
 
   useEffect(() => {
@@ -100,7 +82,9 @@ const WormholeHistory = () => {
       <Col>
         <Button
           disabled={
-            fetchedDays >= 30 || isLoading === true || !sourceWalletAddress
+            isLoading === true ||
+            !sourceWalletAddress ||
+            amountRow >= Object.keys(wohHistory).length
           }
           onClick={onHandleViewMore}
           type="text"

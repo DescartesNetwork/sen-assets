@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 
 import { Button } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
@@ -12,7 +13,7 @@ import {
   setProcess,
   setVisibleProcess,
 } from 'app/model/wormhole.controller'
-import { asyncWait, ethExplorer } from 'shared/util'
+import { asyncWait, ethExplorer, solExplorer } from 'shared/util'
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
 import {
@@ -21,7 +22,7 @@ import {
   WormholeStatus,
 } from 'app/constant/types/wormhole'
 import { updateWohHistory } from 'app/model/wohHistory.controller'
-import { fetchEtherTokenInfo } from 'app/lib/wormhole/helper/ether'
+import WohSolEth from 'app/lib/wormhole/wohSolEth'
 
 const ColumAction = ({ transferState }: { transferState: TransferState }) => {
   const dispatch = useDispatch<AppDispatch>()
@@ -51,17 +52,27 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
       await dispatch(setProcess({ id: context.id })).unwrap()
       //Transfer
       const { sourceWallet, targetWallet } = window.wormhole
-      const tokenTransfer = await fetchEtherTokenInfo(
-        transferState.context.tokenInfo.address,
-      )
-      if (!sourceWallet.ether || !targetWallet.sol || !tokenTransfer)
-        throw new Error('Wallet is not connected')
+      let tokenTransfer = transferState.context.tokenInfo
 
-      const wormholeTransfer = new WohEthSol(
-        sourceWallet.ether,
-        targetWallet.sol,
-        tokenTransfer,
-      )
+      let wormholeTransfer
+      if (transferState.context.srcChainId === CHAIN_ID_SOLANA) {
+        if (!sourceWallet.sol || !targetWallet.ether)
+          throw new Error('Wallet is not connected')
+        wormholeTransfer = new WohSolEth(
+          sourceWallet.sol,
+          targetWallet.ether,
+          tokenTransfer,
+        )
+      } else {
+        if (!sourceWallet.ether || !targetWallet.sol)
+          throw new Error('Wallet is not connected')
+        wormholeTransfer = new WohEthSol(
+          sourceWallet.ether,
+          targetWallet.sol,
+          tokenTransfer,
+        )
+      }
+
       await wormholeTransfer.restore(transferState)
       await onUpdate(transferState)
       const txId = await wormholeTransfer.transfer(
@@ -76,15 +87,23 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
     }
   }
 
+  const onExplore = () => {
+    if (transferState.context.srcChainId === CHAIN_ID_SOLANA) {
+      return window.open(
+        solExplorer(transferState.transferData.txHash),
+        'blank',
+      )
+    }
+    return window.open(ethExplorer(transferState.transferData.txHash), '_blank')
+  }
+
   // action button success
   if (status === 'success') {
     return (
       <Button
         size="small"
         type="text"
-        onClick={() =>
-          window.open(ethExplorer(transferState.transferData.txHash), '_blank')
-        }
+        onClick={onExplore}
         icon={<IonIcon name="open-outline" />}
       />
     )

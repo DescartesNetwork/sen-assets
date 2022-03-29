@@ -1,13 +1,12 @@
 import { ChainId } from '@certusone/wormhole-sdk'
 
 export type WohTokenInfo = {
-  balance: string
   decimals: number
   logo: string
   name: string
   symbol: string
   address: string
-  amount: number
+  amount?: number
 }
 
 export type TransactionDataPerAddress = {
@@ -20,7 +19,7 @@ export type TransactionDataPerAddress = {
 export type TransactionEtherInfo = {
   blockHash: string | null
   blockNumber: number | null
-  block_timestamp?: string
+  block_timestamp: string
   from: string
   gas: number
   gasPrice: string
