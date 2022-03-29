@@ -1,4 +1,4 @@
-import { Fragment } from 'react'
+import { Fragment, useCallback } from 'react'
 
 import { Row, Col, Drawer, Button, Tabs } from 'antd'
 import IonIcon from 'shared/antd/ionicon'
@@ -15,16 +15,21 @@ import { setVisibleActionCenter } from 'os/store/ui.reducer'
 
 const ActionCenter = () => {
   const dispatch = useRootDispatch<RootDispatch>()
-  const { visibleActionCenter } = useRootSelector(
-    (state: RootState) => state.ui,
-  )
+  const {
+    ui: { visibleActionCenter },
+  } = useRootSelector((state: RootState) => state)
+
+  const onActionCenter = useCallback(async () => {
+    return dispatch(setVisibleActionCenter(true))
+  }, [dispatch])
 
   return (
     <Fragment>
       <Button
         type="text"
         icon={<IonIcon name="menu" style={{ fontSize: 20 }} />}
-        onClick={() => dispatch(setVisibleActionCenter(!visibleActionCenter))}
+        onClick={onActionCenter}
+        id="button-action-center"
       />
       <Drawer
         visible={visibleActionCenter}
@@ -40,7 +45,7 @@ const ActionCenter = () => {
               tabBarExtraContent={
                 <Button
                   type="text"
-                  icon={<IonIcon name="close-outline" />}
+                  icon={<IonIcon name="close" />}
                   onClick={() => dispatch(setVisibleActionCenter(false))}
                 />
               }
@@ -50,7 +55,7 @@ const ActionCenter = () => {
                 tab={
                   <span>
                     <IonIcon name="grid-outline" />
-                    Applications
+                    Apps
                   </span>
                 }
                 key="applications"

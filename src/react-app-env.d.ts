@@ -28,11 +28,13 @@ interface Window {
   ipfs?: ReturnType<import('ipfs-core').create>
   // Utility
   notify: ({ type, description, onClick }: SentreNotification) => void
+  goto: (url: string) => void
   // Partner wallets
   coin98: any
   solana: any
   Slope: any
   solflare: any
+  clover_solana: any
 }
 
 // For bigint serialization
@@ -52,19 +54,12 @@ type ComponentManifest = {
     email: string
   }
   tags: string[]
-  supportedViews: Array<'page' | 'widget'>
   description: string
   verified: boolean
 }
 // List of application manifests
 type SenReg = Record<string, ComponentManifest | undefined>
-// Widget size
-type WidgetSize = 'small' | 'middle' | 'large'
-type WidgetType = 'default' | 'solid'
-type WidgetConfig = {
-  size?: WidgetSize
-  type?: WidgetType
-}
+// Coingeckko Data
 type CgkData = {
   icon: any
   symbol: any
@@ -80,7 +75,6 @@ type CgkData = {
  * Declare module
  */
 declare module '*.md'
-declare module 'flexsearch'
 declare module '@senhub/context' {
   export * from 'os/store/context'
 }

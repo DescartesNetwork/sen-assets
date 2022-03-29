@@ -9,6 +9,7 @@ import PDB from 'shared/pdb'
 
 type FlagsState = {
   visited: boolean
+  loading: boolean
 }
 
 /**
@@ -18,6 +19,7 @@ type FlagsState = {
 const NAME = 'flags'
 const initialState: FlagsState = {
   visited: true,
+  loading: true,
 }
 
 /**
@@ -30,14 +32,13 @@ export const loadVisited = createAsyncThunk<
   { state: any }
 >(`${NAME}/loadVisited`, async (_, { getState }) => {
   const {
-    wallet: { address },
-    flags: prevFlags,
+    wallet: { address: walletAddress },
   } = getState()
-  if (!account.isAddress(address))
+  if (!account.isAddress(walletAddress))
     throw new Error('Wallet is not connected yet')
-  const db = new PDB(address).createInstance('sentre')
-  const visited = (await db.getItem('visited')) || false
-  return { ...prevFlags, visited }
+  const db = new PDB(walletAddress).createInstance('sentre')
+  const visited: boolean = (await db.getItem('visited')) || false
+  return { visited }
 })
 
 export const updateVisited = createAsyncThunk<
@@ -47,14 +48,20 @@ export const updateVisited = createAsyncThunk<
 >(`${NAME}/updateVisited`, async (visited, { getState }) => {
   const {
     wallet: { address },
-    flags: prevFlags,
   } = getState()
   if (!account.isAddress(address))
     throw new Error('Wallet is not connected yet')
   const db = new PDB(address).createInstance('sentre')
   await db.setItem('visited', visited)
-  return { ...prevFlags, visited }
+  return { visited }
 })
+
+export const updateLoading = createAsyncThunk(
+  `${NAME}/updateLoading`,
+  async (loading: boolean) => {
+    return { loading }
+  },
+)
 
 /**
  * Usual procedure
@@ -72,6 +79,10 @@ const slice = createSlice({
       )
       .addCase(
         updateVisited.fulfilled,
+        (state, { payload }) => void Object.assign(state, payload),
+      )
+      .addCase(
+        updateLoading.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })
