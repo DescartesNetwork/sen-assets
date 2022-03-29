@@ -10,7 +10,7 @@ import {
 } from 'app/constant/types/wormhole'
 import { SOL_TOKEN_BRIDGE_ADDRESS } from 'app/lib/wormhole/constant/solConfig'
 import { createSolEtherContext } from 'app/lib/wormhole/context'
-import TokenProvider from 'os/providers/tokenProvider'
+import TokenProvider from 'shared/tokenProvider'
 import { net } from 'shared/runtime'
 import { Solana } from '../../adapters/solana/client'
 import { ParsedInfoTransfer } from '../../constants/transaction'
