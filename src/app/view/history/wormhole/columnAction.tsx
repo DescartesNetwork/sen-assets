@@ -13,7 +13,7 @@ import {
   setProcess,
   setVisibleProcess,
 } from 'app/model/wormhole.controller'
-import { asyncWait, ethExplorer, solExplorer } from 'shared/util'
+import { asyncWait, ethExplorer, explorer } from 'shared/util'
 import { WohEthSol } from 'app/lib/wormhole'
 import { notifyError, notifySuccess } from 'app/helper'
 import {
@@ -89,10 +89,7 @@ const ColumAction = ({ transferState }: { transferState: TransferState }) => {
 
   const onExplore = () => {
     if (transferState.context.srcChainId === CHAIN_ID_SOLANA) {
-      return window.open(
-        solExplorer(transferState.transferData.txHash),
-        'blank',
-      )
+      return window.open(explorer(transferState.transferData.txHash), 'blank')
     }
     return window.open(ethExplorer(transferState.transferData.txHash), '_blank')
   }

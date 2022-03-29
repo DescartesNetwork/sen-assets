@@ -1,5 +1,5 @@
 import { account, utils } from '@senswap/sen-js'
-import { getEtherNetwork, getSolNetwork } from 'app/lib/wormhole/helper/utils'
+import { getEtherNetwork } from 'app/lib/wormhole/helper/utils'
 import numbro from 'numbro'
 
 import { net } from 'shared/runtime'
@@ -51,17 +51,6 @@ export const ethExplorer = (txHash: string): string => {
     return `https://goerli.etherscan.io/tx/${txHash}`
   }
   return `https://etherscan.io/tx/${txHash}`
-}
-
-/**
- * Return a url to go to solscan explorer
- * @param txHash - Address or TxId
- * @returns
- */
-export const solExplorer = (sig: string): string => {
-  const network = getSolNetwork()
-
-  return `https://solscan.io/tx/${sig}?cluster=${network}`
 }
 
 /**

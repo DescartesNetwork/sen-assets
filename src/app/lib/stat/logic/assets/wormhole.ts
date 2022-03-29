@@ -10,9 +10,8 @@ import {
 } from 'app/constant/types/wormhole'
 import { SOL_TOKEN_BRIDGE_ADDRESS } from 'app/lib/wormhole/constant/solConfig'
 import { createSolEtherContext } from 'app/lib/wormhole/context'
-import { getSolNetwork } from 'app/lib/wormhole/helper/utils'
 import TokenProvider from 'os/providers/tokenProvider'
-import { Net } from 'shared/runtime'
+import { net } from 'shared/runtime'
 import { Solana } from '../../adapters/solana/client'
 import { ParsedInfoTransfer } from '../../constants/transaction'
 import { TransLogService } from '../translog'
@@ -25,7 +24,7 @@ type ParsedTransaction = {
   token?: string
 }
 
-export default class WormholeHistory {
+class WormholeHistory {
   private solana: Solana = new Solana()
   private tokenProvider = new TokenProvider()
   private transLogService = new TransLogService()
@@ -83,7 +82,6 @@ export default class WormholeHistory {
     }
 
     const ethWallet = await window.wormhole.sourceWallet.ether?.getAddress()
-
     if (!ethWallet) throw new Error('Wallet is not connected')
 
     const context = createSolEtherContext(tokenInfo)
@@ -113,7 +111,7 @@ export default class WormholeHistory {
   ): ParsedTransaction | undefined {
     if (!trx.meta) return
     // filter transaction with wormholeProgramId
-    const solNetWork: Net = getSolNetwork()
+    const solNetWork = net
     const wormholeProgramId = SOL_TOKEN_BRIDGE_ADDRESS[solNetWork]
     const { instructions } = trx.transaction.message
     const programIds = instructions.map((data) => data.programId.toBase58())
@@ -156,3 +154,5 @@ export default class WormholeHistory {
     }
   }
 }
+
+export default WormholeHistory

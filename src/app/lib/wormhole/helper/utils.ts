@@ -12,17 +12,11 @@ import {
   WormholeStoreKey,
 } from 'app/constant/types/wormhole'
 import WohEthSol from '../wohEthSol'
-import storage from 'shared/storage'
 import PDB from 'shared/pdb'
-import { Net } from 'shared/runtime'
-
-export const getSolNetwork = (): Net => {
-  const solNetwork = storage.get('network') || 'mainnet'
-  return solNetwork
-}
+import { net } from 'shared/runtime'
 
 export const getEtherNetwork = () => {
-  const solNetwork = getSolNetwork()
+  const solNetwork = net
   const etherNetwork = solNetwork === 'mainnet' ? 'mainnet' : 'goerli'
   return etherNetwork
 }

@@ -1,7 +1,6 @@
 import { CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 
 import { WohTokenInfo, WormholeContext } from 'app/constant/types/wormhole'
-import { Net } from 'shared/runtime'
 import {
   EtherNetwork,
   ETH_BRIDGE_ADDRESS,
@@ -12,7 +11,8 @@ import {
   SOL_TOKEN_BRIDGE_ADDRESS,
 } from './constant/solConfig'
 import { WORMHOLE_RPC_HOST } from './constant/wormhole'
-import { getEtherNetwork, getSolNetwork } from './helper/utils'
+import { getEtherNetwork } from './helper/utils'
+import { net } from 'shared/runtime'
 
 export const getEtherContext = () => {
   const etherNetwork: EtherNetwork = getEtherNetwork()
@@ -24,7 +24,7 @@ export const getEtherContext = () => {
 }
 
 export const getSolContext = () => {
-  const solNetWork: Net = getSolNetwork()
+  const solNetWork = net
   return {
     chainId: CHAIN_ID_SOLANA,
     tokenBridgeAddress: SOL_TOKEN_BRIDGE_ADDRESS[solNetWork],
@@ -35,7 +35,7 @@ export const getSolContext = () => {
 export const createEtherSolContext = (
   tokenInfo: WohTokenInfo,
 ): WormholeContext => {
-  const solNetWork: Net = getSolNetwork()
+  const solNetWork = net
   const etherContext = getEtherContext()
   return {
     id: new Date().getTime() + '' + Math.random(),
@@ -58,7 +58,7 @@ export const createEtherSolContext = (
 export const createSolEtherContext = (
   tokenInfo: WohTokenInfo,
 ): WormholeContext => {
-  const solNetWork: Net = getSolNetwork()
+  const solNetWork = net
   const solContext = getSolContext()
   const { chainId, tokenBridgeAddress, bridgeAddress } = getEtherContext()
 
