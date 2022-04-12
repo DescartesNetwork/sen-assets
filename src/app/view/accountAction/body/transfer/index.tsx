@@ -20,16 +20,18 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
     if (!wallet) throw new Error('Wallet is not connected')
     let associatedAddress = ''
     try {
-      // Validate existing account
-      await splt.getAccountData(associatedAddress)
+      await splt.getAccountData(dstAddress)
       associatedAddress = dstAddress
-    } catch (er) {
-      const { accountAddress } = await splt.initializeAccount(
-        mint,
+    } catch (er: any) {
+      associatedAddress = await account.deriveAssociatedAddress(
         dstAddress,
-        wallet,
+        mint,
       )
-      associatedAddress = accountAddress
+      try {
+        await splt.getAccountData(associatedAddress)
+      } catch (er) {
+        await splt.initializeAccount(mint, dstAddress, wallet)
+      }
     } finally {
       return associatedAddress
     }
@@ -48,6 +50,7 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
       }
       // transfer splt
       const dstAssociatedAddr = await getDstAssociatedAddr()
+      console.log(dstAssociatedAddr)
       if (!dstAssociatedAddr) throw new Error('Invalid destination address')
       const { txId } = await splt.transfer(
         amountTransfer,
@@ -59,9 +62,9 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
       setDstAddress('')
       return notifySuccess('Transfer', txId)
     } catch (er) {
-      notifyError(er)
+      return notifyError(er)
     } finally {
-      setLoading(false)
+      return setLoading(false)
     }
   }
 
