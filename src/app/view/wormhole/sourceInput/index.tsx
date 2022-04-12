@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 
-import { Row, Col, Typography, Button } from 'antd'
+import { Row, Col, Typography, Button, Space } from 'antd'
 import SourceMintSelect from './sourceMintSelect'
 import NumericInput from 'shared/antd/numericInput'
 
@@ -23,9 +23,12 @@ const SelectMintInput = () => {
         <Typography.Text>Amount</Typography.Text>
       </Col>
       <Col>
-        <Typography.Text>
-          Available: {numeric(maxAmount).format('0,0.[0000]') || 0} {symbol}
-        </Typography.Text>
+        <Space>
+          <Typography.Text type="secondary">Available:</Typography.Text>
+          <Typography.Text>
+            {numeric(maxAmount).format('0,0.[0000]') || 0} {symbol}
+          </Typography.Text>
+        </Space>
       </Col>
       <Col span={24}>
         <NumericInput
