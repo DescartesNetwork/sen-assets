@@ -1,6 +1,6 @@
 import { Button, Space, Typography } from 'antd'
 import StatusTag from '../statusTags'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 
 import { explorer, numeric, shortenAddress } from 'shared/util'
 import { MintSymbol } from 'shared/antd/mint'

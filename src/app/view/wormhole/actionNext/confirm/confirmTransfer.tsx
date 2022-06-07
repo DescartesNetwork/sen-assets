@@ -4,7 +4,7 @@ import { CHAIN_ID_SOLANA, CHAIN_ID_ETH } from '@certusone/wormhole-sdk'
 import { utils, account } from '@senswap/sen-js'
 
 import { Button, Checkbox, Col, Row, Space, Typography } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 import { Progress } from 'app/components/progress'
 
 import { AppDispatch, AppState } from 'app/model'

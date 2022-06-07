@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccountData } from '@senswap/sen-js'
-import LazyLoad from '@senswap/react-lazyload'
+import LazyLoad from '@sentre/react-lazyload'
 import { useMint, useWallet } from '@senhub/providers'
 
 import { Col, Row } from 'antd'

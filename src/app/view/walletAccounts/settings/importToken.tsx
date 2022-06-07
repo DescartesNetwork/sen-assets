@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import LazyLoad from '@senswap/react-lazyload'
+import LazyLoad from '@sentre/react-lazyload'
 import { account } from '@senswap/sen-js'
 import { TokenInfo } from '@solana/spl-token-registry'
 import { useAccount, useMint, useWallet } from '@senhub/providers'
@@ -15,7 +15,7 @@ import {
   Input,
   Avatar,
 } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 
 import { notifyError, notifySuccess } from 'app/helper'
 

@@ -1,7 +1,7 @@
 import { Card, Col, Row, Tooltip } from 'antd'
 import WalletTitle from './walletTitle'
 
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 import SourceWallet from './networkConnect/sourceWallet'
 import TargetWallet from './networkConnect/targetWallet'
 import { useDispatch, useSelector } from 'react-redux'

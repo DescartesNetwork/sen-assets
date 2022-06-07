@@ -4,7 +4,7 @@ import { AccountData } from '@senswap/sen-js'
 import { useAccount, useMint, usePool } from '@senhub/providers'
 
 import { Row, Col, Input, Button } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 
 import { AppState } from 'app/model'
 

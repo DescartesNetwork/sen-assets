@@ -1,6 +1,6 @@
 import { Transaction } from '@solana/web3.js'
 import * as nacl from 'tweetnacl'
-import { account, Signature, SignedMessage } from '@senswap/sen-js'
+import { account, SignedMessage } from '@senswap/sen-js'
 
 import BaseWallet from './baseWallet'
 
@@ -13,13 +13,13 @@ class PhantomWallet extends BaseWallet {
     const { solana } = window
     if (!solana?.isPhantom) throw new Error('Wallet is not connected')
     if (solana.isConnected) return solana
-    solana.connect()
-    return await new Promise((resolve) =>
-      solana.on('connect', () => resolve(solana)),
-    )
+    return await new Promise((resolve) => {
+      solana.on('connect', () => resolve(solana))
+      return solana.connect()
+    })
   }
 
-  getAddress = async () => {
+  getAddress = async (): Promise<string> => {
     const provider = await this.getProvider()
     const address = provider.publicKey.toString()
     if (!account.isAddress(address))
@@ -27,13 +27,24 @@ class PhantomWallet extends BaseWallet {
     return address
   }
 
-  rawSignTransaction = async (transaction: Transaction) => {
+  signTransaction = async (transaction: Transaction): Promise<Transaction> => {
     const provider = await this.getProvider()
     const address = await this.getAddress()
     const publicKey = account.fromAddress(address)
-    transaction.feePayer = publicKey
-    const { signature } = await provider.signTransaction(transaction)
-    return { publicKey, signature } as Signature
+    if (!transaction.feePayer) transaction.feePayer = publicKey
+    return await provider.signTransaction(transaction)
+  }
+
+  signAllTransactions = async (
+    transactions: Transaction[],
+  ): Promise<Transaction[]> => {
+    const provider = await this.getProvider()
+    const address = await this.getAddress()
+    const publicKey = account.fromAddress(address)
+    transactions.forEach((transaction) => {
+      if (!transaction.feePayer) transaction.feePayer = publicKey
+    })
+    return await provider.signAllTransactions(transactions)
   }
 
   signMessage = async (message: string) => {

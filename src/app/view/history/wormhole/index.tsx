@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { account } from '@senswap/sen-js'
 
 import { Button, Col, Row, Table } from 'antd'
-import IonIcon from 'shared/antd/ionicon'
+import IonIcon from '@sentre/antd-ionicon'
 
 import { WORMHOLE_COLUMNS } from './column'
 import { AppDispatch, AppState } from 'app/model'
