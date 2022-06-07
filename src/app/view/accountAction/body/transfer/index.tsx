@@ -50,7 +50,6 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
       }
       // transfer splt
       const dstAssociatedAddr = await getDstAssociatedAddr()
-      console.log(dstAssociatedAddr)
       if (!dstAssociatedAddr) throw new Error('Invalid destination address')
       const { txId } = await splt.transfer(
         amountTransfer,
