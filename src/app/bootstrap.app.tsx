@@ -39,20 +39,4 @@ export const Page = () => {
   )
 }
 
-export const FrameWormhole = () => {
-  return (
-    <UIProvider appId={appId} antd>
-      <MintProvider>
-        <PoolProvider>
-          <AccountProvider>
-            <WalletProvider>
-              <Provider store={model}>
-                <WormHole />
-              </Provider>
-            </WalletProvider>
-          </AccountProvider>
-        </PoolProvider>
-      </MintProvider>
-    </UIProvider>
-  )
-}
+export * from 'app/static.app'
