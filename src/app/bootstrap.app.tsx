@@ -8,7 +8,6 @@ import {
 } from '@senhub/providers'
 
 import View from 'app/view'
-import WormHole from 'app/view/wormhole'
 
 import model from 'app/model'
 import configs from 'app/configs'
@@ -39,20 +38,4 @@ export const Page = () => {
   )
 }
 
-export const FrameWormhole = () => {
-  return (
-    <UIProvider appId={appId} antd>
-      <MintProvider>
-        <PoolProvider>
-          <AccountProvider>
-            <WalletProvider>
-              <Provider store={model}>
-                <WormHole />
-              </Provider>
-            </WalletProvider>
-          </AccountProvider>
-        </PoolProvider>
-      </MintProvider>
-    </UIProvider>
-  )
-}
+export * from 'app/static.app'
