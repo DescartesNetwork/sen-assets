@@ -60,7 +60,7 @@ const Search = ({
 
   return (
     <Row gutter={[16, 16]}>
-      <Col span={24}>
+      <Col flex="auto">
         <Input
           placeholder="Search"
           value={keyword}
@@ -79,6 +79,15 @@ const Search = ({
           }
           onChange={(e) => setKeyword(e.target.value)}
         />
+      </Col>
+      <Col>
+        <Button
+          type="primary"
+          size="large"
+          icon={<IonIcon name="paper-plane-outline" />}
+        >
+          Send
+        </Button>
       </Col>
     </Row>
   )

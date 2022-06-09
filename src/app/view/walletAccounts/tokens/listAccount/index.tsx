@@ -6,7 +6,7 @@ import { useMint, useWallet } from '@senhub/providers'
 
 import { Col, Row } from 'antd'
 import AccountCard from './accountCard'
-import Search from 'app/view/walletAccounts/search/search'
+import Search from 'app/view/walletAccounts/tokens/search/search'
 import Sol from './solCard'
 
 import { selectAccount } from 'app/model/account.controller'
@@ -52,7 +52,7 @@ const ListAccount = () => {
   }, [accountSelected, dispatch, wallet.address])
 
   return (
-    <Row gutter={[12, 12]}>
+    <Row gutter={[12, 12]} className="scrollbar">
       <Col span={24}>
         <Search onChange={onSearch} />
       </Col>
