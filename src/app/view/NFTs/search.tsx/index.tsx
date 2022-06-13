@@ -6,7 +6,7 @@ const Search = () => {
   const [keyword, setKeyword] = useState('')
   return (
     <Row gutter={[16, 16]}>
-      <Col flex="auto">
+      <Col flex="1 0">
         <Input
           placeholder="Search"
           value={keyword}
@@ -31,7 +31,6 @@ const Search = () => {
           type="primary"
           size="large"
           icon={<IonIcon name="paper-plane-outline" />}
-          style={{ fontSize: 18 }}
         >
           Send
         </Button>

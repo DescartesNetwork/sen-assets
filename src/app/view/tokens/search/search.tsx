@@ -60,7 +60,7 @@ const Search = ({
 
   return (
     <Row gutter={[16, 16]}>
-      <Col flex="auto">
+      <Col flex="1 0">
         <Input
           placeholder="Search"
           value={keyword}

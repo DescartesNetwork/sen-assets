@@ -6,7 +6,7 @@ import { useMint, useWallet } from '@senhub/providers'
 
 import { Col, Row } from 'antd'
 import AccountCard from './accountCard'
-import Search from 'app/view/walletAccounts/tokens/search/search'
+import Search from 'app/view/tokens/search/search'
 import Sol from './solCard'
 
 import { selectAccount } from 'app/model/account.controller'
