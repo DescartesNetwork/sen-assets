@@ -8,7 +8,7 @@ const NFTs = () => {
   return (
     <Row gutter={[24, 24]} justify="center" align="middle">
       <Col xs={24} md={16} lg={16} xl={12} xxl={12}>
-        <Card className="card-page card-sen-assets">
+        <Card className="card-page">
           {/* Header */}
           <Row gutter={[24, 24]}>
             <Col flex="auto">

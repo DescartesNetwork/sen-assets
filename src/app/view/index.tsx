@@ -48,7 +48,7 @@ const View = () => {
           onClose={onClose}
           closable={true}
           visible={isToggled}
-          width={300}
+          width={338}
         >
           <SideBar />
         </Drawer>
@@ -60,7 +60,7 @@ const View = () => {
           onBreakpoint={(broken) => {
             setToggled(broken)
           }}
-          width={300}
+          width={338}
           theme={theme}
           className="sidebar"
           style={{ background: 'unset' }}
