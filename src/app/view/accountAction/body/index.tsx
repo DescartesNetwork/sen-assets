@@ -25,7 +25,7 @@ const Body = () => {
   return (
     <Card
       bordered={false}
-      style={{ marginTop: -20, boxShadow: 'none' }}
+      style={{ boxShadow: 'none' }}
       bodyStyle={{ padding: 0 }}
     >
       <Tabs

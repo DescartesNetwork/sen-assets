@@ -4,9 +4,10 @@ import { AccountData } from '@senswap/sen-js'
 import LazyLoad from '@sentre/react-lazyload'
 import { useMint, useWallet } from '@senhub/providers'
 
-import { Col, Row } from 'antd'
+import { Col, Row, Modal } from 'antd'
 import AccountCard from './accountCard'
 import Search from 'app/view/tokens/search/search'
+import Balance from 'app/view/accountAction'
 import Sol from './solCard'
 
 import { selectAccount } from 'app/model/account.controller'
@@ -23,6 +24,7 @@ const ListAccount = () => {
   const { tokenProvider } = useMint()
   const { wallet } = useWallet()
   const [listAccount, setListAccount] = useState<string[]>([])
+  const [visible, setVisible] = useState(false)
 
   const onSearch = useCallback(
     async (accounts: Record<string, AccountData>) => {
@@ -68,11 +70,27 @@ const ListAccount = () => {
             <AccountCard
               accountAddr={address}
               active={accountSelected === address}
-              onClick={(account) => dispatch(selectAccount({ account }))}
+              onClick={(account) => {
+                dispatch(selectAccount({ account }))
+                setVisible(true)
+              }}
             />
           </LazyLoad>
         </Col>
       ))}
+      <Modal
+        visible={visible}
+        footer={false}
+        onCancel={() => setVisible(false)}
+        maskClosable={true}
+        centered
+        className="modal-sen-assets"
+        bodyStyle={{
+          borderRadius: '16px',
+        }}
+      >
+        <Balance />
+      </Modal>
     </Row>
   )
 }

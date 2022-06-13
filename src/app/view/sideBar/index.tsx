@@ -11,7 +11,7 @@ const SideBar = () => {
   return (
     <Card
       bordered={false}
-      style={{ height: '100%' }}
+      style={{ height: '100%', boxShadow: 'none' }}
       bodyStyle={{ height: '100%' }}
       className="sidebar-card card-sen-assets"
     >
