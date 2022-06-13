@@ -13,7 +13,7 @@ const SideBar = () => {
       bordered={false}
       style={{ height: '100%' }}
       bodyStyle={{ height: '100%' }}
-      className="card-sen-assets"
+      className="sidebar-card card-sen-assets"
     >
       <Row gutter={[24, 24]} style={{ height: '100%' }} justify="space-between">
         <Col span={24}>
@@ -21,6 +21,7 @@ const SideBar = () => {
             mode="inline"
             style={{ border: 'none', fontSize: '16px' }}
             defaultSelectedKeys={[location.pathname]}
+            className="sidebar-menu"
           >
             {menuList.map((item) => (
               <Menu.Item style={{ padding: '24px' }} key={item.path}>
