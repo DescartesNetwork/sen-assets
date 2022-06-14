@@ -41,7 +41,7 @@ const View = () => {
   }, [])
 
   return (
-    <Layout hasSider style={{ height: '90vh' }}>
+    <Layout style={{ height: '90vh' }}>
       {isMobile ? (
         <Drawer
           placement="right"
@@ -49,6 +49,7 @@ const View = () => {
           closable={true}
           visible={isToggled}
           width={338}
+          bodyStyle={{ padding: 0 }}
         >
           <SideBar />
         </Drawer>
@@ -62,6 +63,7 @@ const View = () => {
           }}
           width={338}
           theme={theme}
+          trigger={null}
           className="sidebar"
           style={{ background: 'unset' }}
         >

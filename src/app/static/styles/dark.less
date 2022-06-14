@@ -29,14 +29,14 @@
 @typography-title-margin-bottom: 0px;
 
 // Border
-@border-radius-base: 16px;
+@border-radius-base: 8px;
 @border-color-base: @NEUTRAL80;
 @border-width-base: 1px;
 @border-color-split: @border-color-base;
 @popover-customize-border-color: @border-color-base;
 
 // Card
-@card-radius: @border-radius-base;
+@card-radius: @border-radius-base * 2;
 @card-actions-background: @NEUTRAL100;
 @card-background: @NEUTRAL100;
 @card-shadow: @DARK_SHADOW2;
@@ -58,7 +58,6 @@
 @btn-default-border: @NEUTRAL80;
 @btn-default-ghost-color: @NEUTRAL10;
 @btn-default-ghost-border: @NEUTRAL10;
-@btn-border-radius-base: @border-radius-base - 8;
 
 // Input
 @input-placeholder-color: @NEUTRAL40;
@@ -91,5 +90,5 @@
 }
 
 .card-cleanup {
-  background: #2c2e3d;
+  background: #2c2e3d !important;
 }
