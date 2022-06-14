@@ -1,74 +1,56 @@
-import { Row, Col, Card, Typography, Button, Image, Space } from 'antd'
+import { useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
+import { Row, Col, Card, Typography, Button, Space } from 'antd'
+import CardNFT from '../cardNFT'
+import Back from './back'
+import CardAttributes from './cardAttributes'
+import CardDescription from './cardDescription'
 
 import configs from 'app/configs'
-
-import IMAGE_DEFAULT from 'app/static/images/avatar.png'
+import useNftMetaData from 'app/hooks/useNftMetaData'
 
 const {
   sol: { metaplexNFT },
 } = configs
 
 const DetailsNFT = () => {
-  const getData = async () => {
-    const data = await metaplexNFT.getNftMetadata(
-      '31jFWVzitgoLzLv2akLitidPNVm4Q4iedcWtDzFowXck',
-    )
-    console.log('data:', data)
-  }
+  let { mintNFT } = useParams<{ mintNFT: string }>()
+  const { metadata, nftInfo } = useNftMetaData(mintNFT)
+  const metadataData = metadata?.data.data
+
+  console.log('metadata: ', metadata, nftInfo)
   return (
     <Row gutter={[24, 24]} justify="center" align="middle">
-      <Col xs={24} md={16} lg={16} xl={12} xxl={12}>
-        <Card className="card-page card-sen-assets scrollbar">
-          {/* Header */}
-          <Row>
-            <Col span={24} style={{ textAlign: 'center' }} onClick={getData}>
-              <Typography.Title level={3}>Okay Bear #3690</Typography.Title>
-            </Col>
-            <Col span={24}>
-              <Row gutter={[24, 24]}>
-                <Col span={8}>
-                  <Space size={12} direction="vertical">
-                    <Image
-                      src={IMAGE_DEFAULT}
-                      preview={false}
-                      style={{ borderRadius: 4 }}
-                    />
-                    <Button type="primary" block>
-                      Send
-                    </Button>
-                  </Space>
-                </Col>
-                <Col span={16}>
-                  <Row gutter={[24, 24]}>
-                    <Col span={24}>
-                      <Card bordered={false} style={{ height: '200px' }}>
-                        <Row>
-                          <Col flex="auto">
-                            <Typography.Title level={4}>
-                              Attributes
-                            </Typography.Title>
-                          </Col>
-                        </Row>
-                      </Card>
-                    </Col>
-                    <Col span={24}>
-                      <Card bordered={false} style={{ height: '200px' }}>
-                        <Row>
-                          <Col flex="auto">
-                            <Typography.Title level={4}>
-                              Description
-                            </Typography.Title>
-                          </Col>
-                        </Row>
-                      </Card>
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </Card>
-      </Col>
+      <Card className="card-page card-sen-assets scrollbar">
+        <Row gutter={[24, 24]} justify="center">
+          <Col span={8}>
+            <Space direction="vertical" size={8}>
+              <Back />
+              <Space size={12} direction="vertical">
+                <CardNFT mintAddress={mintNFT} isShowName={false} />
+                <Button type="primary" block>
+                  Send
+                </Button>
+              </Space>
+            </Space>
+          </Col>
+          <Col span={16}>
+            <Row gutter={[8, 8]}>
+              <Col span={24}>
+                <Typography.Title level={3}>
+                  {metadataData?.name}
+                </Typography.Title>
+              </Col>
+              <Col span={24}>
+                <CardAttributes mintNFT={mintNFT} />
+              </Col>
+              <Col span={24}>
+                <CardDescription />
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Card>
     </Row>
   )
 }

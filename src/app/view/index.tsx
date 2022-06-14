@@ -12,6 +12,7 @@ import SideBar from './sideBar'
 import NFTs from './NFTs/index'
 import Tokens from './tokens'
 import configs from 'app/configs'
+import DetailsNFT from './NFTs/detailsNFT'
 
 let timeOutForceCheck: NodeJS.Timeout
 
@@ -25,7 +26,7 @@ const View = () => {
   const {
     ui: { width, theme },
   } = useUI()
-  const isMobile = width < 768
+  const isMobile = width < 992
   const [isToggled, setToggled] = useState(false)
 
   const onToggle = () => setToggled(!isToggled)
@@ -76,26 +77,32 @@ const View = () => {
           <Switch>
             <Route
               exact
-              path={`/app/${appId}/`}
-              render={() => <Redirect to={`/app/${appId}/token-asset`} />}
+              path={`/app/${appId}/token-asset`}
+              component={Tokens}
             />
-            <Route exact path={`/app/${appId}/token-asset`}>
-              <Tokens />
-            </Route>
-            <Route exact path={`/app/${appId}/nft-asset`}>
-              <NFTs />
-            </Route>
-            <Route exact path={`/app/${appId}/portal-bridge`}>
-              <WormHole />
-            </Route>
+            <Route exact path={`/app/${appId}/nft-asset`} component={NFTs} />
+            <Route
+              exact
+              path={`/app/${appId}/portal-bridge`}
+              component={WormHole}
+            />
+            <Route
+              exact
+              path={`/app/${appId}/nft-asset/:mintNFT`}
+              component={DetailsNFT}
+            />
+            <Redirect from="*" to={`/app/${appId}/token-asset`} />
           </Switch>
         </Content>
       </Layout>
-      <div className="fixed-widgets">
-        <div onClick={onToggle}>
-          <Avatar icon={<IonIcon name="list-outline"></IonIcon>} />
+
+      {isMobile && (
+        <div className="fixed-widgets">
+          <div onClick={onToggle}>
+            <Avatar icon={<IonIcon name="list-outline" />} />
+          </div>
         </div>
-      </div>
+      )}
     </Layout>
   )
 }

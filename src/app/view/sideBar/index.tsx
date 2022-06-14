@@ -20,7 +20,7 @@ const SideBar = () => {
           <Menu
             mode="inline"
             style={{ border: 'none', fontSize: '16px' }}
-            defaultSelectedKeys={[location.pathname]}
+            selectedKeys={[location.pathname]}
             className="sidebar-menu"
           >
             {menuList.map((item) => (

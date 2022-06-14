@@ -4,6 +4,7 @@
 
 .card-page {
   height: 580px;
+  max-width: 750px;
   overflow: auto;
 }
 
@@ -128,7 +129,15 @@
   }
 }
 
-.preferably-square {
-  // width: 300px;
-  aspect-ratio: auto 1 / 1;
+.square {
+  width: auto;
+  height: 100%;
+  aspect-ratio: 1; /* will make width equal to height (100px container) */
+  object-fit: cover; /* use the one you need */
+}
+
+.nft-card-item-attribute {
+  background: rgba(249, 87, 94, 0.1) !important;
+  border: 1px solid #f9575e !important;
+  border-radius: 12px;
 }
