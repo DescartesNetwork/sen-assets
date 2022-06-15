@@ -7,13 +7,15 @@ export type Attribute = {
   value: string
 }
 
-const ItemAttribute = () => {
+const ItemAttribute = ({ attribute }: { attribute: Attribute }) => {
   return (
     <Card className="nft-card-item-attribute" bodyStyle={{ padding: 12 }}>
       <Space direction="vertical" style={{ width: '100%' }} align="center">
-        <Typography.Text style={{ fontSize: 12 }}>BACKGROUND</Typography.Text>
+        <Typography.Text style={{ fontSize: 12 }}>
+          {attribute.trait_type}
+        </Typography.Text>
         <Typography.Text style={{ fontSize: 14 }} strong>
-          Black
+          {attribute.value}
         </Typography.Text>
         {/* <Typography.Text type="secondary">12% have this trait</Typography.Text> */}
       </Space>
@@ -21,14 +23,8 @@ const ItemAttribute = () => {
   )
 }
 
-type CardAttributesProps = {
-  listAttribute: Attribute[]
-}
-
 const CardAttributes = ({ mintNFT }: { mintNFT: string }) => {
-  const { metadata, nftInfo } = useNftMetaData(mintNFT)
-  if (!metadata) return null
-  console.log('CardAttributes', metadata, nftInfo)
+  const { nftInfo } = useNftMetaData(mintNFT)
   return (
     <Card className="card-cleanup" bordered={false}>
       <Row gutter={[0, 24]}>
@@ -40,11 +36,11 @@ const CardAttributes = ({ mintNFT }: { mintNFT: string }) => {
         </Col>
         <Col span={24}>
           <Row gutter={[24, 24]}>
-            {/* {listAttribute.map((item) => (
-              <Col>
-                <ItemAttribute />
+            {nftInfo?.attributes?.map((item: Attribute, index: number) => (
+              <Col key={index}>
+                <ItemAttribute attribute={item} />
               </Col>
-            ))} */}
+            ))}
           </Row>
         </Col>
       </Row>

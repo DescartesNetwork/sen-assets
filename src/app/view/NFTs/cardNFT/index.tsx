@@ -10,12 +10,14 @@ export type CardNFTProps = {
   mintAddress: string
   onSelect?: (mintAddress: string) => void
   isShowName?: boolean
+  size?: number
 }
 
 const CardNFT = ({
   mintAddress,
   onSelect,
   isShowName = true,
+  size,
 }: CardNFTProps) => {
   const [nftImg, setNftImg] = useState('')
   const [loading, setLoading] = useState(false)
@@ -50,7 +52,10 @@ const CardNFT = ({
         style={{ cursor: 'pointer' }}
         onClick={() => (onSelect ? onSelect(mintAddress) : null)}
       >
-        <Col span={24} style={{ textAlign: 'center' }}>
+        <Col
+          span={24}
+          style={{ textAlign: 'center', width: size || undefined }}
+        >
           <Image
             className="square"
             src={nftImg}

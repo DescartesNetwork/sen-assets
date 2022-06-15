@@ -1,7 +1,14 @@
 import IonIcon from '@sentre/antd-ionicon'
 import { Card, Row, Col, Space, Typography } from 'antd'
+import useNftMetaData from 'app/hooks/useNftMetaData'
 
-const CardDescription = () => {
+type CardDescriptionProps = {
+  mintNFT: string
+}
+
+const CardDescription = ({ mintNFT }: CardDescriptionProps) => {
+  const { nftInfo } = useNftMetaData(mintNFT)
+  console.log('CardDescription: ', nftInfo)
   return (
     <Card className="card-cleanup" bordered={false} style={{ height: '200px' }}>
       <Row gutter={[0, 24]}>
@@ -12,11 +19,7 @@ const CardDescription = () => {
           </Space>
         </Col>
         <Col span={24}>
-          <Typography.Text>
-            Okay Bears is a culture shift. A clean collection of 10,000 diverse
-            bears building a virtuous community that will transcend the internet
-            into the real world.
-          </Typography.Text>
+          <Typography.Text>{nftInfo?.description}</Typography.Text>
         </Col>
       </Row>
     </Card>
