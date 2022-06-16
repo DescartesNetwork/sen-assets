@@ -1,4 +1,4 @@
-import { ChangeEvent, Fragment, useEffect, useState } from 'react'
+import { ChangeEvent, Fragment, useEffect, useMemo, useState } from 'react'
 import { isAddress } from '@sentre/utility'
 import BN from 'bn.js'
 
@@ -14,15 +14,7 @@ const {
   sol: { utility },
 } = configs
 
-type ModalSendNFTProps = {
-  isMultiSelect: boolean
-  mintNFT?: string
-}
-
-const SendMultiNFTs = ({
-  isMultiSelect = false,
-  mintNFT = '',
-}: ModalSendNFTProps) => {
+const SendMultiNFTs = () => {
   const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
   const [receiverAddress, setReceiverAddress] = useState('')
@@ -37,6 +29,17 @@ const SendMultiNFTs = ({
   const onCloseModal = () => {
     setVisible(false)
   }
+
+  const totalNftSelected = Object.values(listNFTsSelected).reduce(
+    (total, value) => {
+      if (value) return total + 1
+      return total
+    },
+    0,
+  )
+
+  console.log('totalNftSelected: ', totalNftSelected)
+
   const onSend = async () => {
     if (!isAddress(receiverAddress))
       return window.notify({
@@ -73,8 +76,9 @@ const SendMultiNFTs = ({
   }
 
   const onChooseNFT = (mintAddress: string, isChecked: boolean) => {
+    let nftsSelected = JSON.parse(JSON.stringify(listNFTsSelected))
     setListNFTsSelected(
-      Object.assign(listNFTsSelected, { [mintAddress]: isChecked }),
+      Object.assign(nftsSelected, { [mintAddress]: isChecked }),
     )
   }
 
@@ -107,7 +111,9 @@ const SendMultiNFTs = ({
             />
           </Col>
           <Col span={24} style={{ textAlign: 'center' }}>
-            <Typography.Text>You have selected 1 NFT</Typography.Text>
+            <Typography.Text>
+              You have selected {totalNftSelected} NFT
+            </Typography.Text>
           </Col>
           <Col span={24}>
             <Row

@@ -42,7 +42,7 @@ const CardSendNFT = ({
   mintNFT,
   isSendOneNFT = true,
   onSelect,
-  isChecked,
+  isChecked = false,
 }: CardSendNFTProps) => {
   const { nftInfo } = useNftMetaData(mintNFT)
 
@@ -54,7 +54,7 @@ const CardSendNFT = ({
     <Row gutter={[24, 24]} align="middle">
       {!isSendOneNFT && (
         <Col>
-          <Checkbox value={isChecked} onChange={onChange} />
+          <Checkbox checked={isChecked} onChange={onChange} />
         </Col>
       )}
       <Col>

@@ -73,10 +73,7 @@ const ModalSendOneNFT = ({ mintNFT }: ModalSendNFTProps) => {
               }}
             />
           </Col>
-          <Col span={24} style={{ textAlign: 'center' }}>
-            <Typography.Text>You have selected 1 NFT</Typography.Text>
-          </Col>
-          <Col span={24}>
+          <Col span={24} style={{ margin: 10 }}>
             <CardSendNFT mintNFT={mintNFT} />
           </Col>
           <Col span={24}>

@@ -28,7 +28,7 @@ const Search = () => {
         />
       </Col>
       <Col>
-        <ModalSendMultiNFTs isMultiSelect={true} />
+        <ModalSendMultiNFTs />
       </Col>
     </Row>
   )
