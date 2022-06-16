@@ -1,5 +1,5 @@
 import { Row, Col, Card, Typography } from 'antd'
-import Settings from '../tokens/settings'
+import Settings from './settings'
 
 import ListNFTs from './listNFTs'
 import Search from './search.tsx'

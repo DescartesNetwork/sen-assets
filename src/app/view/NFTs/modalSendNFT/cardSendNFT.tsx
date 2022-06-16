@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { Row, Col, Checkbox, Space, Typography } from 'antd'
 import { asyncWait, shortenAddress } from 'shared/util'
 import CardNFT from '../cardNFT'
+import useNftMetaData from 'app/hooks/useNftMetaData'
+import { CheckboxChangeEvent } from 'antd/lib/checkbox'
 
 const Address = ({ address }: { address: string }) => {
   const [copied, setCopied] = useState(false)
@@ -31,15 +33,28 @@ const Address = ({ address }: { address: string }) => {
 
 type CardSendNFTProps = {
   mintNFT: string
-  isSelected?: boolean
+  isSendOneNFT?: boolean
+  onSelect?: (mintAddress: string, isChecked: boolean) => void
+  isChecked?: boolean
 }
 
-const CardSendNFT = ({ mintNFT, isSelected = false }: CardSendNFTProps) => {
+const CardSendNFT = ({
+  mintNFT,
+  isSendOneNFT = true,
+  onSelect,
+  isChecked,
+}: CardSendNFTProps) => {
+  const { nftInfo } = useNftMetaData(mintNFT)
+
+  const onChange = (e: CheckboxChangeEvent) => {
+    if (onSelect) onSelect(mintNFT, e.target.checked)
+  }
+
   return (
     <Row gutter={[24, 24]} align="middle">
-      {isSelected && (
+      {!isSendOneNFT && (
         <Col>
-          <Checkbox />
+          <Checkbox value={isChecked} onChange={onChange} />
         </Col>
       )}
       <Col>
@@ -47,8 +62,8 @@ const CardSendNFT = ({ mintNFT, isSelected = false }: CardSendNFTProps) => {
       </Col>
       <Col flex="auto">
         <Space size={4} direction="vertical">
-          <Typography.Text>UKC1</Typography.Text>
-          <Typography.Text type="danger">Okay Bears</Typography.Text>
+          <Typography.Text>{nftInfo?.symbol || ''}</Typography.Text>
+          <Typography.Text type="danger">{nftInfo?.name || ''}</Typography.Text>
         </Space>
       </Col>
       <Col>

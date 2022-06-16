@@ -7,14 +7,13 @@ import CardAttributes from './cardAttributes'
 import CardDescription from './cardDescription'
 import useNftMetaData from 'app/hooks/useNftMetaData'
 import Logo from './logo'
-import ModalSendNFT from '../modalSendNFT'
+import ModalSendOneNFT from '../modalSendNFT/modalSendOneNFT'
 
 const DetailsNFT = () => {
   let { mintNFT } = useParams<{ mintNFT: string }>()
-  const { metadata, nftInfo } = useNftMetaData(mintNFT)
+  const { metadata } = useNftMetaData(mintNFT)
   const metadataData = metadata?.data.data
 
-  console.log('metadata: ', metadata, nftInfo, metadata?.info.owner.toBase58())
   return (
     <Row gutter={[24, 24]} justify="center" align="middle">
       <Card className="card-page card-sen-assets scrollbar">
@@ -24,7 +23,7 @@ const DetailsNFT = () => {
               <Back />
               <Space size={12} direction="vertical">
                 <CardNFT mintAddress={mintNFT} isShowName={false} />
-                <ModalSendNFT mintNFT={mintNFT} />
+                <ModalSendOneNFT mintNFT={mintNFT} />
               </Space>
             </Space>
           </Col>

@@ -15,13 +15,15 @@ type ModalSendNFTProps = {
   mintNFT: string
 }
 
-const ModalSendNFT = ({ mintNFT }: ModalSendNFTProps) => {
+const ModalSendOneNFT = ({ mintNFT }: ModalSendNFTProps) => {
   const [visible, setVisible] = useState(false)
   const [loading, setLoading] = useState(false)
   const [receiverAddress, setReceiverAddress] = useState('')
+
   const onCloseModal = () => {
     setVisible(false)
   }
+
   const onSend = async () => {
     if (!isAddress(receiverAddress))
       return window.notify({
@@ -35,6 +37,7 @@ const ModalSendNFT = ({ mintNFT }: ModalSendNFTProps) => {
         tokenAddress: mintNFT,
         dstWalletAddress: receiverAddress,
       })
+      setVisible(false)
       return window.notify({
         type: 'success',
         description: 'Transfer success!',
@@ -46,6 +49,7 @@ const ModalSendNFT = ({ mintNFT }: ModalSendNFTProps) => {
       return setLoading(false)
     }
   }
+
   return (
     <Fragment>
       <Button type="primary" block onClick={() => setVisible(true)}>
@@ -63,7 +67,7 @@ const ModalSendNFT = ({ mintNFT }: ModalSendNFTProps) => {
           <Col span={24}>
             <Input
               size="large"
-              placeholder="Recipient’s NFT address..."
+              placeholder="Recipient’s wallet address..."
               onChange={(e: ChangeEvent<HTMLInputElement>) => {
                 setReceiverAddress(e.target.value)
               }}
@@ -76,7 +80,7 @@ const ModalSendNFT = ({ mintNFT }: ModalSendNFTProps) => {
             <CardSendNFT mintNFT={mintNFT} />
           </Col>
           <Col span={24}>
-            <Button type="primary" block onClick={onSend}>
+            <Button type="primary" block onClick={onSend} loading={loading}>
               Send
             </Button>
           </Col>
@@ -86,4 +90,4 @@ const ModalSendNFT = ({ mintNFT }: ModalSendNFTProps) => {
   )
 }
 
-export default ModalSendNFT
+export default ModalSendOneNFT

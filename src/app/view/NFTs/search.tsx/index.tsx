@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Row, Col, Input, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
+import ModalSendMultiNFTs from '../modalSendNFT/modalSendMultiNFTs'
 
 const Search = () => {
   const [keyword, setKeyword] = useState('')
@@ -27,13 +28,7 @@ const Search = () => {
         />
       </Col>
       <Col>
-        <Button
-          type="primary"
-          size="large"
-          icon={<IonIcon name="paper-plane-outline" />}
-        >
-          Send
-        </Button>
+        <ModalSendMultiNFTs isMultiSelect={true} />
       </Col>
     </Row>
   )

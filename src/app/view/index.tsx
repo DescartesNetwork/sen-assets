@@ -42,7 +42,7 @@ const View = () => {
   }, [])
 
   return (
-    <Layout style={{ height: '90vh' }}>
+    <Layout style={{ height: '88vh', paddingBottom: '10px' }}>
       {isMobile ? (
         <Drawer
           placement="right"
@@ -73,7 +73,7 @@ const View = () => {
       )}
 
       <Layout className="site-layout">
-        <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
+        <Content style={{ overflow: 'initial' }}>
           <Switch>
             <Route
               exact

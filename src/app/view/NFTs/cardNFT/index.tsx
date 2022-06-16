@@ -3,7 +3,7 @@ import axios from 'axios'
 
 import { Row, Col, Typography, Image, Spin } from 'antd'
 
-import IMAGE_DEFAULT from 'app/static/images/avatar.png'
+import IMAGE_DEFAULT from 'app/static/images/nft.jpeg'
 import useNftMetaData from 'app/hooks/useNftMetaData'
 
 export type CardNFTProps = {

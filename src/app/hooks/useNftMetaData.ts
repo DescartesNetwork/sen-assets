@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { account } from '@senswap/sen-js'
 import axios from 'axios'
 
 import { MetadataType } from 'app/lib/metaplex'
@@ -13,6 +14,7 @@ const useNftMetaData = (mintAddress: string) => {
   const [nftInfo, setNftInfo] = useState<any>()
 
   const getMetaData = useCallback(async () => {
+    if (!account.isAddress(mintAddress)) return
     const metadata = await metaplexNFT.getNftMetadata(mintAddress)
     setMetaData(metadata)
     const url = metadata.data.data.uri
