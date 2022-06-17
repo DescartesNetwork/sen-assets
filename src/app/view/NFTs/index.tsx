@@ -3,8 +3,11 @@ import Settings from './settings'
 
 import ListNFTs from './listNFTs'
 import Search from './search.tsx'
+import { useState } from 'react'
 
 const NFTs = () => {
+  const [searchText, setSearchText] = useState<string>('')
+
   return (
     <Row gutter={[24, 24]} justify="center" align="middle">
       <Card className="card-page">
@@ -20,10 +23,13 @@ const NFTs = () => {
           <Col span={24}>
             <Row gutter={[12, 12]}>
               <Col span={24}>
-                <Search />
+                <Search
+                  searchText={searchText}
+                  onSearch={(value) => setSearchText(value)}
+                />
               </Col>
               <Col span={24}>
-                <ListNFTs />
+                <ListNFTs searchText={searchText} />
               </Col>
             </Row>
           </Col>

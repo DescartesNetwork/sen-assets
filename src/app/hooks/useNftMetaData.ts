@@ -14,12 +14,20 @@ const useNftMetaData = (mintAddress: string) => {
   const [nftInfo, setNftInfo] = useState<any>()
 
   const getMetaData = useCallback(async () => {
-    if (!account.isAddress(mintAddress)) return
-    const metadata = await metaplexNFT.getNftMetadata(mintAddress)
-    setMetaData(metadata)
-    const url = metadata.data.data.uri
-    const response = await axios.get(url)
-    setNftInfo(response.data)
+    if (!account.isAddress(mintAddress)) {
+      setMetaData(undefined)
+      return setNftInfo(undefined)
+    }
+    try {
+      const metadata = await metaplexNFT.getNftMetadata(mintAddress)
+      setMetaData(metadata)
+      const url = metadata.data.data.uri
+      const response = await axios.get(url)
+      setNftInfo(response.data)
+    } catch (error: any) {
+      setMetaData(undefined)
+      setNftInfo(undefined)
+    }
   }, [mintAddress])
 
   useEffect(() => {

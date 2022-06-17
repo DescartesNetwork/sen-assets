@@ -1,4 +1,4 @@
-import { ChangeEvent, Fragment, useEffect, useMemo, useState } from 'react'
+import { ChangeEvent, Fragment, useState } from 'react'
 import { isAddress } from '@sentre/utility'
 import BN from 'bn.js'
 
@@ -38,8 +38,6 @@ const SendMultiNFTs = () => {
     0,
   )
 
-  console.log('totalNftSelected: ', totalNftSelected)
-
   const onSend = async () => {
     if (!isAddress(receiverAddress))
       return window.notify({
@@ -47,7 +45,6 @@ const SendMultiNFTs = () => {
         description: 'Invalid mint address',
       })
 
-    console.log('mintNFT', listNFTsSelected)
     for (const mintNFT in listNFTsSelected) {
       if (!listNFTsSelected[mintNFT]) continue
       setLoading(true)

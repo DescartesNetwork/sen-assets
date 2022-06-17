@@ -1,30 +1,35 @@
-import { useState } from 'react'
 import { Row, Col, Input, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import ModalSendMultiNFTs from '../modalSendNFT/modalSendMultiNFTs'
 
-const Search = () => {
-  const [keyword, setKeyword] = useState('')
+type SearchProps = {
+  onSearch: (keyword: string) => void
+  searchText: string
+}
+
+const Search = ({ onSearch, searchText }: SearchProps) => {
   return (
     <Row gutter={[16, 16]}>
       <Col flex="1 0">
         <Input
           placeholder="Search"
-          value={keyword}
           size="large"
           style={{ background: 'transparent' }}
+          value={searchText}
           prefix={
             <Button
               type="text"
               style={{ marginLeft: -7 }}
               size="small"
-              onClick={keyword ? () => setKeyword('') : () => {}}
+              onClick={searchText ? () => onSearch('') : () => {}}
               icon={
-                <IonIcon name={keyword ? 'close-outline' : 'search-outline'} />
+                <IonIcon
+                  name={searchText ? 'close-outline' : 'search-outline'}
+                />
               }
             />
           }
-          onChange={(e) => setKeyword(e.target.value)}
+          onChange={(e) => onSearch(e.target.value)}
         />
       </Col>
       <Col>

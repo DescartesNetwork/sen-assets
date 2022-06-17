@@ -1,35 +1,47 @@
-import { useHistory } from 'react-router-dom'
-import LazyLoad from '@sentre/react-lazyload'
-
-import { Row, Col, Empty } from 'antd'
-import CardNFT from '../cardNFT'
-
-import useOwnerNFT from 'app/hooks/useOwnerNFT'
+import { useMemo } from 'react'
 import { useWallet } from '@senhub/providers'
-import configs from 'app/configs'
+import { useHistory } from 'react-router-dom'
 
+import { Col, Empty, Row } from 'antd'
+import useOwnerNFT from 'app/hooks/useOwnerNFT'
+
+import CardNFT from '../cardNFT'
+import configs from 'app/configs'
+import SearchEngine from './searchEngine'
+
+type ListNFTsProps = {
+  searchText: string
+}
 const {
   manifest: { appId },
 } = configs
 const nftPath = '/app/' + appId + '/nft-asset'
 
-const ListNFTs = () => {
+const ListNFTs = ({ searchText }: ListNFTsProps) => {
   const {
     wallet: { address: walletAddress },
   } = useWallet()
   const { nfts } = useOwnerNFT(walletAddress)
   const history = useHistory()
+
   const onSelectNFT = (mintAddress: string) => {
     history.push(`${nftPath}/${mintAddress}`)
   }
+
+  const filteredList = useMemo(() => {
+    if (!nfts) return []
+    if (!searchText.length) return nfts
+    const engine = new SearchEngine(nfts)
+    const filtered = engine.search(searchText)
+    return filtered
+  }, [nfts, searchText])
+
   return (
     <Row gutter={[24, 24]} className="scrollbar" style={{ height: 400 }}>
-      {nfts?.length ? (
-        nfts.map((nft) => (
+      {filteredList?.length ? (
+        filteredList.map((nft) => (
           <Col xs={12} md={6} style={{ textAlign: 'center' }} key={nft.mint}>
-            <LazyLoad height={100}>
-              <CardNFT mintAddress={nft.mint} onSelect={onSelectNFT} />
-            </LazyLoad>
+            <CardNFT mintAddress={nft.mint} onSelect={onSelectNFT} />
           </Col>
         ))
       ) : (
