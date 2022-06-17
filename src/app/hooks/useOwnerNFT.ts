@@ -4,6 +4,7 @@ import { useAccount } from '@senhub/providers'
 import { MetadataDataType } from 'app/lib/metaplex'
 import configs from 'app/configs'
 import { BN } from 'bn.js'
+import { DataLoader } from 'shared/dataloader'
 
 const {
   sol: { metaplexNFT },
@@ -16,7 +17,11 @@ const useOwnerNFT = (ownerPublickey: string) => {
 
   const fetchNFTs = useCallback(async () => {
     if (!ownerPublickey) return setNfts([])
-    const nftsFetching = await metaplexNFT.findDataByOwner(ownerPublickey)
+    const nftsFetching = await DataLoader.load(
+      'findDataByOwner' + ownerPublickey,
+      () => metaplexNFT.findDataByOwner(ownerPublickey),
+      { cache: { ttl: 99999999 } },
+    )
     setNfts(nftsFetching)
   }, [ownerPublickey])
 

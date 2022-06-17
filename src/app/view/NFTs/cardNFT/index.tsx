@@ -1,6 +1,3 @@
-import { useCallback, useEffect, useState } from 'react'
-import axios from 'axios'
-
 import { Row, Col, Typography, Image, Spin } from 'antd'
 
 import IMAGE_DEFAULT from 'app/static/images/nft.jpeg'
@@ -19,31 +16,8 @@ const CardNFT = ({
   isShowName = true,
   size,
 }: CardNFTProps) => {
-  const [nftImg, setNftImg] = useState('')
-  const [loading, setLoading] = useState(false)
-  const { metadata } = useNftMetaData(mintAddress)
+  const { metadata, loading, nftInfo } = useNftMetaData(mintAddress)
   const metadataData = metadata?.data.data
-
-  const getNftInfoFromURI = useCallback(async () => {
-    if (!metadata) return setNftImg(IMAGE_DEFAULT)
-    try {
-      setLoading(true)
-      const url = metadata.data.data.uri
-      if (!url) return setNftImg(IMAGE_DEFAULT)
-
-      const response = await axios.get(url)
-      const img = response.data.image
-      return setNftImg(img)
-    } catch (er: any) {
-      return window.notify({ type: 'error', description: er.message })
-    } finally {
-      setLoading(false)
-    }
-  }, [metadata])
-
-  useEffect(() => {
-    getNftInfoFromURI()
-  }, [getNftInfoFromURI])
 
   return (
     <Spin spinning={loading}>
@@ -58,7 +32,7 @@ const CardNFT = ({
         >
           <Image
             className="square"
-            src={nftImg}
+            src={nftInfo?.image || IMAGE_DEFAULT}
             preview={false}
             style={{ borderRadius: 4 }}
           />
