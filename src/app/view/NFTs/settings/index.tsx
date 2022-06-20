@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 
-import { Row, Col, Space, Popover, Typography, Switch } from 'antd'
+import { Row, Col, Space, Popover, Typography, Switch, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
 import { AppDispatch, AppState } from 'app/model'
@@ -34,7 +34,10 @@ const Settings = () => {
       trigger="click"
       placement="topRight"
     >
-      <IonIcon style={{ cursor: 'pointer' }} name="cog-outline" />
+      <Button
+        size="large"
+        icon={<IonIcon style={{ cursor: 'pointer' }} name="cog-outline" />}
+      />
     </Popover>
   )
 }

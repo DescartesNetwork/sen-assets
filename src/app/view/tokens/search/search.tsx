@@ -7,6 +7,7 @@ import { Row, Col, Input, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
 import { AppState } from 'app/model'
+import ModalSendToken from '../modalSendToken'
 
 const KEY_SIZE = 2
 
@@ -81,13 +82,7 @@ const Search = ({
         />
       </Col>
       <Col>
-        <Button
-          type="primary"
-          size="large"
-          icon={<IonIcon name="paper-plane-outline" />}
-        >
-          Send
-        </Button>
+        <ModalSendToken />
       </Col>
     </Row>
   )

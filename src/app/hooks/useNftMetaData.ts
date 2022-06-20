@@ -5,7 +5,6 @@ import axios from 'axios'
 import { MetadataType } from 'app/lib/metaplex'
 import configs from 'app/configs'
 import { DataLoader } from 'shared/dataloader'
-import { useSelector } from 'react-redux'
 
 const {
   sol: { metaplexNFT },

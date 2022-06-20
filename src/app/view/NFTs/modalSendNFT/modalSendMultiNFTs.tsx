@@ -26,6 +26,7 @@ const SendMultiNFTs = () => {
     wallet: { address: walletAddress },
   } = useWallet()
   const { nfts } = useOwnerNFT(walletAddress)
+
   const onCloseModal = () => {
     setVisible(false)
   }

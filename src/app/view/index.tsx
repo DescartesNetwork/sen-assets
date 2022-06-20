@@ -45,7 +45,7 @@ const View = () => {
     <Layout style={{ height: '88vh', paddingBottom: '10px' }}>
       {isMobile ? (
         <Drawer
-          placement="right"
+          placement="left"
           onClose={onClose}
           closable={true}
           visible={isToggled}
@@ -73,7 +73,12 @@ const View = () => {
       )}
 
       <Layout className="site-layout">
-        <Content style={{ overflow: 'initial' }}>
+        <Content
+          style={{
+            overflow: 'auto',
+            padding: !isMobile ? '0 12px' : undefined,
+          }}
+        >
           <Switch>
             <Route
               exact
