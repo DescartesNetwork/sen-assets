@@ -7,16 +7,30 @@ const useOwnerNftByCollection = (ownerPublickey: string) => {
   const { nfts } = useOwnerNFT(ownerPublickey)
   const [nftsFiltered, setNftsFiltered] =
     useState<Record<string, MetadataDataType[]>>()
+  const [nftsSortByCollection, setNftsSortByCollection] =
+    useState<MetadataDataType[]>()
 
   const filterNFTsByCollection = useCallback(async () => {
     let listNFTs: Record<string, MetadataDataType[]> = {}
     nfts?.forEach((nft: MetadataDataType) => {
       if (nft.collection) {
-        listNFTs[nft.collection.key] = listNFTs[nft.collection.key]
+        return (listNFTs[nft.collection.key] = listNFTs[nft.collection.key]
           ? [...listNFTs[nft.collection.key], nft]
-          : [nft]
+          : [nft])
       }
+      return (listNFTs[`unknown`] = listNFTs[`unknown`]
+        ? [...listNFTs[`unknown`], nft]
+        : [nft])
     })
+    let listNftsSortByCollection: MetadataDataType[] = []
+    Object.keys(listNFTs).map((collection) =>
+      Array.prototype.push.apply(
+        listNftsSortByCollection,
+        listNFTs[collection],
+      ),
+    )
+    console.log('nftsSortByCollection: ', listNftsSortByCollection)
+    setNftsSortByCollection(listNftsSortByCollection)
     return setNftsFiltered(listNFTs)
   }, [nfts])
 
@@ -24,7 +38,7 @@ const useOwnerNftByCollection = (ownerPublickey: string) => {
     filterNFTsByCollection()
   }, [filterNFTsByCollection])
 
-  return { nfts: nftsFiltered }
+  return { nfts: nftsFiltered, nftsSortByCollection }
 }
 
 export default useOwnerNftByCollection

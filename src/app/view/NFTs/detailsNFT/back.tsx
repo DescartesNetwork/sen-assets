@@ -15,7 +15,6 @@ const Back = () => {
     <Button
       type="text"
       icon={<IonIcon name="arrow-back-outline" />}
-      style={{ margin: -12 }}
       onClick={() => history.push(nftPath)}
     >
       Back

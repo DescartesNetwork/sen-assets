@@ -1,7 +1,6 @@
 import { Row, Col, Input, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import ModalSendMultiNFTs from '../modalSendNFT/modalSendMultiNFTs'
-import Settings from '../settings'
 
 type SearchProps = {
   onSearch: (keyword: string) => void
@@ -15,7 +14,7 @@ const Search = ({ onSearch, searchText }: SearchProps) => {
         <Input
           placeholder="Search"
           size="large"
-          style={{ background: 'transparent' }}
+          style={{ background: 'transparent', minWidth: 296 }}
           value={searchText}
           prefix={
             <Button
@@ -32,9 +31,6 @@ const Search = ({ onSearch, searchText }: SearchProps) => {
           }
           onChange={(e) => onSearch(e.target.value)}
         />
-      </Col>
-      <Col>
-        <Settings />
       </Col>
       <Col>
         <ModalSendMultiNFTs />

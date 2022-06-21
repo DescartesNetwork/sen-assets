@@ -1,14 +1,15 @@
 import { ChangeEvent, Fragment, useState } from 'react'
 import { isAddress } from '@sentre/utility'
+import { useWallet } from '@senhub/providers'
 import BN from 'bn.js'
 
 import { Button, Col, Input, Modal, Row, Typography } from 'antd'
 import CardSendNFT from './cardSendNFT'
+import IonIcon from '@sentre/antd-ionicon'
+
 import configs from 'app/configs'
 import { explorer } from 'shared/util'
-import IonIcon from '@sentre/antd-ionicon'
-import useOwnerNFT from 'app/hooks/useOwnerNFT'
-import { useWallet } from '@senhub/providers'
+import useOwnerNftByCollection from 'app/hooks/useOwnerNftByCollection'
 
 const {
   sol: { utility },
@@ -25,7 +26,7 @@ const SendMultiNFTs = () => {
   const {
     wallet: { address: walletAddress },
   } = useWallet()
-  const { nfts } = useOwnerNFT(walletAddress)
+  const { nftsSortByCollection: nfts } = useOwnerNftByCollection(walletAddress)
 
   const onCloseModal = () => {
     setVisible(false)

@@ -2,12 +2,12 @@ import { useMemo } from 'react'
 import { useWallet } from '@senhub/providers'
 import { useHistory } from 'react-router-dom'
 
-import { Col, Empty, Row } from 'antd'
-import useOwnerNFT from 'app/hooks/useOwnerNFT'
-
+import { Card, Col, Empty, Row } from 'antd'
 import CardNFT from '../cardNFT'
+
 import configs from 'app/configs'
 import SearchEngine from './searchEngine'
+import useOwnerNftByCollection from 'app/hooks/useOwnerNftByCollection'
 
 type ListNFTsProps = {
   searchText: string
@@ -21,7 +21,7 @@ const ListNFTs = ({ searchText }: ListNFTsProps) => {
   const {
     wallet: { address: walletAddress },
   } = useWallet()
-  const { nfts } = useOwnerNFT(walletAddress)
+  const { nftsSortByCollection: nfts } = useOwnerNftByCollection(walletAddress)
   const history = useHistory()
 
   const onSelectNFT = (mintAddress: string) => {
@@ -41,7 +41,9 @@ const ListNFTs = ({ searchText }: ListNFTsProps) => {
       {filteredList?.length ? (
         filteredList.map((nft) => (
           <Col xs={12} md={6} style={{ textAlign: 'center' }} key={nft.mint}>
-            <CardNFT mintAddress={nft.mint} onSelect={onSelectNFT} />
+            <Card className="card-nft" bordered={false}>
+              <CardNFT mintAddress={nft.mint} onSelect={onSelectNFT} />
+            </Card>
           </Col>
         ))
       ) : (

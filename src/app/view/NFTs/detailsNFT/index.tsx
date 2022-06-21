@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom'
 
-import { Row, Col, Card, Typography, Space } from 'antd'
+import { Row, Col, Card, Typography } from 'antd'
 import CardNFT from '../cardNFT'
 import Back from './back'
 import CardAttributes from './cardAttributes'
@@ -15,38 +15,40 @@ const DetailsNFT = () => {
   const metadataData = metadata?.data.data
 
   return (
-    <Row gutter={[24, 24]} justify="center" align="middle">
-      <Card className="card-page card-sen-assets scrollbar">
-        <Row gutter={[24, 24]} justify="center">
-          <Col xs={24} md={8}>
-            <Space direction="vertical" size={8}>
-              <Back />
-              <Space size={12} direction="vertical">
-                <CardNFT mintAddress={mintNFT} isShowName={false} />
-                <ModalSendOneNFT mintNFT={mintNFT} />
-              </Space>
-            </Space>
-          </Col>
-          <Col xs={24} md={16}>
-            <Row gutter={[8, 8]}>
-              <Col span={24}>
-                <Typography.Title level={3}>
-                  {metadataData?.name}
-                </Typography.Title>
-              </Col>
-              <Col span={24}>
-                <Logo name={metadataData?.name} />
-              </Col>
-              <Col span={24}>
-                <CardAttributes mintNFT={mintNFT} />
-              </Col>
-              <Col span={24}>
-                <CardDescription mintNFT={mintNFT} />
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-      </Card>
+    <Row gutter={[16, 16]} justify="center" align="middle">
+      <Col span={24}>
+        <Back />
+      </Col>
+      <Col span={24}>
+        <Card className="card-sen-assets scrollbar">
+          <Row gutter={[24, 24]} justify="center">
+            <Col xs={24} md={6}>
+              <CardNFT mintAddress={mintNFT} isShowName={false} />
+            </Col>
+            <Col xs={24} md={18}>
+              <Row gutter={[8, 8]}>
+                <Col flex="auto">
+                  <Typography.Title level={3}>
+                    {metadataData?.name}
+                  </Typography.Title>
+                </Col>
+                <Col>
+                  <ModalSendOneNFT mintNFT={mintNFT} />
+                </Col>
+                <Col span={24}>
+                  <Logo name={metadataData?.name} mintAddress={mintNFT} />
+                </Col>
+                <Col span={24}>
+                  <CardAttributes mintNFT={mintNFT} />
+                </Col>
+                <Col span={24}>
+                  <CardDescription mintNFT={mintNFT} />
+                </Col>
+              </Row>
+            </Col>
+          </Row>
+        </Card>
+      </Col>
     </Row>
   )
 }

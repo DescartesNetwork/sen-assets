@@ -3,6 +3,7 @@ import { isAddress } from '@sentre/utility'
 import BN from 'bn.js'
 
 import { Button, Col, Input, Modal, Row, Typography } from 'antd'
+import IonIcon from '@sentre/antd-ionicon'
 import CardSendNFT from './cardSendNFT'
 import configs from 'app/configs'
 import { explorer } from 'shared/util'
@@ -52,7 +53,13 @@ const ModalSendOneNFT = ({ mintNFT }: ModalSendNFTProps) => {
 
   return (
     <Fragment>
-      <Button type="primary" block onClick={() => setVisible(true)}>
+      <Button
+        type="primary"
+        block
+        size="large"
+        icon={<IonIcon name="paper-plane-outline" />}
+        onClick={() => setVisible(true)}
+      >
         Send
       </Button>
 

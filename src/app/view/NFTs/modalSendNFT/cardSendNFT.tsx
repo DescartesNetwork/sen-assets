@@ -1,35 +1,9 @@
-import { useState } from 'react'
-
 import { Row, Col, Checkbox, Space, Typography } from 'antd'
-import { asyncWait, shortenAddress } from 'shared/util'
-import CardNFT from '../cardNFT'
-import useNftMetaData from 'app/hooks/useNftMetaData'
 import { CheckboxChangeEvent } from 'antd/lib/checkbox'
+import CardNFT from '../cardNFT'
+import Address from '../cardNFT/address'
 
-const Address = ({ address }: { address: string }) => {
-  const [copied, setCopied] = useState(false)
-
-  const onCopy = async () => {
-    setCopied(true)
-    await asyncWait(1500)
-    setCopied(false)
-  }
-
-  return (
-    <Space>
-      <Typography.Text className="t-16">
-        {shortenAddress(address)}
-      </Typography.Text>
-      {/* <Tooltip title="Copied" visible={copied}>
-          <CopyToClipboard text={address} onCopy={onCopy}>
-            <Typography.Text style={{ cursor: 'pointer' }} className="t-16">
-              <IonIcon name="copy-outline" />
-            </Typography.Text>
-          </CopyToClipboard>
-        </Tooltip> */}
-    </Space>
-  )
-}
+import useNftMetaData from 'app/hooks/useNftMetaData'
 
 type CardSendNFTProps = {
   mintNFT: string

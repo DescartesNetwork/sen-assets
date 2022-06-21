@@ -35,6 +35,9 @@
 @popover-customize-border-color: @border-color-base;
 @border-color-split: @border-color-base;
 
+//CollapsePanel
+@collapse-panel-border-radius: @border-radius-base * 2;
+
 // Card
 @card-radius: @border-radius-base * 2;
 @card-actions-background: @NEUTRAL05;
@@ -69,6 +72,18 @@
 // Checkbox
 @checkbox-border-radius: @border-radius-base - 4;
 
+// Patch
+.@{ant-prefix}-layout {
+  background: unset;
+}
+.@{ant-prefix}-card {
+  box-shadow: @LIGHT_SHADOW1;
+  &.glass {
+    background-color: color(~`('@{card-background}aa') `);
+    backdrop-filter: blur(16px);
+  }
+}
+
 .account-item {
   background-color: #fff !important;
 }
@@ -81,14 +96,9 @@
   background: #ffffff !important;
 }
 
-// Patch
-.@{ant-prefix}-layout {
-  background: unset;
-}
-.@{ant-prefix}-card {
-  box-shadow: @LIGHT_SHADOW1;
-  &.glass {
-    background-color: color(~`('@{card-background}aa') `);
-    backdrop-filter: blur(16px);
+.nft-element-collapse-custom-collapse {
+  .sen_assets-collapse-header {
+    background: white;
+    border-radius: 12px !important;
   }
 }

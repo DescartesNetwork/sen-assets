@@ -1,5 +1,5 @@
 import IonIcon from '@sentre/antd-ionicon'
-import { Card, Row, Col, Space, Typography } from 'antd'
+import { Card, Row, Col, Space, Typography, Collapse } from 'antd'
 import useNftMetaData from 'app/hooks/useNftMetaData'
 
 type CardDescriptionProps = {
@@ -8,21 +8,29 @@ type CardDescriptionProps = {
 
 const CardDescription = ({ mintNFT }: CardDescriptionProps) => {
   const { nftInfo } = useNftMetaData(mintNFT)
-  console.log('CardDescription: ', nftInfo)
   return (
-    <Card className="card-cleanup" bordered={false} style={{ height: '200px' }}>
-      <Row gutter={[0, 24]}>
-        <Col span={24}>
+    <Collapse
+      bordered={false}
+      defaultActiveKey={['1']}
+      className="nft-element-collapse-custom-collapse"
+      expandIconPosition="end"
+    >
+      <Collapse.Panel
+        header={
           <Space>
-            <IonIcon name="layers" style={{ fontSize: 24 }} />
+            <IonIcon name="list-outline" style={{ fontSize: 24 }} />
             <Typography.Title level={4}>Description</Typography.Title>
           </Space>
-        </Col>
-        <Col span={24}>
-          <Typography.Text>{nftInfo?.description}</Typography.Text>
-        </Col>
-      </Row>
-    </Card>
+        }
+        key="Description"
+      >
+        <Row gutter={[24, 24]}>
+          <Col span={24}>
+            <Typography.Text>{nftInfo?.description}</Typography.Text>
+          </Col>
+        </Row>
+      </Collapse.Panel>
+    </Collapse>
   )
 }
 

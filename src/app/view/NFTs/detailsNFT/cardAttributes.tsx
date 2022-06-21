@@ -1,4 +1,4 @@
-import { Card, Row, Col, Typography, Space } from 'antd'
+import { Card, Row, Col, Typography, Space, Collapse } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import useNftMetaData from 'app/hooks/useNftMetaData'
 
@@ -26,25 +26,30 @@ const ItemAttribute = ({ attribute }: { attribute: Attribute }) => {
 const CardAttributes = ({ mintNFT }: { mintNFT: string }) => {
   const { nftInfo } = useNftMetaData(mintNFT)
   return (
-    <Card className="card-cleanup" bordered={false}>
-      <Row gutter={[0, 24]}>
-        <Col span={24}>
+    <Collapse
+      bordered={false}
+      defaultActiveKey={['1']}
+      className="nft-element-collapse-custom-collapse"
+      expandIconPosition="end"
+    >
+      <Collapse.Panel
+        header={
           <Space>
-            <IonIcon name="layers" style={{ fontSize: 24 }} />
+            <IonIcon name="layers-outline" style={{ fontSize: 24 }} />
             <Typography.Title level={4}>Attributes</Typography.Title>
           </Space>
-        </Col>
-        <Col span={24}>
-          <Row gutter={[24, 24]}>
-            {nftInfo?.attributes?.map((item: Attribute, index: number) => (
-              <Col key={index}>
-                <ItemAttribute attribute={item} />
-              </Col>
-            ))}
-          </Row>
-        </Col>
-      </Row>
-    </Card>
+        }
+        key="Attributes"
+      >
+        <Row gutter={[24, 24]} style={{ paddingTop: 16 }}>
+          {nftInfo?.attributes?.map((item: Attribute, index: number) => (
+            <Col md={8} xs={''} key={index}>
+              <ItemAttribute attribute={item} />
+            </Col>
+          ))}
+        </Row>
+      </Collapse.Panel>
+    </Collapse>
   )
 }
 
