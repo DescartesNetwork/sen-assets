@@ -83,7 +83,7 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
           loading={loading}
           disabled={!Number(amount) || !account.isAddress(dstAddress)}
         >
-          Transfer
+          Send
         </Button>
       </Col>
     </Row>
