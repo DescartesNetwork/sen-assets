@@ -1,5 +1,5 @@
 import IonIcon from '@sentre/antd-ionicon'
-import { Card, Row, Col, Space, Typography, Collapse } from 'antd'
+import { Row, Col, Space, Typography, Collapse } from 'antd'
 import useNftMetaData from 'app/hooks/useNftMetaData'
 
 type CardDescriptionProps = {
