@@ -11,7 +11,7 @@ const CardDescription = ({ mintNFT }: CardDescriptionProps) => {
   return (
     <Collapse
       bordered={false}
-      defaultActiveKey={['1']}
+      defaultActiveKey={['Description']}
       className="nft-element-collapse-custom-collapse"
       expandIconPosition="end"
     >

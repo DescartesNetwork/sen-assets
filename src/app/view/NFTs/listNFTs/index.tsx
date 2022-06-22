@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useWallet } from '@senhub/providers'
 import { useHistory } from 'react-router-dom'
+import LazyLoad from '@sentre/react-lazyload'
 
 import { Card, Col, Empty, Row } from 'antd'
 import CardNFT from '../cardNFT'
@@ -42,7 +43,9 @@ const ListNFTs = ({ searchText }: ListNFTsProps) => {
         filteredList.map((nft) => (
           <Col xs={12} md={6} style={{ textAlign: 'center' }} key={nft.mint}>
             <Card className="card-nft" bordered={false}>
-              <CardNFT mintAddress={nft.mint} onSelect={onSelectNFT} />
+              <LazyLoad height={100} offset={150} overflow>
+                <CardNFT mintAddress={nft.mint} onSelect={onSelectNFT} />
+              </LazyLoad>
             </Card>
           </Col>
         ))

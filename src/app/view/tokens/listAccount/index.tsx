@@ -4,7 +4,7 @@ import { AccountData } from '@senswap/sen-js'
 import LazyLoad from '@sentre/react-lazyload'
 import { useMint, useWallet } from '@senhub/providers'
 
-import { Col, Row, Modal } from 'antd'
+import { Col, Row, Modal, Typography } from 'antd'
 import AccountCard from './accountCard'
 import Search from 'app/view/tokens/search/search'
 import Balance from 'app/view/accountAction'
@@ -43,6 +43,7 @@ const ListAccount = () => {
         }
         listAccount.push(addr)
       }
+      console.log('listAccount: ', listAccount)
       return setListAccount([...prioritizeAccount, ...listAccount])
     },
     [tokenProvider],
@@ -54,8 +55,11 @@ const ListAccount = () => {
   }, [accountSelected, dispatch, wallet.address])
 
   return (
-    <Row gutter={[12, 12]} className="scrollbar">
-      <Col span={24}>
+    <Row gutter={[12, 12]}>
+      <Col flex="auto">
+        <Typography.Title level={2}>Tokens Asset</Typography.Title>
+      </Col>
+      <Col>
         <Search onChange={onSearch} />
       </Col>
       <Col span={24}>
@@ -66,7 +70,7 @@ const ListAccount = () => {
       </Col>
       {listAccount.map((address) => (
         <Col span={24} key={address}>
-          <LazyLoad height={68} offset={150} overflow>
+          <LazyLoad height={68} overflow>
             <AccountCard
               accountAddr={address}
               active={accountSelected === address}

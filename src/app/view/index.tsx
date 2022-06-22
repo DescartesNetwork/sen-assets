@@ -72,7 +72,7 @@ const View = () => {
         </Sider>
       )}
 
-      <Layout className="site-layout">
+      <Layout className="site-layout scrollbar">
         <Content
           style={{
             overflow: 'auto',

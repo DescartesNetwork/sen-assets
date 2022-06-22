@@ -12,7 +12,6 @@ import View from 'app/view'
 import model from 'app/model'
 import configs from 'app/configs'
 
-import 'app/static/styles/index.less'
 import 'app/static/styles/dark.less'
 import 'app/static/styles/light.less'
 

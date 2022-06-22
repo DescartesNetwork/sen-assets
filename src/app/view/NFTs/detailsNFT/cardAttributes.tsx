@@ -28,7 +28,7 @@ const CardAttributes = ({ mintNFT }: { mintNFT: string }) => {
   return (
     <Collapse
       bordered={false}
-      defaultActiveKey={['1']}
+      defaultActiveKey={['Attributes']}
       className="nft-element-collapse-custom-collapse"
       expandIconPosition="end"
     >
