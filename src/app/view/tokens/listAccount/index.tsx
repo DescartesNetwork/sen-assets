@@ -4,11 +4,9 @@ import { AccountData } from '@senswap/sen-js'
 import LazyLoad from '@sentre/react-lazyload'
 import { useMint, useWallet } from '@senhub/providers'
 
-import { Col, Row, Modal, Typography } from 'antd'
+import { Col, Row, Typography } from 'antd'
 import AccountCard from './accountCard'
 import Search from 'app/view/tokens/search/search'
-import Balance from 'app/view/accountAction'
-import Sol from './solCard'
 
 import { selectAccount } from 'app/model/account.controller'
 import { AppDispatch, AppState } from 'app/model'
@@ -19,12 +17,11 @@ const {
 } = configs
 
 const ListAccount = () => {
-  const dispatch = useDispatch<AppDispatch>()
   const { accountSelected } = useSelector((state: AppState) => state.account)
   const { tokenProvider } = useMint()
   const { wallet } = useWallet()
   const [listAccount, setListAccount] = useState<string[]>([])
-  const [visible, setVisible] = useState(false)
+  const dispatch = useDispatch<AppDispatch>()
 
   const onSearch = useCallback(
     async (accounts: Record<string, AccountData>) => {
@@ -63,9 +60,13 @@ const ListAccount = () => {
         <Search onChange={onSearch} />
       </Col>
       <Col span={24}>
-        <Sol
+        <AccountCard
+          accountAddr={wallet.address}
           active={accountSelected === wallet.address}
-          onClick={(account) => dispatch(selectAccount({ account }))}
+          onClick={(account) => {
+            dispatch(selectAccount({ account }))
+          }}
+          isSol
         />
       </Col>
       {listAccount.map((address) => (
@@ -76,25 +77,11 @@ const ListAccount = () => {
               active={accountSelected === address}
               onClick={(account) => {
                 dispatch(selectAccount({ account }))
-                setVisible(true)
               }}
             />
           </LazyLoad>
         </Col>
       ))}
-      <Modal
-        visible={visible}
-        footer={false}
-        onCancel={() => setVisible(false)}
-        maskClosable={true}
-        centered
-        className="modal-sen-assets"
-        bodyStyle={{
-          borderRadius: '16px',
-        }}
-      >
-        <Balance />
-      </Modal>
     </Row>
   )
 }
