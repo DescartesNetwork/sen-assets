@@ -13,6 +13,7 @@ import NFTs from './NFTs/index'
 import Tokens from './tokens'
 import configs from 'app/configs'
 import DetailsNFT from './NFTs/detailsNFT'
+import Sweepers from './sweepers'
 
 let timeOutForceCheck: NodeJS.Timeout
 
@@ -45,7 +46,7 @@ const View = () => {
     <Layout
       style={{
         height: '90vh',
-        paddingBottom: 10,
+        padding: '0 0 10px 10px',
         margin: -12,
       }}
       className="scrollbar"
@@ -95,13 +96,14 @@ const View = () => {
             <Route exact path={`/app/${appId}/nft-asset`} component={NFTs} />
             <Route
               exact
-              path={`/app/${appId}/portal-bridge`}
-              component={WormHole}
-            />
-            <Route
-              exact
               path={`/app/${appId}/nft-asset/:mintNFT`}
               component={DetailsNFT}
+            />
+            <Route exact path={`/app/${appId}/sweepers`} component={Sweepers} />
+            <Route
+              exact
+              path={`/app/${appId}/portal-bridge`}
+              component={WormHole}
             />
             <Redirect from="*" to={`/app/${appId}/token-asset`} />
           </Switch>

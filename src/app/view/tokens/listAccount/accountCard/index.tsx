@@ -45,7 +45,7 @@ const AccountCard = ({
             <Divider style={{ height: '100%' }} type="vertical" />
           </Col>
         )}
-        <Col xs={{ span: 24, order: 3 }} md={{ span: 12, order: 2 }}>
+        <Col xs={{ span: 24, order: 3 }} md={{ span: 14, order: 2 }}>
           <Row gutter={[8, 8]}>
             {/* Balance */}
             <Col xs={12} md={6}>
@@ -67,7 +67,7 @@ const AccountCard = ({
         </Col>
         {/* Manage */}
         <Col
-          md={{ span: 6, order: 3 }}
+          md={{ span: 4, order: 3 }}
           xs={{ span: 12, order: 2 }}
           style={{ textAlign: 'right' }}
         >

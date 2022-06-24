@@ -1,12 +1,30 @@
-import { Link, useLocation } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
+import { useMemo } from 'react'
 
-import { Card, Col, Menu, Row } from 'antd'
-import IonIcon from '@sentre/antd-ionicon'
-import { menuList } from 'app/helper/menuList'
+import { Card, Col, Menu, MenuProps, Row } from 'antd'
+import { MENU_LIST } from 'app/helper/menuList'
 import CardCleanUp from './cardCleanUp'
+import configs from 'app/configs'
+
+const {
+  manifest: { appId },
+} = configs
+const appPath = '/app/' + appId
 
 const SideBar = () => {
   const location = useLocation()
+  const history = useHistory()
+
+  const onSelect: MenuProps['onClick'] = (e) => {
+    history.push(e.key)
+  }
+
+  const selectedKey = useMemo(() => {
+    const key = location.pathname.replace(`${appPath}/`, '')
+    const indexOf = key.indexOf('/')
+    if (indexOf === -1) return location.pathname
+    return `${appPath}/${key.slice(0, indexOf)}`
+  }, [location.pathname])
 
   return (
     <Card
@@ -20,18 +38,11 @@ const SideBar = () => {
           <Menu
             mode="inline"
             style={{ border: 'none', fontSize: '16px' }}
-            selectedKeys={[location.pathname]}
+            selectedKeys={[selectedKey]}
             className="sidebar-menu"
-          >
-            {menuList.map((item) => (
-              <Menu.Item style={{ padding: '24px' }} key={item.path}>
-                <Link to={item.path}>
-                  <IonIcon name={item.icon} style={{ fontSize: '18px' }} />
-                  <span>{item.name}</span>
-                </Link>
-              </Menu.Item>
-            ))}
-          </Menu>
+            items={MENU_LIST}
+            onClick={onSelect}
+          />
         </Col>
         <Col span={24}>
           <Row style={{ height: '100%' }} align="bottom">

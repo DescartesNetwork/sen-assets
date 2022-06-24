@@ -1,9 +1,20 @@
+import { useHistory } from 'react-router-dom'
+
 import IonIcon from '@sentre/antd-ionicon'
 import { Button, Card, Col, Row, Typography } from 'antd'
 
+import configs from 'app/configs'
+
 import IconSenAsset from 'app/static/images/icon_senasset.png'
 
+const {
+  manifest: { appId },
+} = configs
+const appPath = '/app/' + appId
+
 const CardCleanUp = () => {
+  const history = useHistory()
+
   return (
     <Card
       bordered={false}
@@ -34,8 +45,12 @@ const CardCleanUp = () => {
           </Typography.Text>
         </Col>
         <Col span={24}>
-          <Button icon={<IonIcon name="sparkles-outline" />} block>
-            Clean up
+          <Button
+            icon={<IonIcon name="sparkles-outline" />}
+            block
+            onClick={() => history.push(appPath + '/sweepers')}
+          >
+            Sweepers
           </Button>
         </Col>
       </Row>
