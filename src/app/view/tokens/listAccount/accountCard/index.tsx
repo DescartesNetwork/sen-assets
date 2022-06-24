@@ -7,13 +7,12 @@ import LogoItem from './logoItem'
 import ValueItem from './value'
 import AmountItem from './amount'
 import PriceItem from './price'
-import DayChangeItem from './DayChangeItem'
+import DayChangeItem from './dayChangeItem'
 
 import { SOL_ADDRESS } from 'app/constant/sol'
 
 const AccountCard = ({
   accountAddr,
-  active = false,
   onClick = () => {},
   isSol = false,
 }: {
@@ -32,7 +31,7 @@ const AccountCard = ({
 
   return (
     <Card
-      className={`account-item ${active ? 'active' : ''}`}
+      className="account-item"
       bodyStyle={{ padding: 12 }}
       hoverable
       onClick={() => onClick(accountAddr)}

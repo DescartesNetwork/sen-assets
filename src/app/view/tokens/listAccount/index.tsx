@@ -74,7 +74,6 @@ const ListAccount = () => {
           <LazyLoad height={68} overflow>
             <AccountCard
               accountAddr={address}
-              active={accountSelected === address}
               onClick={(account) => {
                 dispatch(selectAccount({ account }))
               }}

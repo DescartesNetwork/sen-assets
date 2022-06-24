@@ -42,7 +42,14 @@ const View = () => {
   }, [])
 
   return (
-    <Layout style={{ height: '88vh', paddingBottom: '10px' }}>
+    <Layout
+      style={{
+        height: '90vh',
+        paddingBottom: 10,
+        margin: -12,
+      }}
+      className="scrollbar"
+    >
       {isMobile ? (
         <Drawer
           placement="left"
@@ -72,11 +79,11 @@ const View = () => {
         </Sider>
       )}
 
-      <Layout className="site-layout scrollbar">
+      <Layout className="site-layout">
         <Content
           style={{
             overflow: 'auto',
-            padding: !isMobile ? '0 12px' : undefined,
+            padding: !isMobile ? '0 12px' : '0px 12px',
           }}
         >
           <Switch>

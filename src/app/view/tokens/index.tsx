@@ -4,7 +4,7 @@ import ListAccount from 'app/view/tokens/listAccount'
 
 const Tokens = () => {
   return (
-    <Row gutter={[24, 24]} justify="center" align="middle">
+    <Row justify="center" align="middle">
       {/* Body + Search */}
       <Col span={24}>
         <ListAccount />
