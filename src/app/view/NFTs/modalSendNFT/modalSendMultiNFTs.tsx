@@ -50,7 +50,6 @@ const SendMultiNFTs = () => {
     for (const mintNFT in listNFTsSelected) {
       if (!listNFTsSelected[mintNFT]) continue
       setLoading(true)
-      console.log('send tx')
       try {
         const { txId } = await utility.safeTransfer({
           amount: new BN(1),
@@ -68,7 +67,6 @@ const SendMultiNFTs = () => {
       } catch (er: any) {
         window.notify({ type: 'error', description: er.message })
       } finally {
-        console.log(listNFTsSelected)
         setLoading(false)
       }
     }

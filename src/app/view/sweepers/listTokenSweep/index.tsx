@@ -35,7 +35,6 @@ const ListTokenSweep = forwardRef(
 
     const onChooseAccount = (accountAddress: string, isChecked: boolean) => {
       let accounts = JSON.parse(JSON.stringify(accountsSelected))
-      console.log(Object.assign(accounts, { [accountAddress]: isChecked }))
       setAccountsSelected(
         Object.assign(accounts, { [accountAddress]: isChecked }),
       )

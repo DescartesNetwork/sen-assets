@@ -29,7 +29,6 @@ const useOwnerNftByCollection = (ownerPublickey: string) => {
         listNFTs[collection],
       ),
     )
-    console.log('nftsSortByCollection: ', listNftsSortByCollection)
     setNftsSortByCollection(listNftsSortByCollection)
     return setNftsFiltered(listNFTs)
   }, [nfts])

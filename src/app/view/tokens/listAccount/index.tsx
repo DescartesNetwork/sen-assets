@@ -40,7 +40,6 @@ const ListAccount = () => {
         }
         listAccount.push(addr)
       }
-      console.log('listAccount: ', listAccount)
       return setListAccount([...prioritizeAccount, ...listAccount])
     },
     [tokenProvider],

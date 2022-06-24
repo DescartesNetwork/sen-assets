@@ -40,7 +40,6 @@ const MintSelection = ({
   const { recommendedMints, addRecommendMint } = useRecommendedMints()
   const { searchedMints, loading } = useSearchedMints(keyword, 0)
   const { sortedMints } = useSortMints(searchedMints)
-  console.log('value value: ', value)
 
   const onSelect = useCallback(
     (mintAddress: string) => {
