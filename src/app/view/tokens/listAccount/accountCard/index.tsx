@@ -33,7 +33,6 @@ const AccountCard = ({
     <Card
       className="account-item"
       bodyStyle={{ padding: 12 }}
-      hoverable
       onClick={() => onClick(accountAddr)}
     >
       <Row>
