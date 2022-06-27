@@ -70,7 +70,7 @@ const ListTokenSweep = forwardRef(
     }))
 
     return (
-      <Space direction="vertical">
+      <Space direction="vertical" style={{ width: '100%' }}>
         <Row gutter={[16, 16]} className="scrollbar" style={{ maxHeight: 500 }}>
           {listAccounts.map((address) => (
             <Col span={24} key={address}>

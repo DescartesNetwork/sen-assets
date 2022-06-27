@@ -34,7 +34,7 @@ const SideBar = () => {
       className="sidebar-card card-sen-assets"
     >
       <Row gutter={[24, 24]} style={{ height: '100%' }} justify="space-between">
-        <Col span={24}>
+        <Col span={24} style={{ height: '60%', overflow: 'auto' }}>
           <Menu
             mode="inline"
             style={{ border: 'none', fontSize: '16px' }}

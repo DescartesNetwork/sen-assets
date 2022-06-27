@@ -1,5 +1,10 @@
+import Icon from '@ant-design/icons'
+
+import { ReactComponent as TokenAssets } from 'app/static/images/aside/token-assets.svg'
+import { ReactComponent as NFTsAssets } from 'app/static/images/aside/nft-assets.svg'
+import { ReactComponent as PortalBridge } from 'app/static/images/aside/portal-bridge.svg'
+
 import configs from 'app/configs'
-import IonIcon from '@sentre/antd-ionicon'
 
 const {
   manifest: { appId },
@@ -10,16 +15,16 @@ export const MENU_LIST = [
   {
     key: appPath + '/token-asset',
     label: 'Tokens Asset',
-    icon: <IonIcon name="wallet-outline" style={{ fontSize: '18px' }} />,
+    icon: <Icon component={TokenAssets} style={{ fontSize: '24px' }} />,
   },
   {
     key: appPath + '/nft-asset',
     label: 'NFTs Asset',
-    icon: <IonIcon name="pricetag-outline" style={{ fontSize: '18px' }} />,
+    icon: <Icon component={NFTsAssets} style={{ fontSize: '24px' }} />,
   },
   {
     key: appPath + '/portal-bridge',
     label: 'Portal Bridge',
-    icon: <IonIcon name="link-outline" style={{ fontSize: '18px' }} />,
+    icon: <Icon component={PortalBridge} style={{ fontSize: '24px' }} />,
   },
 ]
