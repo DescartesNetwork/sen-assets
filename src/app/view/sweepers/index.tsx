@@ -6,7 +6,6 @@ import ListTokenSweep from './listTokenSweep/index'
 
 type ListTokenSweepRefType = {
   sweepAccounts: () => void
-  loading: boolean
 }
 
 const Sweepers = () => {

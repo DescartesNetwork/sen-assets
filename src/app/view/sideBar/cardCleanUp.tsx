@@ -39,8 +39,7 @@ const CardCleanUp = () => {
         </Col>
         <Col span={24}>
           <Typography.Text style={{ fontSize: '12px' }}>
-            Help clean up your token list by converting tokens with an amount
-            less than $1 into SOL tokens.
+            Help clean up your tokens when the value is $0.
             <Typography.Link href="/"> Read More</Typography.Link>
           </Typography.Text>
         </Col>

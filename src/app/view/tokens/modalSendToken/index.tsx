@@ -43,12 +43,13 @@ const ModalSendToken = () => {
         tokenAddress: mint,
         dstWalletAddress: dstAddress,
       })
-      setAmount('')
       window.notify({
         type: 'success',
         description: 'Transfer success!',
         onClick: () => window.open(explorer(txId), '_blank'),
       })
+      setAmount('')
+      setDstAddress('')
     } catch (er: any) {
       window.notify({ type: 'error', description: er.message })
     } finally {

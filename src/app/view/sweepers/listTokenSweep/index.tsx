@@ -3,7 +3,9 @@ import { useAccount } from '@senhub/providers'
 
 import { Col, Row, Space, Typography } from 'antd'
 import CardToken from './cardToken'
-import { explorer, shortenAddress } from 'shared/util'
+
+import { explorer } from 'shared/util'
+import SpltHelper from 'app/lib/spltHelper'
 
 type ListTokenSweepProps = {
   setLoadingBtn: (loading: boolean) => void
@@ -43,28 +45,26 @@ const ListTokenSweep = forwardRef(
     useImperativeHandle(ref, () => ({
       accountsSelected: accountsSelected,
       sweepAccounts: async () => {
-        for (const accountAddr in accountsSelected) {
-          if (!accountsSelected[accountAddr]) continue
-          setLoadingBtn(true)
-          try {
-            const { splt, wallet } = window.sentre
-            if (!wallet) return
-            const { txId } = await splt.closeAccount(accountAddr, wallet)
-            setAccountsSelected(
-              Object.assign(accountsSelected, { [accountAddr]: false }),
-            )
-            window.notify({
-              type: 'success',
-              description: `Close ${shortenAddress(
-                accountAddr,
-              )} successfully. Click to view details.`,
-              onClick: () => window.open(explorer(txId), '_blank'),
-            })
-          } catch (er: any) {
-            window.notify({ type: 'error', description: er.message })
-          } finally {
-            setLoadingBtn(false)
-          }
+        setLoadingBtn(true)
+        try {
+          let accounts = Object.keys(accountsSelected).filter(
+            (accountAddress) => {
+              return accountsSelected[accountAddress] === true
+            },
+          )
+          console.log('accountsSelected: ', accounts)
+          const spltHelper = new SpltHelper()
+          const { txId } = await spltHelper.closeAccounts(accounts)
+          setAccountsSelected({})
+          window.notify({
+            type: 'success',
+            description: `Close accounts successfully. Click to view details.`,
+            onClick: () => window.open(explorer(txId), '_blank'),
+          })
+        } catch (er: any) {
+          window.notify({ type: 'error', description: er.message })
+        } finally {
+          setLoadingBtn(false)
         }
       },
     }))
