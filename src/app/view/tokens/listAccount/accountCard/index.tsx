@@ -7,7 +7,7 @@ import LogoItem from './logoItem'
 import ValueItem from './value'
 import AmountItem from './amount'
 import PriceItem from './price'
-import DayChangeItem from './dayChangeItem'
+import DayUpdateChangeItem from './dayUpdateChangeItem'
 
 import { SOL_ADDRESS } from 'app/constant/sol'
 

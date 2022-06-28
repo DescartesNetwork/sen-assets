@@ -1,11 +1,11 @@
 import { Space, Typography } from 'antd'
 import { PriceChange, PriceIndicator } from 'app/components/price'
 
-type DayChangeItemProps = {
+type DayUpdateChangeItemProps = {
   mint: string
 }
 
-const DayChangeItem = ({ mint }: DayChangeItemProps) => {
+const DayUpdateChangeItem = ({ mint }: DayUpdateChangeItemProps) => {
   return (
     <Space direction="vertical" size={0} style={{ width: '100%' }}>
       <Typography.Text type="secondary" className="caption">
@@ -21,4 +21,4 @@ const DayChangeItem = ({ mint }: DayChangeItemProps) => {
   )
 }
 
-export default DayChangeItem
+export default DayUpdateChangeItem
