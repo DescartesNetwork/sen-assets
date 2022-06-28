@@ -15,17 +15,20 @@ class SpltHelper {
   closeAccounts = async (
     accounts: string[],
   ): Promise<{
-    txId: string
-    transaction: Transaction
+    txIds: string[]
+    transactions: Transaction[]
   }> => {
     if (accounts.length === 0) throw new Error('Please select accounts!')
     const provider = await this.getProvider()
-    const instructions: web3.TransactionInstruction[] = []
     // Close account instruction
+    let transactions: Transaction[] = []
+    let SIZE_TRANSACTION = 25 // Limit instructions per transaction
+
+    const instructions: web3.TransactionInstruction[] = []
     accounts.forEach((account) => {
       instructions.push(
         Token.createCloseAccountInstruction(
-          TOKEN_PROGRAM_ID, // fixed
+          TOKEN_PROGRAM_ID,
           new PublicKey(account), // to be closed token account
           provider.wallet.publicKey, // rent's destination
           provider.wallet.publicKey, // token account authority
@@ -33,9 +36,18 @@ class SpltHelper {
         ),
       )
     })
-    const transaction = new Transaction().add(...instructions)
-    const txId = await provider.sendAndConfirm(transaction)
-    return { txId, transaction }
+    // slice small transaction
+    for (let i = 0; i < instructions.length; i += SIZE_TRANSACTION) {
+      transactions.push(
+        new Transaction().add(...instructions.slice(i, i + SIZE_TRANSACTION)),
+      )
+    }
+    const txIds = await provider.sendAll(
+      transactions.map((tx) => {
+        return { tx, signers: [] }
+      }),
+    )
+    return { txIds, transactions }
   }
 }
 export default SpltHelper

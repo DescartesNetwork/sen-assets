@@ -6,15 +6,25 @@ import ListTokenSweep from './listTokenSweep/index'
 
 type ListTokenSweepRefType = {
   sweepAccounts: () => void
+  onSelectAll: (isSelectAll: boolean) => void
 }
 
 const Sweepers = () => {
   const listTokenSweepRef = useRef<ListTokenSweepRefType>(null)
   const [loading, setLoading] = useState(false)
+  const [isSelectAll, setSelectAll] = useState(false)
 
   const sweep = async () => {
     if (listTokenSweepRef.current) {
       listTokenSweepRef.current.sweepAccounts()
+    }
+  }
+
+  const selectAll = () => {
+    if (listTokenSweepRef.current) {
+      const isSelectAllAccounts = !isSelectAll
+      listTokenSweepRef.current.onSelectAll(isSelectAllAccounts)
+      setSelectAll(isSelectAllAccounts)
     }
   }
 
@@ -40,8 +50,8 @@ const Sweepers = () => {
             </Col>
           </Row>
           <Card className="card-page-container">
-            <Row gutter={[14, 14]}>
-              <Col span={24}>
+            <Row gutter={[14, 14]} align="middle">
+              <Col flex="auto">
                 <Typography.Text type="secondary">
                   <IonIcon
                     name="information-circle-outline"
@@ -49,6 +59,11 @@ const Sweepers = () => {
                   />{' '}
                   Your tokens with a value of $0 will be listed below.
                 </Typography.Text>
+              </Col>
+              <Col>
+                <Button ghost style={{ border: 'none' }} onClick={selectAll}>
+                  {!isSelectAll ? 'Select All' : 'Clear All'}
+                </Button>
               </Col>
               <Col span={24}>
                 <ListTokenSweep

@@ -4,7 +4,6 @@ import { useAccount } from '@senhub/providers'
 import { Col, Row, Space, Typography } from 'antd'
 import CardToken from './cardToken'
 
-import { explorer } from 'shared/util'
 import SpltHelper from 'app/lib/spltHelper'
 
 type ListTokenSweepProps = {
@@ -43,7 +42,6 @@ const ListTokenSweep = forwardRef(
     }
 
     useImperativeHandle(ref, () => ({
-      accountsSelected: accountsSelected,
       sweepAccounts: async () => {
         setLoadingBtn(true)
         try {
@@ -53,18 +51,26 @@ const ListTokenSweep = forwardRef(
             },
           )
           const spltHelper = new SpltHelper()
-          const { txId } = await spltHelper.closeAccounts(accounts)
+          await spltHelper.closeAccounts(accounts)
           setAccountsSelected({})
           window.notify({
             type: 'success',
-            description: `Close accounts successfully. Click to view details.`,
-            onClick: () => window.open(explorer(txId), '_blank'),
+            description: `Close accounts successfully.`,
           })
         } catch (er: any) {
           window.notify({ type: 'error', description: er.message })
         } finally {
           setLoadingBtn(false)
         }
+      },
+      onSelectAll: (isSelectAll: boolean) => {
+        let accountSelected: Record<string, boolean> = {}
+        if (isSelectAll) {
+          for (const accAddr in accounts) {
+            accountSelected[accAddr] = true
+          }
+        }
+        setAccountsSelected(accountSelected)
       },
     }))
 
