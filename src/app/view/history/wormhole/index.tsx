@@ -74,7 +74,7 @@ const WormholeHistory = () => {
           dataSource={sortedHistory?.slice(0, amountRow)}
           rowClassName={(record, index) => (index % 2 ? 'odd-row' : 'even-row')}
           pagination={false}
-          scroll={{ x: 1000 }}
+          // scroll={{ x: 1000 }}
           rowKey={(record) => record.context.id}
           loading={isLoading}
         />

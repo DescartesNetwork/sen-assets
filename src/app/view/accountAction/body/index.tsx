@@ -25,7 +25,7 @@ const Body = () => {
   return (
     <Card
       bordered={false}
-      style={{ marginTop: -20, boxShadow: 'none' }}
+      style={{ boxShadow: 'none' }}
       bodyStyle={{ padding: 0 }}
     >
       <Tabs
@@ -36,11 +36,11 @@ const Body = () => {
         <Tabs.TabPane tab="Send" key="Send">
           <Transfer accountAddr={accountSelected} />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Receive" key="Receive">
-          <Receive accountAddr={accountSelected} />
-        </Tabs.TabPane>
         <Tabs.TabPane tab="Wrap/Unwrap" key="Wrap/Unwrap" disabled={!canWrap}>
           <Wrap />
+        </Tabs.TabPane>
+        <Tabs.TabPane tab="Receive" key="Receive">
+          <Receive accountAddr={accountSelected} />
         </Tabs.TabPane>
         <Tabs.TabPane tab="Close" key="Close" disabled={mint === SOL_ADDRESS}>
           <Close accountAddr={accountSelected} />

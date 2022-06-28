@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { AccountData } from '@senswap/sen-js'
-import { useAccount, useMint, usePool } from '@senhub/providers'
+import { useAccount, useMint, usePool, useUI } from '@senhub/providers'
 
-import { Row, Col, Input, Button } from 'antd'
+import { Input, Button, Space, Row, Col } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
 import { AppState } from 'app/model'
+import ModalSendToken from '../modalSendToken'
+import Settings from '../settings'
 
 const KEY_SIZE = 2
 
@@ -22,6 +24,10 @@ const Search = ({
   const { accounts } = useAccount()
   const { tokenProvider } = useMint()
   const { pools } = usePool()
+  const {
+    ui: { width },
+  } = useUI()
+  const isMobile = width < 992
 
   // Check visible account with settings
   const checkVisible = useCallback(
@@ -59,13 +65,16 @@ const Search = ({
   }, [onSearch])
 
   return (
-    <Row gutter={[16, 16]}>
-      <Col span={24}>
+    <Row gutter={[8, 0]} wrap={false}>
+      <Col flex="auto">
         <Input
+          className="search-assets"
           placeholder="Search"
-          value={keyword}
           size="large"
-          style={{ background: 'transparent' }}
+          style={{
+            minWidth: isMobile ? undefined : 296,
+          }}
+          value={keyword}
           prefix={
             <Button
               type="text"
@@ -79,6 +88,12 @@ const Search = ({
           }
           onChange={(e) => setKeyword(e.target.value)}
         />
+      </Col>
+      <Col>
+        <Space size={8}>
+          <Settings />
+          <ModalSendToken />
+        </Space>
       </Col>
     </Row>
   )

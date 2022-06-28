@@ -2,12 +2,11 @@ import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccountData } from '@senswap/sen-js'
 import LazyLoad from '@sentre/react-lazyload'
-import { useMint, useWallet } from '@senhub/providers'
+import { useMint, useUI, useWallet } from '@senhub/providers'
 
-import { Col, Row } from 'antd'
+import { Col, Row, Typography } from 'antd'
 import AccountCard from './accountCard'
-import Search from 'app/view/walletAccounts/search/search'
-import Sol from './solCard'
+import Search from 'app/view/tokens/search/search'
 
 import { selectAccount } from 'app/model/account.controller'
 import { AppDispatch, AppState } from 'app/model'
@@ -18,11 +17,15 @@ const {
 } = configs
 
 const ListAccount = () => {
-  const dispatch = useDispatch<AppDispatch>()
   const { accountSelected } = useSelector((state: AppState) => state.account)
   const { tokenProvider } = useMint()
   const { wallet } = useWallet()
   const [listAccount, setListAccount] = useState<string[]>([])
+  const dispatch = useDispatch<AppDispatch>()
+  const {
+    ui: { width },
+  } = useUI()
+  const isMobile = width < 992
 
   const onSearch = useCallback(
     async (accounts: Record<string, AccountData>) => {
@@ -53,22 +56,30 @@ const ListAccount = () => {
 
   return (
     <Row gutter={[12, 12]}>
-      <Col span={24}>
+      <Col flex="auto">
+        <Typography.Title level={2}>Tokens Asset</Typography.Title>
+      </Col>
+      <Col span={isMobile ? 24 : undefined}>
         <Search onChange={onSearch} />
       </Col>
       <Col span={24}>
-        <Sol
+        <AccountCard
+          accountAddr={wallet.address}
           active={accountSelected === wallet.address}
-          onClick={(account) => dispatch(selectAccount({ account }))}
+          onClick={(account) => {
+            dispatch(selectAccount({ account }))
+          }}
+          isSol
         />
       </Col>
       {listAccount.map((address) => (
         <Col span={24} key={address}>
-          <LazyLoad height={68} offset={150} overflow>
+          <LazyLoad height={68} overflow>
             <AccountCard
               accountAddr={address}
-              active={accountSelected === address}
-              onClick={(account) => dispatch(selectAccount({ account }))}
+              onClick={(account) => {
+                dispatch(selectAccount({ account }))
+              }}
             />
           </LazyLoad>
         </Col>

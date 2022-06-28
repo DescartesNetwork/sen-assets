@@ -4,9 +4,8 @@ import { Space, Typography } from 'antd'
 import NetworkAvatar from 'app/components/network/networkAvatar'
 import ColumAction from './columnAction'
 import HistoryStatus from './columnStatus'
-import NetworkName from 'app/components/network/networkName'
 
-import { numeric, shortenAddress } from 'shared/util'
+import { numeric } from 'shared/util'
 import { TransferState, WormholeContext } from 'app/constant/types/wormhole'
 
 export const WORMHOLE_COLUMNS = [
@@ -22,30 +21,13 @@ export const WORMHOLE_COLUMNS = [
     },
   },
   {
-    title: 'TRANSACTION ID',
-    render: (data: TransferState) => {
-      const txHash = data.transferData.txHash
-      return (
-        <Typography.Text style={{ fontWeight: 700 }}>
-          {txHash ? shortenAddress(txHash, 8, '...') : '--'}
-        </Typography.Text>
-      )
-    },
-  },
-  {
-    title: 'SOURCE - TARGET',
+    title: 'Token BRIDGE',
     dataIndex: 'context',
     render: (context: WormholeContext) => (
       <Space>
         <NetworkAvatar chainId={context.srcChainId} />
-        <Typography.Text>
-          <NetworkName chainId={context.srcChainId} />
-        </Typography.Text>
-        <span>-</span>
+        <span>{`->`}</span>
         <NetworkAvatar chainId={context.targetChainId} />
-        <Typography.Text>
-          <NetworkName chainId={context.targetChainId} />
-        </Typography.Text>
       </Space>
     ),
   },
