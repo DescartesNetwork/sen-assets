@@ -84,7 +84,7 @@ const View = () => {
         <Content
           style={{
             overflow: 'auto',
-            padding: !isMobile ? '0 12px' : '0px 12px',
+            padding: !isMobile ? '0 12px' : '0px 12px 0px 0px',
           }}
         >
           <Switch>
