@@ -12,7 +12,7 @@ const WormHole = () => {
           <Typography.Title level={2}>Portal Bridge</Typography.Title>
           <Card
             className="card-page-container"
-            bodyStyle={{ padding: 0 }}
+            bodyStyle={{ padding: 0, overflow: 'hidden' }}
             bordered={false}
           >
             <WormWallet />
