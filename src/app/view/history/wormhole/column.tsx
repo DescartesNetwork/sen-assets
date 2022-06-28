@@ -26,7 +26,7 @@ export const WORMHOLE_COLUMNS = [
     render: (context: WormholeContext) => (
       <Space>
         <NetworkAvatar chainId={context.srcChainId} />
-        <span>{`->`}</span>
+        <span style={{ whiteSpace: 'nowrap' }}>{`->`}</span>
         <NetworkAvatar chainId={context.targetChainId} />
       </Space>
     ),
