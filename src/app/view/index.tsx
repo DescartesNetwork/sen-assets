@@ -47,7 +47,7 @@ const View = () => {
       style={{
         height: '90vh',
         padding: '0 0 10px 10px',
-        margin: -12,
+        margin: '0 -12px -12px -12px',
       }}
       className="scrollbar"
     >
@@ -90,10 +90,10 @@ const View = () => {
           <Switch>
             <Route
               exact
-              path={`/app/${appId}/token-asset`}
+              path={`/app/${appId}/tokens-asset`}
               component={Tokens}
             />
-            <Route exact path={`/app/${appId}/nft-asset`} component={NFTs} />
+            <Route exact path={`/app/${appId}/nfts-asset`} component={NFTs} />
             <Route
               exact
               path={`/app/${appId}/nft-asset/:mintNFT`}
@@ -105,7 +105,7 @@ const View = () => {
               path={`/app/${appId}/portal-bridge`}
               component={WormHole}
             />
-            <Redirect from="*" to={`/app/${appId}/token-asset`} />
+            <Redirect from="*" to={`/app/${appId}/tokens-asset`} />
           </Switch>
         </Content>
       </Layout>

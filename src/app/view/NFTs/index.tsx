@@ -4,8 +4,13 @@ import { Row, Col, Typography } from 'antd'
 
 import ListNFTs from './listNFTs'
 import Search from './search.tsx'
+import { useUI } from '@senhub/providers'
 
 const NFTs = () => {
+  const {
+    ui: { width },
+  } = useUI()
+  const isMobile = width < 992
   const [searchText, setSearchText] = useState<string>('')
 
   return (
@@ -13,7 +18,7 @@ const NFTs = () => {
       <Col flex="auto">
         <Typography.Title level={2}>Sen Assets</Typography.Title>
       </Col>
-      <Col>
+      <Col span={isMobile ? 24 : undefined}>
         <Search
           searchText={searchText}
           onSearch={(value) => setSearchText(value)}

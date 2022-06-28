@@ -7,7 +7,7 @@ import { useHistory } from 'react-router-dom'
 const {
   manifest: { appId },
 } = configs
-const nftPath = '/app/' + appId + '/nft-asset'
+const nftPath = '/app/' + appId + '/nfts-asset'
 
 const Back = () => {
   const history = useHistory()

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccountData } from '@senswap/sen-js'
 import LazyLoad from '@sentre/react-lazyload'
-import { useMint, useWallet } from '@senhub/providers'
+import { useMint, useUI, useWallet } from '@senhub/providers'
 
 import { Col, Row, Typography } from 'antd'
 import AccountCard from './accountCard'
@@ -22,6 +22,10 @@ const ListAccount = () => {
   const { wallet } = useWallet()
   const [listAccount, setListAccount] = useState<string[]>([])
   const dispatch = useDispatch<AppDispatch>()
+  const {
+    ui: { width },
+  } = useUI()
+  const isMobile = width < 992
 
   const onSearch = useCallback(
     async (accounts: Record<string, AccountData>) => {
@@ -55,7 +59,7 @@ const ListAccount = () => {
       <Col flex="auto">
         <Typography.Title level={2}>Tokens Asset</Typography.Title>
       </Col>
-      <Col>
+      <Col span={isMobile ? 24 : undefined}>
         <Search onChange={onSearch} />
       </Col>
       <Col span={24}>
