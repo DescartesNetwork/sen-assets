@@ -52,7 +52,6 @@ const ListTokenSweep = forwardRef(
               return accountsSelected[accountAddress] === true
             },
           )
-          console.log('accountsSelected: ', accounts)
           const spltHelper = new SpltHelper()
           const { txId } = await spltHelper.closeAccounts(accounts)
           setAccountsSelected({})

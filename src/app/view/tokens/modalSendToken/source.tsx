@@ -1,16 +1,18 @@
+import { Fragment } from 'react'
+import { useWallet } from '@senhub/providers'
+
 import { Row, Col, Typography, Button, Divider } from 'antd'
 import { MintSelection, MintSymbol } from 'shared/antd/mint'
 import NumericInput from 'shared/antd/numericInput'
 
 import { useMintAccount } from 'app/hooks/useMintAccount'
 import { numeric } from 'shared/util'
-import { Fragment } from 'react'
-import { useWallet } from '@senhub/providers'
+import { SOL_ADDRESS } from 'app/constant/sol'
 
 const Source = ({
   accountAddr,
   onChange,
-  amount: value,
+  amount,
   mintAddress,
 }: {
   accountAddr: string
@@ -29,11 +31,13 @@ const Source = ({
 
   const onSelectToken = async (mint: string) => {
     const { splt } = window.sentre
+    if (mint === SOL_ADDRESS) return onChange(walletAddress, amount, mint)
     const accountAddress = await splt.deriveAssociatedAddress(
       walletAddress,
       mint,
     )
-    onChange(accountAddress, value, mint)
+
+    onChange(accountAddress, amount, mint)
   }
   return (
     <Row gutter={[8, 8]}>
@@ -66,7 +70,7 @@ const Source = ({
               MAX
             </Button>
           }
-          value={value}
+          value={amount}
           onValue={(value) => onChange(accountAddr, value, mintAddress)}
           max={mintAccount.balance}
         />

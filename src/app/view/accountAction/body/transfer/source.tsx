@@ -15,7 +15,6 @@ const Source = ({
   value: string
 }) => {
   const mintAccount = useMintAccount(accountAddr)
-
   return (
     <Row gutter={[8, 8]}>
       <Col flex="auto">

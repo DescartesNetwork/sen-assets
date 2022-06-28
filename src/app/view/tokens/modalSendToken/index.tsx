@@ -1,15 +1,17 @@
 import { Fragment, useState } from 'react'
 import { isAddress } from '@sentre/utility'
+import { utils } from '@senswap/sen-js'
 import { BN } from 'bn.js'
 
 import IonIcon from '@sentre/antd-ionicon'
 import { Button, Col, Modal, Row, Typography } from 'antd'
 import Destination from './destination'
 import Source from './source'
+
 import configs from 'app/configs'
-import { utils } from '@senswap/sen-js'
 import { useMintAccount } from 'app/hooks/useMintAccount'
-import { explorer } from 'shared/util'
+import { notifyError, notifySuccess } from 'app/helper'
+import { SOL_ADDRESS } from 'app/constant/sol'
 
 const {
   sol: { utility },
@@ -34,24 +36,29 @@ const ModalSendToken = () => {
         type: 'error',
         description: 'Invalid wallet address',
       })
+
     setLoading(true)
     try {
+      const { wallet, lamports } = window.sentre
+      if (!wallet) return
       // transfer lamports
       const amountTransfer = utils.decimalize(amount, decimals)
+      if (mint === SOL_ADDRESS) {
+        const txId = await lamports.transfer(amountTransfer, dstAddress, wallet)
+        setAmount('')
+        setDstAddress('')
+        return notifySuccess('Transfer', txId)
+      }
       const { txId } = await utility.safeTransfer({
         amount: new BN(amountTransfer.toString()),
         tokenAddress: mint,
         dstWalletAddress: dstAddress,
       })
-      window.notify({
-        type: 'success',
-        description: 'Transfer success!',
-        onClick: () => window.open(explorer(txId), '_blank'),
-      })
       setAmount('')
       setDstAddress('')
+      return notifySuccess('Transfer', txId)
     } catch (er: any) {
-      window.notify({ type: 'error', description: er.message })
+      return notifyError(er)
     } finally {
       setLoading(false)
     }

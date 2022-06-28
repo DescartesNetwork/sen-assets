@@ -34,8 +34,6 @@ class SpltHelper {
       )
     })
     const transaction = new Transaction().add(...instructions)
-    console.log('Instruction: ', instructions)
-
     const txId = await provider.sendAndConfirm(transaction)
     return { txId, transaction }
   }

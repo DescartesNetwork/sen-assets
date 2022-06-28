@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { account, utils } from '@senswap/sen-js'
+import { isAddress } from '@sentre/utility'
+import { BN } from 'bn.js'
 
 import { Row, Col, Button } from 'antd'
 import Source from './source'
@@ -8,6 +10,11 @@ import Destination from './destination'
 import { useMintAccount } from 'app/hooks/useMintAccount'
 import { SOL_ADDRESS } from 'app/constant/sol'
 import { notifyError, notifySuccess } from 'app/helper'
+import configs from 'app/configs'
+
+const {
+  sol: { utility },
+} = configs
 
 const Transfer = ({ accountAddr }: { accountAddr: string }) => {
   const [dstAddress, setDstAddress] = useState('')
@@ -15,48 +22,29 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
   const [loading, setLoading] = useState(false)
   const [amount, setAmount] = useState('')
 
-  const getDstAssociatedAddr = async (): Promise<string | undefined> => {
-    const { splt, wallet } = window.sentre
-    if (!wallet) throw new Error('Wallet is not connected')
-    let associatedAddress = ''
-    try {
-      await splt.getAccountData(dstAddress)
-      associatedAddress = dstAddress
-    } catch (er: any) {
-      associatedAddress = await account.deriveAssociatedAddress(
-        dstAddress,
-        mint,
-      )
-      try {
-        await splt.getAccountData(associatedAddress)
-      } catch (er) {
-        await splt.initializeAccount(mint, dstAddress, wallet)
-      }
-    } finally {
-      return associatedAddress
-    }
-  }
-
   const transfer = async () => {
+    if (!isAddress(dstAddress))
+      return window.notify({
+        type: 'error',
+        description: 'Invalid wallet address',
+      })
     setLoading(true)
     try {
-      const { splt, wallet, lamports } = window.sentre
+      const { wallet, lamports } = window.sentre
       if (!wallet) return
       // transfer lamports
       const amountTransfer = utils.decimalize(amount, decimals)
       if (mint === SOL_ADDRESS) {
         const txId = await lamports.transfer(amountTransfer, dstAddress, wallet)
+        setAmount('')
+        setDstAddress('')
         return notifySuccess('Transfer', txId)
       }
-      // transfer splt
-      const dstAssociatedAddr = await getDstAssociatedAddr()
-      if (!dstAssociatedAddr) throw new Error('Invalid destination address')
-      const { txId } = await splt.transfer(
-        amountTransfer,
-        accountAddr,
-        dstAssociatedAddr,
-        wallet,
-      )
+      const { txId } = await utility.safeTransfer({
+        amount: new BN(amountTransfer.toString()),
+        tokenAddress: mint,
+        dstWalletAddress: dstAddress,
+      })
       setAmount('')
       setDstAddress('')
       return notifySuccess('Transfer', txId)
