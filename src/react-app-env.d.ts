@@ -82,12 +82,3 @@ declare module '@senhub/context' {
 declare module '@senhub/providers' {
   export * from 'os/providers'
 }
-
-/**
- * Declare namespace
- */
-declare namespace JSX {
-  interface IntrinsicElements {
-    'ion-icon': any
-  }
-}

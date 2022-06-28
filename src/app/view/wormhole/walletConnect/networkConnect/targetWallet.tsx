@@ -75,7 +75,7 @@ const TargetWallet = () => {
   }, [dispatch, getTargetEtherWallet])
 
   const onChooseWallet = async (value: ChainId) => {
-    let sourceChain = CHAIN_ID_SOLANA
+    let sourceChain: ChainId = CHAIN_ID_SOLANA
     if (value === CHAIN_ID_SOLANA) {
       sourceChain = CHAIN_ID_ETH
       try {
