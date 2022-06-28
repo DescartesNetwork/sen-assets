@@ -61,7 +61,7 @@ const AccountCard = ({
             </Col>
             {/* 24h Change */}
             <Col xs={12} md={6}>
-              <DayChangeItem mint={!isSol ? mint : SOL_ADDRESS} />
+              <DayUpdateChangeItem mint={!isSol ? mint : SOL_ADDRESS} />
             </Col>
           </Row>
         </Col>
