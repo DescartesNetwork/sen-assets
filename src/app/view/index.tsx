@@ -46,7 +46,7 @@ const View = () => {
     <Layout
       style={{
         height: '90vh',
-        padding: '0 0 10px 10px',
+        padding: '0 0 12px 16px',
         margin: '0 -12px -12px -12px',
       }}
       className="scrollbar"
@@ -84,7 +84,7 @@ const View = () => {
         <Content
           style={{
             overflow: 'auto',
-            padding: !isMobile ? '0 12px' : '0px 12px 0px 0px',
+            padding: !isMobile ? '0px 16px 0px 24px' : '0px 12px 0px 0px',
           }}
         >
           <Switch>
@@ -96,7 +96,7 @@ const View = () => {
             <Route exact path={`/app/${appId}/nfts-asset`} component={NFTs} />
             <Route
               exact
-              path={`/app/${appId}/nft-asset/:mintNFT`}
+              path={`/app/${appId}/nfts-asset/:mintNFT`}
               component={DetailsNFT}
             />
             <Route exact path={`/app/${appId}/sweepers`} component={Sweepers} />

@@ -16,7 +16,7 @@ type ListNFTsProps = {
 const {
   manifest: { appId },
 } = configs
-const nftPath = '/app/' + appId + '/nft-asset'
+const nftPath = '/app/' + appId + '/nfts-asset'
 
 const ListNFTs = ({ searchText }: ListNFTsProps) => {
   const {

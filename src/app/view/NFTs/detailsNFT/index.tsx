@@ -8,11 +8,13 @@ import CardDescription from './cardDescription'
 import useNftMetaData from 'app/hooks/useNftMetaData'
 import Logo from './logo'
 import ModalSendOneNFT from '../modalSendNFT/modalSendOneNFT'
+import PageNotFound from 'app/components/pageNotFound'
 
 const DetailsNFT = () => {
   let { mintNFT } = useParams<{ mintNFT: string }>()
-  const { metadata } = useNftMetaData(mintNFT)
+  const { metadata, loading } = useNftMetaData(mintNFT)
   const metadataData = metadata?.data.data
+  if (!metadataData && !loading) return <PageNotFound />
 
   return (
     <Row gutter={[16, 16]} justify="center" align="middle">
