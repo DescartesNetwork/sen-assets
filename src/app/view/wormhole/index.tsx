@@ -1,6 +1,5 @@
 import { Card, Col, Row, Space, Typography } from 'antd'
 import WormAction from './actionNext'
-import WormTitle from './wormTitle'
 import WormWallet from './walletConnect'
 import SelectMintInput from 'app/view/wormhole/sourceInput'
 import History from '../history'
@@ -11,14 +10,13 @@ const WormHole = () => {
       <Col xs={24} md={16} lg={16} xl={16} xxl={12}>
         <Space direction="vertical" size={24} style={{ width: '100%' }}>
           <Typography.Title level={2}>Portal Bridge</Typography.Title>
-          <Card className="card-page-container">
-            <Row gutter={[14, 14]}>
-              <Col span={24}>
-                <WormTitle />
-              </Col>
-              <Col span={24}>
-                <WormWallet />
-              </Col>
+          <Card
+            className="card-page-container"
+            bodyStyle={{ padding: 0 }}
+            bordered={false}
+          >
+            <WormWallet />
+            <Row gutter={[14, 14]} style={{ padding: 24 }}>
               <Col span={24}>
                 <SelectMintInput />
               </Col>
@@ -27,7 +25,7 @@ const WormHole = () => {
               </Col>
             </Row>
           </Card>
-          <Card className="card-page-container">
+          <Card className="card-page-container" bordered={false}>
             <History />
           </Card>
         </Space>
