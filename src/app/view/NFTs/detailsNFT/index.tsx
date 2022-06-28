@@ -1,4 +1,6 @@
+import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { useAccount, useWallet } from '@senhub/providers'
 
 import { Row, Col, Card, Typography } from 'antd'
 import CardNFT from '../cardNFT'
@@ -13,7 +15,33 @@ import PageNotFound from 'app/components/pageNotFound'
 const DetailsNFT = () => {
   let { mintNFT } = useParams<{ mintNFT: string }>()
   const { metadata, loading } = useNftMetaData(mintNFT)
+  const [isShowSendBtn, setIsShowSendBtn] = useState(false)
+
+  const { accounts } = useAccount()
+  const {
+    wallet: { address: walletAddress },
+  } = useWallet()
   const metadataData = metadata?.data.data
+
+  const checkIsHasNFT = useCallback(async () => {
+    const { splt } = window.sentre
+    const nftTokenAccount = await splt.deriveAssociatedAddress(
+      walletAddress,
+      mintNFT,
+    )
+    if (
+      accounts[nftTokenAccount] &&
+      Number(accounts[nftTokenAccount].amount.toString()) === 1
+    )
+      return setIsShowSendBtn(true)
+
+    return setIsShowSendBtn(false)
+  }, [accounts, mintNFT, walletAddress])
+
+  useEffect(() => {
+    checkIsHasNFT()
+  }, [checkIsHasNFT])
+
   if (!metadataData && !loading) return <PageNotFound />
 
   return (
@@ -35,7 +63,7 @@ const DetailsNFT = () => {
                   </Typography.Title>
                 </Col>
                 <Col>
-                  <ModalSendOneNFT mintNFT={mintNFT} />
+                  {isShowSendBtn && <ModalSendOneNFT mintNFT={mintNFT} />}
                 </Col>
                 <Col span={24}>
                   <Logo name={metadataData?.name} mintAddress={mintNFT} />

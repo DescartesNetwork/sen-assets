@@ -11,16 +11,15 @@ const {
 } = configs
 
 const useOwnerNFT = (ownerPublickey: string) => {
-  const [nfts, setNfts] = useState<MetadataDataType[]>([])
+  const [nfts, setNfts] = useState<MetadataDataType[]>()
   const [nftsFiltered, setNftFiltered] = useState<MetadataDataType[]>()
   const { accounts } = useAccount()
 
   const fetchNFTs = useCallback(async () => {
-    if (!ownerPublickey) return setNfts([])
+    if (!ownerPublickey) return setNfts(undefined)
     const nftsFetching = await DataLoader.load(
       'findDataByOwner' + ownerPublickey,
       () => metaplexNFT.findDataByOwner(ownerPublickey),
-      { cache: { ttl: 99999999 } },
     )
     setNfts(nftsFetching)
   }, [ownerPublickey])
@@ -30,6 +29,7 @@ const useOwnerNFT = (ownerPublickey: string) => {
   }, [fetchNFTs])
 
   const filterNFTs = useCallback(async () => {
+    if (!nfts) return setNftFiltered(undefined)
     const { splt } = window.sentre
     let nftsFiltered: MetadataDataType[] = []
     await Promise.all(
