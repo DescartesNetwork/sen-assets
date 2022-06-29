@@ -66,9 +66,9 @@ const ListTokenSweep = forwardRef(
       onSelectAll: (isSelectAll: boolean) => {
         let accountSelected: Record<string, boolean> = {}
         if (isSelectAll) {
-          for (const accAddr in accounts) {
+          listAccounts.forEach((accAddr) => {
             accountSelected[accAddr] = true
-          }
+          })
         }
         setAccountsSelected(accountSelected)
       },
