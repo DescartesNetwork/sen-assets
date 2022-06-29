@@ -131,7 +131,13 @@ const SendMultiNFTs = () => {
             </Row>
           </Col>
           <Col span={24}>
-            <Button type="primary" block onClick={onSend} loading={loading}>
+            <Button
+              type="primary"
+              block
+              onClick={onSend}
+              loading={loading}
+              disabled={totalNftSelected === 0}
+            >
               Send
             </Button>
           </Col>
