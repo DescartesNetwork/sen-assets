@@ -17,7 +17,7 @@ const Price = ({
     <span style={{ color: colorized ? color : 'inherit' }}>
       {!cgkData?.price
         ? '--'
-        : `$${numeric(cgkData?.price).format('0,0.[00]')}`}
+        : `$${numeric(cgkData?.price).format('0,0.[0000000000]')}`}
     </span>
   )
 }
