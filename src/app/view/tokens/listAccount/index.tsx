@@ -62,7 +62,7 @@ const ListAccount = () => {
       <Col span={isMobile ? 24 : undefined}>
         <Search onChange={onSearch} />
       </Col>
-      <Col span={24}>
+      <Col span={24} style={{ paddingTop: 12 }}>
         <AccountCard
           accountAddr={wallet.address}
           active={accountSelected === wallet.address}
