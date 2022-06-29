@@ -40,7 +40,6 @@ const CardCleanUp = () => {
         <Col span={24}>
           <Typography.Text style={{ fontSize: '12px' }}>
             Help clean up your tokens when the value is $0.
-            <Typography.Link href="/"> Read More</Typography.Link>
           </Typography.Text>
         </Col>
         <Col span={24}>
