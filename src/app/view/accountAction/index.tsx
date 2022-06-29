@@ -1,24 +1,14 @@
-import { Card, Col, Row } from 'antd'
-import Header from './header/header'
+import { Col, Row } from 'antd'
 import Body from './body'
 
-const Balance = () => {
+const AccountAction = () => {
   return (
-    <Card
-      className="card-page"
-      bodyStyle={{ padding: 0 }}
-      style={{ overflow: 'hidden' }}
-    >
-      <Row>
-        <Col span={24}>
-          <Header />
-        </Col>
-        <Col span={24}>
-          <Body />
-        </Col>
-      </Row>
-    </Card>
+    <Row gutter={[24, 24]}>
+      <Col span={24}>
+        <Body />
+      </Col>
+    </Row>
   )
 }
 
-export default Balance
+export default AccountAction

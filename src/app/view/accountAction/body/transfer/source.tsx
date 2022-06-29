@@ -3,6 +3,7 @@ import { MintSymbol } from 'shared/antd/mint'
 import NumericInput from 'shared/antd/numericInput'
 
 import { useMintAccount } from 'app/hooks/useMintAccount'
+import { numeric } from 'shared/util'
 
 const Source = ({
   accountAddr,
@@ -14,11 +15,16 @@ const Source = ({
   value: string
 }) => {
   const mintAccount = useMintAccount(accountAddr)
-
   return (
     <Row gutter={[8, 8]}>
-      <Col span={24}>
+      <Col flex="auto">
         <Typography.Text>Amount</Typography.Text>
+      </Col>
+      <Col>
+        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+          Available: {numeric(mintAccount.balance).format('0,0.[00]a')}{' '}
+          <MintSymbol mintAddress={mintAccount.mint} />
+        </Typography.Text>
       </Col>
       <Col span={24}>
         <NumericInput
