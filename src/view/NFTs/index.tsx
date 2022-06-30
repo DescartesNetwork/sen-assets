@@ -16,7 +16,7 @@ const NFTs = () => {
   return (
     <Row gutter={[24, 24]} justify="center" align="middle">
       <Col flex="auto">
-        <Typography.Title level={2}>Sen Assets</Typography.Title>
+        <Typography.Title level={2}>NFT Assets</Typography.Title>
       </Col>
       <Col span={isMobile ? 24 : undefined}>
         <Search

@@ -45,7 +45,7 @@ const View = () => {
   return (
     <Layout
       style={{
-        height: '90vh',
+        height: '88vh',
         padding: '0 0 12px 16px',
         margin: '0 -12px -12px -12px',
       }}
@@ -86,6 +86,7 @@ const View = () => {
             overflow: 'auto',
             padding: !isMobile ? '0px 16px 0px 24px' : '0px 16px 0px 0px',
           }}
+          className="scrollbar"
         >
           <Switch>
             <Route
@@ -113,7 +114,11 @@ const View = () => {
       {isMobile && (
         <div className="fixed-widgets">
           <div onClick={onToggle}>
-            <Avatar icon={<IonIcon name="list-outline" />} />
+            <Avatar
+              shape="circle"
+              style={{ backgroundColor: '#FFFFFF' }}
+              icon={<IonIcon name="list-outline" style={{ color: 'red' }} />}
+            />
           </div>
         </div>
       )}

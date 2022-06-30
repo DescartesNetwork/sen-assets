@@ -47,6 +47,7 @@ const CardCleanUp = () => {
             icon={<IonIcon name="sparkles-outline" />}
             block
             onClick={() => history.push(appPath + '/sweepers')}
+            type="ghost"
           >
             Sweepers
           </Button>

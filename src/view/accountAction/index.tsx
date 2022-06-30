@@ -3,7 +3,7 @@ import Body from './body'
 
 const AccountAction = () => {
   return (
-    <Row gutter={[24, 24]}>
+    <Row>
       <Col span={24}>
         <Body />
       </Col>

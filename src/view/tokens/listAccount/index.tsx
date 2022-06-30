@@ -57,7 +57,7 @@ const ListAccount = () => {
   return (
     <Row gutter={[12, 12]}>
       <Col flex="auto">
-        <Typography.Title level={2}>Tokens Asset</Typography.Title>
+        <Typography.Title level={2}>Token Assets</Typography.Title>
       </Col>
       <Col span={isMobile ? 24 : undefined}>
         <Search onChange={onSearch} />

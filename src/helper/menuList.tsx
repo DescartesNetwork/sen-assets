@@ -14,12 +14,12 @@ const appPath = '/app/' + appId
 export const MENU_LIST = [
   {
     key: appPath + '/tokens-asset',
-    label: 'Tokens Asset',
+    label: 'Token Assets',
     icon: <Icon component={TokenAssets} style={{ fontSize: '24px' }} />,
   },
   {
     key: appPath + '/nfts-asset',
-    label: 'NFTs Asset',
+    label: 'NFT Assets',
     icon: <Icon component={NFTsAssets} style={{ fontSize: '24px' }} />,
   },
   {
