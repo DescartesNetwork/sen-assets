@@ -10,15 +10,25 @@ export type Attribute = {
 const ItemAttribute = ({ attribute }: { attribute: Attribute }) => {
   return (
     <Card className="nft-card-item-attribute" bodyStyle={{ padding: 12 }}>
-      <Space direction="vertical" style={{ width: '100%' }} align="center">
-        <Typography.Text style={{ fontSize: 12 }}>
-          {attribute.trait_type}
-        </Typography.Text>
-        <Typography.Text style={{ fontSize: 14 }} strong>
-          {attribute.value}
-        </Typography.Text>
-        {/* <Typography.Text type="secondary">12% have this trait</Typography.Text> */}
-      </Space>
+      <Row gutter={[0, 4]} align="middle">
+        <Col span={24} style={{ textAlign: 'center' }}>
+          <Typography.Text
+            ellipsis={{ tooltip: true }}
+            style={{ fontSize: 12 }}
+          >
+            {attribute.trait_type}
+          </Typography.Text>
+        </Col>
+        <Col span={24} style={{ textAlign: 'center' }}>
+          <Typography.Text
+            ellipsis={{ tooltip: true }}
+            style={{ fontSize: 14 }}
+            strong
+          >
+            {attribute.value}
+          </Typography.Text>
+        </Col>
+      </Row>
     </Card>
   )
 }
