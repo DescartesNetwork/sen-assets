@@ -1,4 +1,4 @@
-import { Net } from 'shared/runtime'
+import { Net, rpc } from 'shared/runtime'
 import { Utility } from '@sentre/utility'
 import metaplexNFT from 'app/lib/metaplex'
 import SafeWallet from 'app/helper/safeWallet'
@@ -40,7 +40,7 @@ const conf: Record<Net, Conf> = {
   mainnet: {
     node: 'https://api.mainnet-beta.solana.com',
     sntrAddress: 'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M',
-    metaplexNFT: new metaplexNFT('mainnet-beta'),
+    metaplexNFT: new metaplexNFT(rpc),
     utility: new Utility(
       new SafeWallet(),
       'https://api.mainnet-beta.solana.com',
