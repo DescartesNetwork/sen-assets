@@ -91,7 +91,7 @@ const SendMultiNFTs = () => {
       </Button>
 
       <Modal visible={visible} footer={false} onCancel={onCloseModal}>
-        <Row gutter={[8, 8]}>
+        <Row gutter={[16, 16]}>
           <Col span={24}>
             <Typography.Title level={4}>Send NFT</Typography.Title>
           </Col>
@@ -114,7 +114,7 @@ const SendMultiNFTs = () => {
           </Col>
           <Col span={24}>
             <Row
-              gutter={[8, 8]}
+              gutter={[16, 16]}
               className="scrollbar"
               style={{ maxHeight: 400, padding: 20 }}
             >
@@ -137,6 +137,7 @@ const SendMultiNFTs = () => {
               onClick={onSend}
               loading={loading}
               disabled={totalNftSelected === 0}
+              size="large"
             >
               Send
             </Button>

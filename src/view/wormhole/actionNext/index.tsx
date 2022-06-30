@@ -26,6 +26,7 @@ const WormAction = () => {
             type="primary"
             onClick={() => setVisible(true)}
             block
+            size="large"
           >
             Reopen
           </Button>
@@ -35,6 +36,7 @@ const WormAction = () => {
             type="primary"
             onClick={() => setVisible(true)}
             block
+            size="large"
           >
             Next
           </Button>

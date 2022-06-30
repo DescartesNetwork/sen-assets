@@ -81,7 +81,7 @@ const ModalSendToken = () => {
         centered
         className="modal-sen-assets"
       >
-        <Row gutter={[8, 8]}>
+        <Row gutter={[16, 16]}>
           <Col span={24}>
             <Typography.Title level={4}>Send tokens</Typography.Title>
           </Col>
@@ -101,7 +101,13 @@ const ModalSendToken = () => {
             />
           </Col>
           <Col span={24}>
-            <Button type="primary" block loading={loading} onClick={onSend}>
+            <Button
+              type="primary"
+              block
+              loading={loading}
+              onClick={onSend}
+              size="large"
+            >
               Send
             </Button>
           </Col>

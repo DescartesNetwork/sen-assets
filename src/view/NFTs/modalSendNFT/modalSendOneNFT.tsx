@@ -64,7 +64,7 @@ const ModalSendOneNFT = ({ mintNFT }: ModalSendNFTProps) => {
       </Button>
 
       <Modal visible={visible} footer={false} onCancel={onCloseModal}>
-        <Row gutter={[8, 8]}>
+        <Row gutter={[16, 16]}>
           <Col span={24}>
             <Typography.Title level={4}>Send NFT</Typography.Title>
           </Col>
@@ -80,11 +80,17 @@ const ModalSendOneNFT = ({ mintNFT }: ModalSendNFTProps) => {
               }}
             />
           </Col>
-          <Col span={24} style={{ margin: 10 }}>
+          <Col span={24} style={{ padding: 10 }}>
             <CardSendNFT mintNFT={mintNFT} />
           </Col>
           <Col span={24}>
-            <Button type="primary" block onClick={onSend} loading={loading}>
+            <Button
+              type="primary"
+              block
+              onClick={onSend}
+              loading={loading}
+              size="large"
+            >
               Send
             </Button>
           </Col>

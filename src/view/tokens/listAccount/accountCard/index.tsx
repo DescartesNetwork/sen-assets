@@ -32,7 +32,7 @@ const AccountCard = ({
   return (
     <Card
       className="account-item"
-      bodyStyle={{ padding: 12 }}
+      bodyStyle={{ padding: 16 }}
       onClick={() => onClick(accountAddr)}
     >
       <Row>

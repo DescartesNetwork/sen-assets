@@ -70,6 +70,7 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
           block
           loading={loading}
           disabled={!Number(amount) || !account.isAddress(dstAddress)}
+          size="large"
         >
           Send
         </Button>

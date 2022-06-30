@@ -28,11 +28,7 @@ const Body = () => {
       style={{ boxShadow: 'none' }}
       bodyStyle={{ padding: 0 }}
     >
-      <Tabs
-        activeKey={activeKey}
-        onChange={setActiveKey}
-        style={{ padding: 16, paddingTop: 4 }}
-      >
+      <Tabs activeKey={activeKey} onChange={setActiveKey}>
         <Tabs.TabPane tab="Send" key="Send">
           <Transfer accountAddr={accountSelected} />
         </Tabs.TabPane>
