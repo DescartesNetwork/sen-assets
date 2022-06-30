@@ -1,6 +1,6 @@
 {
   "name": "sen-assets",
-  "version": "2.0.1",
+  "version": "2.3.0",
   "dependencies": {
     "@certusone/wormhole-sdk": "^0.4.4",
     "@metamask/detect-provider": "^1.2.0",
@@ -46,7 +46,7 @@
   "scripts": {
     "start": "craco start",
     "build": "yarn build:production",
-    "build:production": "craco --max_old_space_size=4096 build",
+    "build:production": "craco build",
     "build:staging": "env-cmd -f .env.staging craco build",
     "test": "craco test",
     "predeploy": "yarn build:production",
