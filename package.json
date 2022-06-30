@@ -47,11 +47,11 @@
     "start": "craco start",
     "build": "yarn build:production",
     "build:production": "craco --max_old_space_size=4096 build",
-    "build:staging": "env-cmd -f .env.staging craco build",
+    "build:staging": "env-cmd -f .env.staging craco --max_old_space_size=4096 build",
     "test": "craco test",
     "predeploy": "yarn build:production",
     "deploy": "gh-pages -d build",
-    "preserve": "npm run build:staging",
+    "preserve": "yarn build:staging",
     "serve": "serve -s build -l 3000",
     "manifest": "NODE_ENV=production node ./manifest-builder.js"
   },
