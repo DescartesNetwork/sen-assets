@@ -46,7 +46,7 @@
   "scripts": {
     "start": "craco start",
     "build": "npm run build:production",
-    "build:production": "craco build",
+    "build:production": "craco build --max-old-space-size=4096",
     "build:staging": "env-cmd -f .env.staging craco build",
     "test": "craco test",
     "predeploy": "npm run build:production",
