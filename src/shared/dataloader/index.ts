@@ -73,7 +73,7 @@ class SingleFlight {
 
     callback()
       .then((response) => {
-        SingleFlightCache.set(request.key, response, this.config.cache)
+        SingleFlightCache.set(request.key, response)
         request.resolves(response)
       })
       .catch((error) => {

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
 import { account } from '@senswap/sen-js'
-import axios from 'axios'
 
 import { MetadataType } from 'app/lib/metaplex'
 import configs from 'app/configs'
@@ -25,17 +24,16 @@ const useNftMetaData = (mintAddress: string) => {
       const metadata = await DataLoader.load(
         'getNftMetadata' + mintAddress,
         () => metaplexNFT.getNftMetadata(mintAddress),
-        { cache: { ttl: 99999999 } },
       )
       setMetaData(metadata)
 
       const url = metadata.data.data.uri
       const response = await DataLoader.load(
         'getNftMetadataUrl' + mintAddress,
-        () => axios.get(url),
-        { cache: { ttl: 99999999 } },
+        // Error with axios
+        () => fetch(url).then((val) => val.json()),
       )
-      setNftInfo(response.data)
+      setNftInfo(response)
     } catch (error: any) {
       setMetaData(undefined)
       setNftInfo(undefined)
