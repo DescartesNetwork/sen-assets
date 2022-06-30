@@ -1,6 +1,6 @@
 {
-  "name": "senhub",
-  "version": "2.2.2",
+  "name": "sen-assets",
+  "version": "2.0.1",
   "dependencies": {
     "@certusone/wormhole-sdk": "^0.4.4",
     "@metamask/detect-provider": "^1.2.0",
@@ -46,8 +46,8 @@
   "scripts": {
     "start": "craco start",
     "build": "yarn build:production",
-    "build:production": "craco build",
-    "build:staging": "env-cmd -f .env.staging craco build",
+    "build:production": "craco --max_old_space_size=4096 build",
+    "build:staging": "env-cmd -f .env.staging craco build --max_old_space_size=4096",
     "test": "craco test",
     "predeploy": "yarn build:production",
     "deploy": "gh-pages -d build",
