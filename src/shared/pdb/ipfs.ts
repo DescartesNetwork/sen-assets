@@ -1,5 +1,5 @@
 import { create, isIPFS } from 'ipfs-core'
-import { asyncWait } from 'shared/util'
+import { util } from '@sentre/senhub'
 
 class IPFS {
   private _ipfs: any = async () => {
@@ -7,7 +7,7 @@ class IPFS {
       if (!window.ipfs) window.ipfs = await create()
       return window.ipfs
     } catch (er) {
-      await asyncWait(500)
+      await util.asyncWait(500)
       return await this._ipfs()
     }
   }
