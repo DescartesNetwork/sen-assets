@@ -1,4 +1,4 @@
-import { Col, Row, Space, Tooltip, Typography } from 'antd'
+import { Col, Row, Tooltip, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import { MintAvatar, MintSymbol, MintName } from 'shared/antd/mint'
 
