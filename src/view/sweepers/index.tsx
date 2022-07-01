@@ -31,7 +31,11 @@ const Sweepers = () => {
   return (
     <Row justify="center" align="middle">
       <Col xs={24} md={16} lg={16} xl={16} xxl={12}>
-        <Space direction="vertical" size={24} style={{ maxWidth: 692 }}>
+        <Space
+          direction="vertical"
+          size={24}
+          style={{ width: '100%', maxWidth: 692 }}
+        >
           <Row>
             <Col flex="auto">
               <Typography.Title level={2}>Sweeper</Typography.Title>
