@@ -59,6 +59,7 @@ const View = () => {
           visible={isToggled}
           width={338}
           bodyStyle={{ padding: 0 }}
+          closeIcon={<IonIcon name="close-outline" />}
         >
           <SideBar />
         </Drawer>

@@ -14,14 +14,13 @@ import PageNotFound from 'components/pageNotFound'
 
 const DetailsNFT = () => {
   let { mintNFT } = useParams<{ mintNFT: string }>()
-  const { metadata, loading } = useNftMetaData(mintNFT)
+  const { nftInfo, loading } = useNftMetaData(mintNFT)
   const [isShowSendBtn, setIsShowSendBtn] = useState(false)
 
   const { accounts } = useAccount()
   const {
     wallet: { address: walletAddress },
   } = useWallet()
-  const metadataData = metadata?.data.data
 
   const checkIsHasNFT = useCallback(async () => {
     const { splt } = window.sentre
@@ -41,8 +40,7 @@ const DetailsNFT = () => {
   useEffect(() => {
     checkIsHasNFT()
   }, [checkIsHasNFT])
-
-  if (!metadataData && !loading) return <PageNotFound />
+  if (!nftInfo && !loading) return <PageNotFound />
 
   return (
     <Row gutter={[16, 16]} justify="center" align="middle">
@@ -58,15 +56,13 @@ const DetailsNFT = () => {
             <Col xs={24} md={18}>
               <Row gutter={[8, 8]}>
                 <Col flex="auto">
-                  <Typography.Title level={3}>
-                    {metadataData?.name}
-                  </Typography.Title>
+                  <Typography.Title level={3}>{nftInfo?.name}</Typography.Title>
                 </Col>
                 <Col>
                   {isShowSendBtn && <ModalSendOneNFT mintNFT={mintNFT} />}
                 </Col>
                 <Col span={24}>
-                  <Logo name={metadataData?.name} mintAddress={mintNFT} />
+                  <Logo name={nftInfo?.name} mintAddress={mintNFT} />
                 </Col>
                 <Col span={24}>
                   <CardAttributes mintNFT={mintNFT} />

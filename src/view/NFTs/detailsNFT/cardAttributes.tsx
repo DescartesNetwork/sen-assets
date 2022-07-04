@@ -53,7 +53,7 @@ const CardAttributes = ({ mintNFT }: { mintNFT: string }) => {
       >
         <Row gutter={[24, 24]} style={{ paddingTop: 16 }}>
           {nftInfo?.attributes?.map((item: Attribute, index: number) => (
-            <Col md={8} xs={''} key={index}>
+            <Col md={6} xs={12} key={index}>
               <ItemAttribute attribute={item} />
             </Col>
           ))}

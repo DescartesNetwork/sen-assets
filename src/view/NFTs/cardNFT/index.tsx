@@ -18,8 +18,7 @@ const CardNFT = ({
   isShowName = true,
   size,
 }: CardNFTProps) => {
-  const { metadata, loading, nftInfo } = useNftMetaData(mintAddress)
-  const metadataData = metadata?.data.data
+  const { loading, nftInfo } = useNftMetaData(mintAddress)
 
   return (
     <Spin spinning={loading}>
@@ -39,9 +38,7 @@ const CardNFT = ({
         {isShowName && (
           <Col span={24} style={{ textAlign: 'left' }}>
             <Space size={4} direction="vertical">
-              <Typography.Title level={5}>
-                {metadataData?.name}
-              </Typography.Title>
+              <Typography.Title level={5}>{nftInfo?.name}</Typography.Title>
               <Address address={mintAddress} />
             </Space>
           </Col>
