@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useAccount, useUI } from '@sentre/senhub'
 
 import { Button, Card, Col, Divider, Modal, Row, Space } from 'antd'
+import IonIcon from '@sentre/antd-ionicon'
 import AccountAction from 'view/accountAction'
 import LogoItem from './logoItem'
 import ValueItem from './value'
@@ -92,6 +93,7 @@ const AccountCard = ({
         bodyStyle={{
           borderRadius: '16px',
         }}
+        closeIcon={<IonIcon name="close-outline" />}
       >
         <AccountAction />
       </Modal>

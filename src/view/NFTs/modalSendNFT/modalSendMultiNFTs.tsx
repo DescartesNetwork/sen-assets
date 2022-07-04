@@ -90,7 +90,12 @@ const SendMultiNFTs = () => {
         Send
       </Button>
 
-      <Modal visible={visible} footer={false} onCancel={onCloseModal}>
+      <Modal
+        visible={visible}
+        footer={false}
+        onCancel={onCloseModal}
+        closeIcon={<IonIcon name="close-outline" />}
+      >
         <Row gutter={[16, 16]}>
           <Col span={24}>
             <Typography.Title level={4}>Send NFT</Typography.Title>

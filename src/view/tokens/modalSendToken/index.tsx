@@ -80,6 +80,7 @@ const ModalSendToken = () => {
         onCancel={onCloseModal}
         centered
         className="modal-sen-assets"
+        closeIcon={<IonIcon name="close-outline" />}
       >
         <Row gutter={[16, 16]}>
           <Col span={24}>
