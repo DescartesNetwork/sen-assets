@@ -38,7 +38,7 @@ const Sweepers = () => {
         >
           <Row>
             <Col flex="auto">
-              <Typography.Title level={2}>Sweeper</Typography.Title>
+              <Typography.Title level={2}>Token Sweeper</Typography.Title>
             </Col>
             <Col>
               <Button
@@ -61,7 +61,7 @@ const Sweepers = () => {
                     name="information-circle-outline"
                     style={{ fontSize: 14 }}
                   />{' '}
-                  Your tokens with a value of $0 will be listed below.
+                  Your unused account(s) with 0 token will be listed below.
                 </Typography.Text>
               </Col>
               <Col>

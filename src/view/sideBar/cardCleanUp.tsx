@@ -29,17 +29,16 @@ const CardCleanUp = () => {
       <Row gutter={[8, 8]}>
         <Col span={24}>
           <Typography.Text style={{ fontSize: '12px' }}>
-            Extra Features
+            New Feature
           </Typography.Text>
         </Col>
         <Col span={24}>
-          <Typography.Title level={5}>
-            SenAsset Product Advertisement
-          </Typography.Title>
+          <Typography.Title level={5}>Token Sweeper</Typography.Title>
         </Col>
         <Col span={24}>
           <Typography.Text style={{ fontSize: '12px' }}>
-            Help clean up your tokens when the value is $0.
+            Reclaim your renting fee for unused account(s) (accounts with 0
+            token).
           </Typography.Text>
         </Col>
         <Col span={24}>
@@ -49,7 +48,7 @@ const CardCleanUp = () => {
             onClick={() => history.push(appPath + '/sweepers')}
             type="ghost"
           >
-            Sweepers
+            Sweep now
           </Button>
         </Col>
       </Row>
