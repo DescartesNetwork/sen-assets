@@ -21,7 +21,7 @@ const LogoItem = ({ mint }: LogoItemProps) => {
               <Tooltip title={`Mint Address: ${mint}`}>
                 <IonIcon
                   name="information-circle-outline"
-                  style={{ fontSize: 14 }}
+                  style={{ fontSize: 14, cursor: 'pointer' }}
                 />
               </Tooltip>
             </Typography.Title>
