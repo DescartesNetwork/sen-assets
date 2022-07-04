@@ -87,11 +87,11 @@ const ListTokenSweep = forwardRef(
             </Col>
           ))}
         </Row>
-        <Space>
+        <Space size={8}>
           <Typography.Text type="danger">
             {totalAccountsSelected}
-          </Typography.Text>{' '}
-          selected
+          </Typography.Text>
+          <Typography.Text>selected</Typography.Text>
         </Space>
       </Space>
     )
