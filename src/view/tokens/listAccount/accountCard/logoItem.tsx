@@ -17,11 +17,10 @@ const LogoItem = ({ mint }: LogoItemProps) => {
           <Col span={24}>
             <Typography.Title level={4} ellipsis={{ tooltip: true }}>
               <MintSymbol mintAddress={mint} />
-              {'  '}
               <Tooltip title={`Mint Address: ${mint}`}>
                 <IonIcon
                   name="information-circle-outline"
-                  style={{ fontSize: 14, cursor: 'pointer' }}
+                  style={{ fontSize: 14, cursor: 'pointer', paddingLeft: 10 }}
                 />
               </Tooltip>
             </Typography.Title>

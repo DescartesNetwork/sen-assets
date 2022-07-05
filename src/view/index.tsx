@@ -112,13 +112,13 @@ const View = () => {
         </Content>
       </Layout>
 
-      {isMobile && (
+      {isMobile && !isToggled && (
         <div className="fixed-widgets">
           <div onClick={onToggle}>
             <Avatar
               shape="circle"
-              style={{ backgroundColor: '#FFFFFF' }}
-              icon={<IonIcon name="list-outline" style={{ color: 'red' }} />}
+              style={{ backgroundColor: '#f9575e' }}
+              icon={<IonIcon name="list-outline" style={{ color: 'white' }} />}
             />
           </div>
         </div>

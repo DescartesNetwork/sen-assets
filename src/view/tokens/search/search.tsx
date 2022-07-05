@@ -50,7 +50,7 @@ const Search = ({
     for (const accAddr in accounts) {
       const account = accounts[accAddr]
       if (keyword && keyword.length > KEY_SIZE) {
-        const tokens = await tokenProvider.find(keyword)
+        const tokens = await tokenProvider.find(keyword, 0)
         const mints = tokens.map((token) => token.address)
         if (!mints.includes(account.mint)) continue
       }

@@ -37,7 +37,7 @@ const AccountCard = ({
       onClick={() => onClick(accountAddr)}
     >
       <Row>
-        <Col md={{ span: 6, order: 1 }} xs={{ span: 12, order: 1 }}>
+        <Col md={{ span: 6, order: 1 }} xs={{ span: 18, order: 1 }}>
           {/* Token Info */}
           <LogoItem mint={!isSol ? mint : SOL_ADDRESS} />
         </Col>
@@ -69,7 +69,7 @@ const AccountCard = ({
         {/* Manage */}
         <Col
           md={{ span: 3, order: 3 }}
-          xs={{ span: 12, order: 2 }}
+          xs={{ span: 6, order: 2 }}
           style={{ textAlign: 'right' }}
         >
           <Space style={{ height: '100%' }} align="center">
