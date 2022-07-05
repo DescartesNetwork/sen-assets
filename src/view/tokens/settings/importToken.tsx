@@ -1,12 +1,12 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 import { account } from '@senswap/sen-js'
 import { useAccount, useMint, useUI, useWallet } from '@sentre/senhub'
 
 import { Row, Col, Typography, Button, Modal } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
+import { MintSelection } from 'shared/antd/mint'
 
 import { notifyError, notifySuccess } from 'helper'
-import { MintSelection } from 'shared/antd/mint'
 
 const ImportToken = () => {
   const [visible, setVisible] = useState(false)
@@ -53,25 +53,22 @@ const ImportToken = () => {
   }
 
   return (
-    <Row gutter={[16, 16]}>
-      <Col span={24}>
-        <Button
-          type="primary"
-          icon={<IonIcon name="add-outline" />}
-          onClick={() => setVisible(true)}
-          block
-        >
-          Import token
-        </Button>
-      </Col>
+    <Fragment>
+      <Button
+        type="primary"
+        icon={<IonIcon name="add-outline" />}
+        onClick={() => setVisible(true)}
+        block
+      >
+        Import token
+      </Button>
       <Modal
         visible={visible}
+        footer={false}
         onCancel={() => setVisible(false)}
-        closeIcon={<IonIcon name="close-outline" />}
-        footer={null}
+        width={445}
         centered
-        destroyOnClose
-        style={{ maxWidth: 455 }}
+        closeIcon={<IonIcon name="close-outline" />}
       >
         <Row gutter={[16, 16]}>
           <Col span={24}>
@@ -103,7 +100,7 @@ const ImportToken = () => {
           </Col>
         </Row>
       </Modal>
-    </Row>
+    </Fragment>
   )
 }
 
