@@ -116,6 +116,7 @@ const View = () => {
         <div className="fixed-widgets">
           <div onClick={onToggle}>
             <Avatar
+              className="fixed-widgets-icon"
               shape="circle"
               style={{ backgroundColor: '#f9575e' }}
               icon={<IonIcon name="list-outline" style={{ color: 'white' }} />}
