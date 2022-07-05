@@ -67,26 +67,6 @@ const SideBar = () => {
                 onClick={onSelect}
               />
             </Col>
-            <Col span={24}>
-              <Menu
-                mode="inline"
-                style={{ border: 'none', fontSize: '16px' }}
-                selectedKeys={[selectedKey]}
-                className="sidebar-menu"
-                items={MENU_LIST}
-                onClick={onSelect}
-              />
-            </Col>
-            <Col span={24}>
-              <Menu
-                mode="inline"
-                style={{ border: 'none', fontSize: '16px' }}
-                selectedKeys={[selectedKey]}
-                className="sidebar-menu"
-                items={MENU_LIST}
-                onClick={onSelect}
-              />
-            </Col>
           </Row>
         </Col>
         <Col span={24}>
