@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { account, utils } from '@senswap/sen-js'
-import { isAddress } from '@sentre/utility'
 import { BN } from 'bn.js'
 
 import { Row, Col, Button } from 'antd'
@@ -8,43 +7,21 @@ import Source from './source'
 import Destination from './destination'
 
 import { useMintAccount } from 'hooks/useMintAccount'
-import { SOL_ADDRESS } from 'constant/sol'
 import { notifyError, notifySuccess } from 'helper'
-import configs from 'configs'
-
-const {
-  sol: { utility },
-} = configs
+import { useTransfer } from 'hooks/useTransfer'
 
 const Transfer = ({ accountAddr }: { accountAddr: string }) => {
   const [dstAddress, setDstAddress] = useState('')
   const { mint, decimals } = useMintAccount(accountAddr)
   const [loading, setLoading] = useState(false)
   const [amount, setAmount] = useState('')
+  const { transfer } = useTransfer()
 
-  const transfer = async () => {
-    if (!isAddress(dstAddress))
-      return window.notify({
-        type: 'error',
-        description: 'Invalid wallet address',
-      })
+  const onTransfer = async () => {
     setLoading(true)
     try {
-      const { wallet, lamports } = window.sentre
-      if (!wallet) return
-      // transfer lamports
-      const amountTransfer = utils.decimalize(amount, decimals)
-      if (mint === SOL_ADDRESS) {
-        const txId = await lamports.transfer(amountTransfer, dstAddress, wallet)
-        setAmount('')
-        setDstAddress('')
-        return notifySuccess('Transfer', txId)
-      }
-      const { txId } = await utility.safeTransfer({
-        amount: new BN(amountTransfer.toString()),
-        tokenAddress: mint,
-        dstWalletAddress: dstAddress,
-      })
+      const amountBN = new BN(utils.decimalize(amount, decimals).toString())
+      const txId = await transfer(dstAddress, amountBN, mint)
       setAmount('')
       setDstAddress('')
       return notifySuccess('Transfer', txId)
@@ -66,7 +43,7 @@ const Transfer = ({ accountAddr }: { accountAddr: string }) => {
       <Col span={24}>
         <Button
           type="primary"
-          onClick={transfer}
+          onClick={onTransfer}
           block
           loading={loading}
           disabled={!Number(amount) || !account.isAddress(dstAddress)}
