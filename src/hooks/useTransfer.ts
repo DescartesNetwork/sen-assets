@@ -8,7 +8,6 @@ import configs from 'configs'
 const {
   sol: { utility },
 } = configs
-const PLATFORM_FEE = 5000
 
 export const useTransfer = () => {
   const transfer = useCallback(
@@ -16,11 +15,7 @@ export const useTransfer = () => {
       if (!isAddress(dstAddress)) throw new Error('Invalid wallet address')
       const { wallet, lamports } = window.sentre
       if (mint === SOL_ADDRESS) {
-        return lamports.transfer(
-          BigInt(amount.toString()) - BigInt(PLATFORM_FEE),
-          dstAddress,
-          wallet,
-        )
+        return lamports.transfer(BigInt(amount.toString()), dstAddress, wallet)
       }
       const { txId } = await utility.safeTransfer({
         amount: amount,
