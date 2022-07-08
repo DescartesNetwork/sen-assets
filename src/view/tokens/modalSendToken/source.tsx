@@ -1,5 +1,6 @@
 import { Fragment } from 'react'
 import { useWallet } from '@sentre/senhub'
+import { utils } from '@senswap/sen-js'
 
 import { Row, Col, Typography, Button, Divider } from 'antd'
 import { MintSelection, MintSymbol } from 'shared/antd/mint'
@@ -8,6 +9,9 @@ import NumericInput from 'shared/antd/numericInput'
 import { useMintAccount } from 'hooks/useMintAccount'
 import { util } from '@sentre/senhub'
 import { SOL_ADDRESS } from 'constant/sol'
+
+const PLATFORM_FEE = BigInt(5000)
+const NETWORK_FEE = BigInt(5000)
 
 const Source = ({
   accountAddr,
@@ -26,7 +30,7 @@ const Source = ({
 }) => {
   const mintAccount = useMintAccount(accountAddr)
   const {
-    wallet: { address: walletAddress },
+    wallet: { address: walletAddress, lamports },
   } = useWallet()
 
   const onSelectToken = async (mint: string) => {
@@ -39,6 +43,11 @@ const Source = ({
 
     onChange(accountAddress, amount, mint)
   }
+
+  let max = mintAccount.balance
+  if (mintAddress === SOL_ADDRESS)
+    max = utils.undecimalize(lamports - PLATFORM_FEE - NETWORK_FEE, 9)
+
   return (
     <Row gutter={[8, 8]}>
       <Col flex="auto">
@@ -63,9 +72,7 @@ const Source = ({
             <Button
               type="text"
               style={{ marginRight: -7 }}
-              onClick={() =>
-                onChange(accountAddr, mintAccount.balance, mintAddress)
-              }
+              onClick={() => onChange(accountAddr, max, mintAddress)}
             >
               MAX
             </Button>

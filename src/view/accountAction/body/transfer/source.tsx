@@ -24,8 +24,9 @@ const Source = ({
     wallet: { address, lamports },
   } = useWallet()
 
-  let max = mintAccount.amount
-  if (accountAddr === address) max = lamports - PLATFORM_FEE - NETWORK_FEE
+  let max = mintAccount.balance
+  if (accountAddr === address)
+    max = utils.undecimalize(lamports - PLATFORM_FEE - NETWORK_FEE, 9)
 
   return (
     <Row gutter={[8, 8]}>
@@ -50,7 +51,7 @@ const Source = ({
             <Button
               type="text"
               style={{ marginRight: -7 }}
-              onClick={() => onChange(utils.undecimalize(max, 9))}
+              onClick={() => onChange(max)}
             >
               MAX
             </Button>
