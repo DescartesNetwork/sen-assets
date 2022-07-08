@@ -1,9 +1,14 @@
+import { utils } from '@senswap/sen-js'
+import { useWallet, util } from '@sentre/senhub'
+
 import { Row, Col, Typography, Button } from 'antd'
 import { MintSymbol } from 'shared/antd/mint'
 import NumericInput from 'shared/antd/numericInput'
 
 import { useMintAccount } from 'hooks/useMintAccount'
-import { util } from '@sentre/senhub'
+
+const PLATFORM_FEE = BigInt(5000)
+const NETWORK_FEE = BigInt(5000)
 
 const Source = ({
   accountAddr,
@@ -15,6 +20,13 @@ const Source = ({
   value: string
 }) => {
   const mintAccount = useMintAccount(accountAddr)
+  const {
+    wallet: { address, lamports },
+  } = useWallet()
+
+  let max = mintAccount.amount
+  if (accountAddr === address) max = lamports - PLATFORM_FEE - NETWORK_FEE
+
   return (
     <Row gutter={[8, 8]}>
       <Col flex="auto">
@@ -38,7 +50,7 @@ const Source = ({
             <Button
               type="text"
               style={{ marginRight: -7 }}
-              onClick={() => onChange(mintAccount.balance)}
+              onClick={() => onChange(utils.undecimalize(max, 9))}
             >
               MAX
             </Button>
