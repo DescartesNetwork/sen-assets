@@ -1,5 +1,5 @@
 import { Fragment, useState } from 'react'
-import { isAddress } from '@sentre/utility'
+
 import { utils } from '@senswap/sen-js'
 import { BN } from 'bn.js'
 
@@ -8,14 +8,9 @@ import { Button, Col, Modal, Row, Typography } from 'antd'
 import Destination from './destination'
 import Source from './source'
 
-import configs from 'configs'
 import { useMintAccount } from 'hooks/useMintAccount'
 import { notifyError, notifySuccess } from 'helper'
-import { SOL_ADDRESS } from 'constant/sol'
-
-const {
-  sol: { utility },
-} = configs
+import { useTransfer } from 'hooks/useTransfer'
 
 const ModalSendToken = () => {
   const [visible, setVisible] = useState(false)
@@ -25,35 +20,16 @@ const ModalSendToken = () => {
   const [dstAddress, setDstAddress] = useState('')
   const [amount, setAmount] = useState('')
   const { mint, decimals } = useMintAccount(accountAddr)
-
+  const { transfer } = useTransfer()
   const onCloseModal = () => {
     setVisible(false)
   }
 
   const onSend = async () => {
-    if (!isAddress(dstAddress))
-      return window.notify({
-        type: 'error',
-        description: 'Invalid wallet address',
-      })
-
     setLoading(true)
     try {
-      const { wallet, lamports } = window.sentre
-      if (!wallet) return
-      // transfer lamports
-      const amountTransfer = utils.decimalize(amount, decimals)
-      if (mint === SOL_ADDRESS) {
-        const txId = await lamports.transfer(amountTransfer, dstAddress, wallet)
-        setAmount('')
-        setDstAddress('')
-        return notifySuccess('Transfer', txId)
-      }
-      const { txId } = await utility.safeTransfer({
-        amount: new BN(amountTransfer.toString()),
-        tokenAddress: mint,
-        dstWalletAddress: dstAddress,
-      })
+      const amountBN = new BN(utils.decimalize(amount, decimals).toString())
+      const txId = await transfer(dstAddress, amountBN, mint)
       setAmount('')
       setDstAddress('')
       return notifySuccess('Transfer', txId)
