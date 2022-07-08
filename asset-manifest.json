@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.js": "/static/js/main.2e3dd45c.js",
+    "main.js": "/static/js/main.5278827b.js",
     "sen_assets.js": "/index.js",
     "static/js/src_bootstrap_tsx.89c9742b.chunk.js": "/static/js/src_bootstrap_tsx.89c9742b.chunk.js",
     "static/js/vendors-node_modules_reduxjs_toolkit_dist_redux-toolkit_esm_js.9c30d359.chunk.js": "/static/js/vendors-node_modules_reduxjs_toolkit_dist_redux-toolkit_esm_js.9c30d359.chunk.js",
@@ -10,7 +10,7 @@
     "static/js/node_modules_prop-types_index_js-node_modules_react-router-dom_esm_react-router-dom_js.d40e3fff.chunk.js": "/static/js/node_modules_prop-types_index_js-node_modules_react-router-dom_esm_react-router-dom_js.d40e3fff.chunk.js",
     "static/js/node_modules_react_index_js.772d374b.chunk.js": "/static/js/node_modules_react_index_js.772d374b.chunk.js",
     "static/css/src_bootstrap_app_tsx-src_static_images_coin98_png-src_static_images_metamask_png-src_static_-d2f771.ea585510.chunk.css": "/static/css/src_bootstrap_app_tsx-src_static_images_coin98_png-src_static_images_metamask_png-src_static_-d2f771.ea585510.chunk.css",
-    "static/js/src_bootstrap_app_tsx-src_static_images_coin98_png-src_static_images_metamask_png-src_static_-d2f771.5cb5f623.chunk.js": "/static/js/src_bootstrap_app_tsx-src_static_images_coin98_png-src_static_images_metamask_png-src_static_-d2f771.5cb5f623.chunk.js",
+    "static/js/src_bootstrap_app_tsx-src_static_images_coin98_png-src_static_images_metamask_png-src_static_-d2f771.15d38891.chunk.js": "/static/js/src_bootstrap_app_tsx-src_static_images_coin98_png-src_static_images_metamask_png-src_static_-d2f771.15d38891.chunk.js",
     "static/js/vendors-node_modules_react-dom_index_js.30046e76.chunk.js": "/static/js/vendors-node_modules_react-dom_index_js.30046e76.chunk.js",
     "static/js/_18f2-_0b7d-_25ed-_8131-_3fc0-_e4dd-_7bec-_ec71-_df0e-_887c-_c738-_9820-_7d1a-_b254-_ed1b-_d1-147343.d6791982.chunk.js": "/static/js/_18f2-_0b7d-_25ed-_8131-_3fc0-_e4dd-_7bec-_ec71-_df0e-_887c-_c738-_9820-_7d1a-_b254-_ed1b-_d1-147343.d6791982.chunk.js",
     "static/js/node_modules_web-vitals_dist_web-vitals_js.17dadc03.chunk.js": "/static/js/node_modules_web-vitals_dist_web-vitals_js.17dadc03.chunk.js",
@@ -27,7 +27,7 @@
     "static/js/vendors-node_modules_senswap_sen-js_dist_index_js-node_modules_sentre_antd-ionicon_dist_index-6772ee.dd060489.chunk.js": "/static/js/vendors-node_modules_senswap_sen-js_dist_index_js-node_modules_sentre_antd-ionicon_dist_index-6772ee.dd060489.chunk.js",
     "static/js/vendors-node_modules_ant-design_icons_es_utils_js-node_modules_classnames_index_js-node_modul-ceecc0.927223ad.chunk.js": "/static/js/vendors-node_modules_ant-design_icons_es_utils_js-node_modules_classnames_index_js-node_modul-ceecc0.927223ad.chunk.js",
     "static/css/vendors-node_modules_sentre_senhub_dist_index_js-node_modules_sentre_senhub_dist_static_image-55fa97.1fca13ca.chunk.css": "/static/css/vendors-node_modules_sentre_senhub_dist_index_js-node_modules_sentre_senhub_dist_static_image-55fa97.1fca13ca.chunk.css",
-    "static/js/vendors-node_modules_sentre_senhub_dist_index_js-node_modules_sentre_senhub_dist_static_image-55fa97.be3b1580.chunk.js": "/static/js/vendors-node_modules_sentre_senhub_dist_index_js-node_modules_sentre_senhub_dist_static_image-55fa97.be3b1580.chunk.js",
+    "static/js/vendors-node_modules_sentre_senhub_dist_index_js-node_modules_sentre_senhub_dist_static_image-55fa97.c8678af8.chunk.js": "/static/js/vendors-node_modules_sentre_senhub_dist_index_js-node_modules_sentre_senhub_dist_static_image-55fa97.c8678af8.chunk.js",
     "static/js/vendors-node_modules_antd_es_index_js.169ecc01.chunk.js": "/static/js/vendors-node_modules_antd_es_index_js.169ecc01.chunk.js",
     "static/js/vendors-node_modules_react-redux_es_index_js.04d92ffd.chunk.js": "/static/js/vendors-node_modules_react-redux_es_index_js.04d92ffd.chunk.js",
     "static/js/vendors-node_modules_ant-design_icons_es_components_Icon_js-node_modules_certusone_wormhole-s-a677cc.2b9a1592.chunk.js": "/static/js/vendors-node_modules_ant-design_icons_es_components_Icon_js-node_modules_certusone_wormhole-s-a677cc.2b9a1592.chunk.js",
@@ -84,7 +84,7 @@
     "static/media/icon-telegram.svg": "/static/media/icon-telegram.2450489f40d03000fe65fc1c6f238d85.svg",
     "static/media/README.md": "/static/media/README.6ec7fb28984917e74062.md",
     "static.app.tsx": "/sen_assets-asset-senhub.json",
-    "main.2e3dd45c.js.map": "/static/js/main.2e3dd45c.js.map",
+    "main.5278827b.js.map": "/static/js/main.5278827b.js.map",
     "index.js.map": "/index.js.map",
     "src_bootstrap_tsx.89c9742b.chunk.js.map": "/static/js/src_bootstrap_tsx.89c9742b.chunk.js.map",
     "vendors-node_modules_reduxjs_toolkit_dist_redux-toolkit_esm_js.9c30d359.chunk.js.map": "/static/js/vendors-node_modules_reduxjs_toolkit_dist_redux-toolkit_esm_js.9c30d359.chunk.js.map",
@@ -94,7 +94,7 @@
     "node_modules_prop-types_index_js-node_modules_react-router-dom_esm_react-router-dom_js.d40e3fff.chunk.js.map": "/static/js/node_modules_prop-types_index_js-node_modules_react-router-dom_esm_react-router-dom_js.d40e3fff.chunk.js.map",
     "node_modules_react_index_js.772d374b.chunk.js.map": "/static/js/node_modules_react_index_js.772d374b.chunk.js.map",
     "src_bootstrap_app_tsx-src_static_images_coin98_png-src_static_images_metamask_png-src_static_-d2f771.ea585510.chunk.css.map": "/static/css/src_bootstrap_app_tsx-src_static_images_coin98_png-src_static_images_metamask_png-src_static_-d2f771.ea585510.chunk.css.map",
-    "src_bootstrap_app_tsx-src_static_images_coin98_png-src_static_images_metamask_png-src_static_-d2f771.5cb5f623.chunk.js.map": "/static/js/src_bootstrap_app_tsx-src_static_images_coin98_png-src_static_images_metamask_png-src_static_-d2f771.5cb5f623.chunk.js.map",
+    "src_bootstrap_app_tsx-src_static_images_coin98_png-src_static_images_metamask_png-src_static_-d2f771.15d38891.chunk.js.map": "/static/js/src_bootstrap_app_tsx-src_static_images_coin98_png-src_static_images_metamask_png-src_static_-d2f771.15d38891.chunk.js.map",
     "vendors-node_modules_react-dom_index_js.30046e76.chunk.js.map": "/static/js/vendors-node_modules_react-dom_index_js.30046e76.chunk.js.map",
     "node_modules_web-vitals_dist_web-vitals_js.17dadc03.chunk.js.map": "/static/js/node_modules_web-vitals_dist_web-vitals_js.17dadc03.chunk.js.map",
     "node_modules_react-router-dom_esm_react-router-dom_js.a13e8314.chunk.js.map": "/static/js/node_modules_react-router-dom_esm_react-router-dom_js.a13e8314.chunk.js.map",
@@ -106,7 +106,7 @@
     "vendors-node_modules_senswap_sen-js_dist_index_js-node_modules_sentre_antd-ionicon_dist_index-6772ee.dd060489.chunk.js.map": "/static/js/vendors-node_modules_senswap_sen-js_dist_index_js-node_modules_sentre_antd-ionicon_dist_index-6772ee.dd060489.chunk.js.map",
     "vendors-node_modules_ant-design_icons_es_utils_js-node_modules_classnames_index_js-node_modul-ceecc0.927223ad.chunk.js.map": "/static/js/vendors-node_modules_ant-design_icons_es_utils_js-node_modules_classnames_index_js-node_modul-ceecc0.927223ad.chunk.js.map",
     "vendors-node_modules_sentre_senhub_dist_index_js-node_modules_sentre_senhub_dist_static_image-55fa97.1fca13ca.chunk.css.map": "/static/css/vendors-node_modules_sentre_senhub_dist_index_js-node_modules_sentre_senhub_dist_static_image-55fa97.1fca13ca.chunk.css.map",
-    "vendors-node_modules_sentre_senhub_dist_index_js-node_modules_sentre_senhub_dist_static_image-55fa97.be3b1580.chunk.js.map": "/static/js/vendors-node_modules_sentre_senhub_dist_index_js-node_modules_sentre_senhub_dist_static_image-55fa97.be3b1580.chunk.js.map",
+    "vendors-node_modules_sentre_senhub_dist_index_js-node_modules_sentre_senhub_dist_static_image-55fa97.c8678af8.chunk.js.map": "/static/js/vendors-node_modules_sentre_senhub_dist_index_js-node_modules_sentre_senhub_dist_static_image-55fa97.c8678af8.chunk.js.map",
     "vendors-node_modules_antd_es_index_js.169ecc01.chunk.js.map": "/static/js/vendors-node_modules_antd_es_index_js.169ecc01.chunk.js.map",
     "vendors-node_modules_react-redux_es_index_js.04d92ffd.chunk.js.map": "/static/js/vendors-node_modules_react-redux_es_index_js.04d92ffd.chunk.js.map",
     "vendors-node_modules_ant-design_icons_es_components_Icon_js-node_modules_certusone_wormhole-s-a677cc.2b9a1592.chunk.js.map": "/static/js/vendors-node_modules_ant-design_icons_es_components_Icon_js-node_modules_certusone_wormhole-s-a677cc.2b9a1592.chunk.js.map",
@@ -116,6 +116,6 @@
     "vendors-node_modules_certusone_wormhole-sdk_lib_esm_solana_core-node_bridge_js.c77470c9.chunk.js.map": "/static/js/vendors-node_modules_certusone_wormhole-sdk_lib_esm_solana_core-node_bridge_js.c77470c9.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.2e3dd45c.js"
+    "static/js/main.5278827b.js"
   ]
 }
