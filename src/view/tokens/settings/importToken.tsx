@@ -10,7 +10,7 @@ import { notifyError, notifySuccess } from 'helper'
 
 const ImportToken = () => {
   const [visible, setVisible] = useState(false)
-  const [mintAddress, setMintAddress] = useState('')
+  const [mintAddress, setMintAddress] = useState<string>('')
   const [loading, setLoading] = useState(false)
   const {
     wallet: { address: walletAddress },

@@ -64,7 +64,11 @@ const Source = ({
           placeholder="0"
           prefix={
             <Fragment>
-              <MintSelection value={mintAddress} onChange={onSelectToken} />
+              <MintSelection
+                value={mintAddress}
+                onChange={onSelectToken}
+                nativeSol
+              />
               <Divider type="vertical" />
             </Fragment>
           }
