@@ -1,5 +1,5 @@
 import { Space, Typography } from 'antd'
-import { MintAvatar, MintSymbol, MintName } from 'shared/antd/mint'
+import { MintAvatar, MintSymbol, MintName } from '@sen-use/components'
 
 type LogoItemProps = {
   mint: string

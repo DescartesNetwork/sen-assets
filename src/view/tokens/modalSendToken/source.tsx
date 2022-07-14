@@ -3,7 +3,7 @@ import { useWallet } from '@sentre/senhub'
 import { utils } from '@senswap/sen-js'
 
 import { Row, Col, Typography, Button, Divider } from 'antd'
-import { MintSelection, MintSymbol } from 'shared/antd/mint'
+import { MintSelection, MintSymbol } from '@sen-use/components'
 import NumericInput from 'shared/antd/numericInput'
 
 import { useMintAccount } from 'hooks/useMintAccount'
@@ -64,7 +64,11 @@ const Source = ({
           placeholder="0"
           prefix={
             <Fragment>
-              <MintSelection value={mintAddress} onChange={onSelectToken} />
+              <MintSelection
+                value={mintAddress}
+                onChange={onSelectToken}
+                nativeSol
+              />
               <Divider type="vertical" />
             </Fragment>
           }
