@@ -6,6 +6,7 @@ import Transfer from 'view/accountAction/body/transfer'
 import Receive from 'view/accountAction/body/receive'
 import Wrap from 'view/accountAction/body/wrap'
 import Close from './close'
+import Burn from './burn'
 
 import { AppState } from 'model'
 import { useMintAccount } from 'hooks/useMintAccount'
@@ -40,6 +41,13 @@ const Body = () => {
         </Tabs.TabPane>
         <Tabs.TabPane tab="Close" key="Close" disabled={mint === SOL_ADDRESS}>
           <Close accountAddr={accountSelected} />
+        </Tabs.TabPane>
+        <Tabs.TabPane
+          tab="Burn"
+          key="Burn"
+          disabled={mint === SOL_ADDRESS || mint === WSOL_ADDRESS}
+        >
+          <Burn accountAddr={accountSelected} />
         </Tabs.TabPane>
       </Tabs>
     </Card>
