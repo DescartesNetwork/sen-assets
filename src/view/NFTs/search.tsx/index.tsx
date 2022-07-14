@@ -1,7 +1,8 @@
-import { Row, Col, Input, Button } from 'antd'
+import { Row, Col, Input, Button, Space } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import ModalSendMultiNFTs from '../modalSendNFT/modalSendMultiNFTs'
 import { useUI } from '@sentre/senhub'
+import Settings from '../settings'
 
 type SearchProps = {
   onSearch: (keyword: string) => void
@@ -15,7 +16,7 @@ const Search = ({ onSearch, searchText }: SearchProps) => {
   const isMobile = width < 992
 
   return (
-    <Row gutter={[16, 16]} wrap={false}>
+    <Row gutter={[8, 8]} wrap={false}>
       <Col flex="1 0">
         <Input
           className="search-assets"
@@ -38,6 +39,9 @@ const Search = ({ onSearch, searchText }: SearchProps) => {
           }
           onChange={(e) => onSearch(e.target.value)}
         />
+      </Col>
+      <Col>
+        <Settings />
       </Col>
       <Col>
         <ModalSendMultiNFTs />

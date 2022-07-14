@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
 
 import { Space, Typography, Tooltip } from 'antd'
-import IonIcon from '@sentre/antd-ionicon'
 import { util } from '@sentre/senhub'
+
+import IonIcon from '@sentre/antd-ionicon'
 
 const Address = ({ address }: { address: string }) => {
   const [copied, setCopied] = useState(false)
@@ -17,7 +18,7 @@ const Address = ({ address }: { address: string }) => {
   return (
     <Space>
       <Typography.Text type="secondary" className="t-16">
-        {util.shortenAddress(address)}
+        {util.shortenAddress(address, 3)}
       </Typography.Text>
       <Tooltip title="Copied" visible={copied}>
         <CopyToClipboard text={address} onCopy={onCopy}>

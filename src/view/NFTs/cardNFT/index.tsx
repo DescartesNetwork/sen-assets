@@ -1,15 +1,19 @@
-import { Row, Col, Typography, Image, Spin, Space } from 'antd'
+import { useEffect } from 'react'
 
-import IMAGE_DEFAULT from 'static/images/nft.jpeg'
+import { Row, Col, Typography, Image, Spin, Button, Space } from 'antd'
+import IonIcon from '@sentre/antd-ionicon'
+import Address from './address'
+
 import useNftMetaData from 'hooks/useNftMetaData'
 
-import Address from './address'
+import IMAGE_DEFAULT from 'static/images/nft-default.png'
 
 export type CardNFTProps = {
   mintAddress: string
   onSelect?: (mintAddress: string) => void
   isShowName?: boolean
   size?: number
+  checkNFTUnknown?: (mintAddress: string, isUnkown: boolean) => void
 }
 
 const CardNFT = ({
@@ -17,8 +21,20 @@ const CardNFT = ({
   onSelect,
   isShowName = true,
   size,
+  checkNFTUnknown,
 }: CardNFTProps) => {
-  const { loading, nftInfo } = useNftMetaData(mintAddress)
+  const { loading, nftInfo, metadata, isUnknownNFT } =
+    useNftMetaData(mintAddress)
+
+  const onSocialMedia = () => {
+    window.open('https://magiceden.io/item-details/' + mintAddress, '_blank')
+  }
+
+  useEffect(() => {
+    if (checkNFTUnknown && isUnknownNFT) {
+      checkNFTUnknown(mintAddress, true)
+    }
+  }, [checkNFTUnknown, isUnknownNFT, loading, mintAddress, nftInfo])
 
   return (
     <Spin spinning={loading}>
@@ -37,10 +53,23 @@ const CardNFT = ({
         </Col>
         {isShowName && (
           <Col span={24} style={{ textAlign: 'left' }}>
-            <Space size={4} direction="vertical">
-              <Typography.Title level={5}>{nftInfo?.name}</Typography.Title>
-              <Address address={mintAddress} />
-            </Space>
+            <Row gutter={[8, 8]}>
+              <Col span={24}>
+                <Typography.Title ellipsis={{ tooltip: true }} level={5}>
+                  {nftInfo?.name || metadata?.data.data.name}
+                </Typography.Title>
+              </Col>
+              <Col span={24}>
+                <Space size={0}>
+                  <Address address={mintAddress} />
+                  <Button
+                    type="text"
+                    icon={<IonIcon name="earth-outline" />}
+                    onClick={onSocialMedia}
+                  />
+                </Space>
+              </Col>
+            </Row>
           </Col>
         )}
       </Row>
