@@ -87,7 +87,6 @@ const Burn = ({ accountAddr }: { accountAddr: string }) => {
           Burn
         </Button>
       </Col>
-      <Col span={24} style={{ fontSize: 12 }}></Col>
     </Row>
   )
 }

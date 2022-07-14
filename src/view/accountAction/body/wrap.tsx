@@ -190,11 +190,23 @@ const Wrap = () => {
       </Col>
       <Col span={24}>
         {isWrap ? (
-          <Button type="primary" onClick={wrap} block loading={loading}>
+          <Button
+            type="primary"
+            size="large"
+            onClick={wrap}
+            block
+            loading={loading}
+          >
             Wrap
           </Button>
         ) : (
-          <Button type="primary" onClick={unwrap} block loading={loading}>
+          <Button
+            type="primary"
+            size="large"
+            onClick={unwrap}
+            block
+            loading={loading}
+          >
             Unwrap
           </Button>
         )}
