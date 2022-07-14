@@ -1,5 +1,5 @@
 import { Col, Divider, Row, Space, Tooltip, Typography } from 'antd'
-import { MintAvatar, MintSymbol } from 'shared/antd/mint'
+import { MintAvatar, MintSymbol } from '@sen-use/components'
 import Price, { PriceChange, PriceIndicator } from 'components/price'
 import IconButton from 'components/iconButton'
 

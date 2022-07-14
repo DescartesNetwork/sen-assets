@@ -4,7 +4,7 @@ import { useAccount, useMint, useUI, useWallet } from '@sentre/senhub'
 
 import { Row, Col, Typography, Button, Modal } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import { MintSelection } from 'shared/antd/mint'
+import { MintSelection } from '@sen-use/components'
 
 import { notifyError, notifySuccess } from 'helper'
 
