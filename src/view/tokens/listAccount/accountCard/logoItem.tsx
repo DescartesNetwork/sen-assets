@@ -1,6 +1,6 @@
 import { Col, Row, Tooltip, Typography } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import { MintAvatar, MintSymbol, MintName } from 'shared/antd/mint'
+import { MintAvatar, MintSymbol, MintName } from '@sen-use/components'
 
 type LogoItemProps = {
   mint: string
