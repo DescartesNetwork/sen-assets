@@ -4,7 +4,7 @@ import BN from 'bn.js'
 
 import { Button, Col, Row, Typography } from 'antd'
 import { useMintAccount } from 'hooks/useMintAccount'
-import { MintSymbol } from 'shared/antd/mint'
+import { MintSymbol } from '@sen-use/components'
 import NumericInput from 'shared/antd/numericInput'
 import { useCallback, useState } from 'react'
 import { notifySuccess } from 'helper'
