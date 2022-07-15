@@ -50,29 +50,5 @@ class SpltHelper {
     )
     return { txIds, transactions }
   }
-
-  burnToken = async (
-    amount: BN,
-    mintAddress: string,
-    accountAddress: string,
-  ) => {
-    const provider = await this.getProvider()
-    const mintPublicKey = new PublicKey(mintAddress)
-    const instructions: web3.TransactionInstruction[] = []
-    instructions.push(
-      Token.createBurnInstruction(
-        TOKEN_PROGRAM_ID,
-        mintPublicKey,
-        new PublicKey(accountAddress),
-        provider.wallet.publicKey,
-        [],
-        Number(amount),
-      ),
-    )
-    console.log(amount, mintAddress, accountAddress)
-    const transaction = new Transaction().add(...instructions)
-    const txId = await provider.sendAndConfirm(transaction)
-    return { txId, transaction }
-  }
 }
 export default SpltHelper
