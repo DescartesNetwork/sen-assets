@@ -1,7 +1,8 @@
+import { useUI } from '@sentre/senhub'
+
 import { Row, Col, Input, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 import ModalSendMultiNFTs from '../modalSendNFT/modalSendMultiNFTs'
-import { useUI } from '@sentre/senhub'
 import Settings from '../settings'
 
 type SearchProps = {
