@@ -14,7 +14,7 @@ const NFTs = () => {
   const [searchText, setSearchText] = useState<string>('')
 
   return (
-    <Row gutter={[24, 24]} justify="center" align="middle">
+    <Row gutter={[24, 24]} align="middle">
       <Col flex="auto">
         <Typography.Title level={2}>NFT Assets</Typography.Title>
       </Col>

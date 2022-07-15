@@ -7,7 +7,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 export type State = {
   hiddenZeros: boolean
   hiddenUnknownTokens: boolean
-  groupByNftCollection: boolean
+  hiddenUnknownNFTs: boolean
 }
 
 /**
@@ -18,7 +18,7 @@ const NAME = 'settings'
 const initialState: State = {
   hiddenZeros: false,
   hiddenUnknownTokens: true,
-  groupByNftCollection: false,
+  hiddenUnknownNFTs: true,
 }
 
 /**
@@ -43,13 +43,13 @@ export const setHiddenUnknownTokens = createAsyncThunk<
   return { ...settings, hiddenUnknownTokens: checked }
 })
 
-export const setGroupByNftCollection = createAsyncThunk<
+export const setHiddenUnknownNFTs = createAsyncThunk<
   State,
   { checked: boolean },
   { state: { settings: State } }
->(`${NAME}/setGroupByNftCollection`, async ({ checked }, { getState }) => {
+>(`${NAME}/setHiddenUnknownNFTs`, async ({ checked }, { getState }) => {
   const { settings } = getState()
-  return { ...settings, groupByNftCollection: checked }
+  return { ...settings, hiddenUnknownNFTs: checked }
 })
 
 /**
@@ -71,7 +71,7 @@ const slice = createSlice({
         (state, { payload }) => void Object.assign(state, payload),
       )
       .addCase(
-        setGroupByNftCollection.fulfilled,
+        setHiddenUnknownNFTs.fulfilled,
         (state, { payload }) => void Object.assign(state, payload),
       ),
 })

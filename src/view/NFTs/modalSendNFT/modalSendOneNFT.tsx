@@ -55,7 +55,6 @@ const ModalSendOneNFT = ({ mintNFT }: ModalSendNFTProps) => {
     <Fragment>
       <Button
         type="primary"
-        block
         size="large"
         icon={<IonIcon name="paper-plane-outline" />}
         onClick={() => setVisible(true)}
