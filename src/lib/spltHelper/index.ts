@@ -1,7 +1,6 @@
 import { web3 } from '@project-serum/anchor'
 import { PublicKey, Transaction } from '@solana/web3.js'
 import { TOKEN_PROGRAM_ID, Token } from '@solana/spl-token'
-import BN from 'bn.js'
 
 import { rpc } from '@sentre/senhub'
 import { getAnchorProvider } from './utils'
