@@ -37,8 +37,12 @@ const ListNFTs = ({ searchText }: ListNFTsProps) => {
     history.push(`${nftPath}/${mintAddress}`)
   }
 
-  const checkUnknownNFT = (mintNFT: string, isUnkown: boolean) => {
-    setListNFTsUnknown(Object.assign(listNFTsUnknown, { [mintNFT]: isUnkown }))
+  const addUnknownNFT = (mintNFT: string) => {
+    if (listNFTsUnknown[mintNFT]) return
+    const nftsUnknown = Object.assign(listNFTsUnknown, {
+      [mintNFT]: true,
+    })
+    setListNFTsUnknown(JSON.parse(JSON.stringify(nftsUnknown)))
   }
 
   const filteredList = useMemo(() => {
@@ -64,7 +68,7 @@ const ListNFTs = ({ searchText }: ListNFTsProps) => {
                 <CardNFT
                   mintAddress={nft.mint}
                   onSelect={onSelectNFT}
-                  checkNFTUnknown={checkUnknownNFT}
+                  addUnknownNFT={addUnknownNFT}
                 />
               </LazyLoad>
             </Card>

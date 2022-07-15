@@ -18,7 +18,7 @@ const NAME = 'settings'
 const initialState: State = {
   hiddenZeros: false,
   hiddenUnknownTokens: true,
-  hiddenUnknownNFTs: false,
+  hiddenUnknownNFTs: true,
 }
 
 /**

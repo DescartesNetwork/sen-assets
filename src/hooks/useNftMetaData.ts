@@ -9,9 +9,22 @@ const {
   sol: { metaplexNFT },
 } = configs
 
+export type Attribute = {
+  trait_type: string
+  value: string
+}
+export type NFTInfo = {
+  name: string
+  image: string
+  symbol: string
+  attributes: Attribute[]
+  description: string
+  external_url: string
+}
+
 const useNftMetaData = (mintAddress: string) => {
   const [metaData, setMetaData] = useState<MetadataType>()
-  const [nftInfo, setNftInfo] = useState<any>()
+  const [nftInfo, setNftInfo] = useState<NFTInfo>()
   const [loading, setLoading] = useState(false)
   const [isUnknownNFT, setIsUnknownNFT] = useState(false)
 

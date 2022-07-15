@@ -13,7 +13,7 @@ export type CardNFTProps = {
   onSelect?: (mintAddress: string) => void
   isShowName?: boolean
   size?: number
-  checkNFTUnknown?: (mintAddress: string, isUnkown: boolean) => void
+  addUnknownNFT?: (mintAddress: string) => void
 }
 
 const CardNFT = ({
@@ -21,7 +21,7 @@ const CardNFT = ({
   onSelect,
   isShowName = true,
   size,
-  checkNFTUnknown,
+  addUnknownNFT,
 }: CardNFTProps) => {
   const { loading, nftInfo, metadata, isUnknownNFT } =
     useNftMetaData(mintAddress)
@@ -31,10 +31,10 @@ const CardNFT = ({
   }
 
   useEffect(() => {
-    if (checkNFTUnknown && isUnknownNFT) {
-      checkNFTUnknown(mintAddress, true)
+    if (addUnknownNFT && isUnknownNFT) {
+      addUnknownNFT(mintAddress)
     }
-  }, [checkNFTUnknown, isUnknownNFT, loading, mintAddress, nftInfo])
+  }, [addUnknownNFT, isUnknownNFT, loading, mintAddress, nftInfo])
 
   return (
     <Spin spinning={loading}>
