@@ -52,6 +52,7 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
           onClick={close}
           disabled={Boolean(account.amount)}
           block
+          size="large"
         >
           Close Account
         </Button>

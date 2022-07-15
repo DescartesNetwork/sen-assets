@@ -4,12 +4,12 @@ import { Row, Col, Space, Popover, Typography, Switch, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
 import { AppDispatch, AppState } from 'model'
-import { setGroupByNftCollection } from 'model/settings.controller'
+import { setHiddenUnknownNFTs } from 'model/settings.controller'
 
 const Settings = () => {
   const dispatch = useDispatch<AppDispatch>()
   const {
-    settings: { groupByNftCollection },
+    settings: { hiddenUnknownNFTs },
   } = useSelector((state: AppState) => state)
 
   return (
@@ -21,12 +21,12 @@ const Settings = () => {
             <Space size="large">
               <Switch
                 size="small"
-                checked={groupByNftCollection}
+                checked={hiddenUnknownNFTs}
                 onChange={(checked) =>
-                  dispatch(setGroupByNftCollection({ checked }))
+                  dispatch(setHiddenUnknownNFTs({ checked }))
                 }
               />
-              <Typography.Text>Group By NFT Collection</Typography.Text>
+              <Typography.Text>Hide unknown NFTs</Typography.Text>
             </Space>
           </Col>
         </Row>

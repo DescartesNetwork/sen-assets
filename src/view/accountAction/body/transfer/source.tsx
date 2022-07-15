@@ -35,7 +35,7 @@ const Source = ({
       </Col>
       <Col>
         <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          Available: {util.numeric(mintAccount.balance).format('0,0.[00]a')}{' '}
+          Available: {util.numeric(mintAccount.balance).format('0,0.[0000]a')}{' '}
           <MintSymbol mintAddress={mintAccount.mint} />
         </Typography.Text>
       </Col>

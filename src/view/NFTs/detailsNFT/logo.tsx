@@ -9,7 +9,9 @@ type LogoProps = {
 const Logo = ({ name = '', mintAddress }: LogoProps) => {
   return (
     <Space direction="vertical">
-      <Typography.Text type="danger">{name}</Typography.Text>
+      <Typography.Text type="danger" ellipsis={{ tooltip: true }}>
+        {name}
+      </Typography.Text>
       <Address address={mintAddress} />
     </Space>
   )
