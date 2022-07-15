@@ -50,7 +50,7 @@ const DetailsNFT = () => {
         <Back />
       </Col>
       <Col span={24}>
-        <Card className="card-sen-assets scrollbar">
+        <Card className="card-sen-assets scrollbar" loading={loading}>
           <Row gutter={[24, 24]} justify="center">
             <Col xs={24} md={6}>
               <CardNFT mintAddress={mintNFT} isShowName={false} />
