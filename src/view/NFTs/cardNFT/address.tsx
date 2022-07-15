@@ -1,9 +1,8 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import CopyToClipboard from 'react-copy-to-clipboard'
-
-import { Space, Typography, Tooltip } from 'antd'
 import { util } from '@sentre/senhub'
 
+import { Space, Typography, Tooltip } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
 const Address = ({ address }: { address: string }) => {
