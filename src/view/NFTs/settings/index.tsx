@@ -36,6 +36,7 @@ const Settings = () => {
     >
       <Button
         size="large"
+        style={{ background: 'transparent' }}
         icon={<IonIcon style={{ cursor: 'pointer' }} name="cog-outline" />}
       />
     </Popover>
