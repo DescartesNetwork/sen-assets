@@ -6,7 +6,7 @@ import History from '../history'
 
 export const WormHoleFrame = () => {
   return (
-    <Card className="card-page-container" style={{ height: 442 }}>
+    <Card className="card-page-container">
       <Row gutter={[14, 14]}>
         <Col span={24}>
           <Typography.Title level={2}>Portal Bridge</Typography.Title>
