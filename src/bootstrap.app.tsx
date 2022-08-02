@@ -8,6 +8,7 @@ import {
 } from '@sentre/senhub'
 
 import View from 'view'
+import WormHole from 'view/wormhole'
 
 import model from 'model'
 import configs from 'configs'
@@ -18,6 +19,24 @@ import 'static/styles/light.less'
 const {
   manifest: { appId },
 } = configs
+
+export const FrameWormhole = () => {
+  return (
+    <UIProvider appId={appId} antd>
+      <MintProvider>
+        <PoolProvider>
+          <AccountProvider>
+            <WalletProvider>
+              <Provider store={model}>
+                <WormHole />
+              </Provider>
+            </WalletProvider>
+          </AccountProvider>
+        </PoolProvider>
+      </MintProvider>
+    </UIProvider>
+  )
+}
 
 export const Page = () => {
   return (
