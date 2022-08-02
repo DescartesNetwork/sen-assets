@@ -8,7 +8,7 @@ import {
 } from '@sentre/senhub'
 
 import View from 'view'
-import WormHole from 'view/wormhole'
+import { WormHoleFrame } from 'view/wormhole'
 
 import model from 'model'
 import configs from 'configs'
@@ -28,7 +28,7 @@ export const FrameWormhole = () => {
           <AccountProvider>
             <WalletProvider>
               <Provider store={model}>
-                <WormHole />
+                <WormHoleFrame />
               </Provider>
             </WalletProvider>
           </AccountProvider>
