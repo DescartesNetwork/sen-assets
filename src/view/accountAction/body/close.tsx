@@ -36,11 +36,19 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
   }
 
   const errorMessage = useMemo(() => {
-    if (account.close_authority !== wallet.address)
+    if (
+      !!account.close_authority_option &&
+      account.close_authority !== wallet.address
+    )
       return `You don't have permission to close this account!`
     if (!!account.amount)
       return 'Please transfer out all tokens in this account before closing!'
-  }, [account.amount, account.close_authority, wallet.address])
+  }, [
+    account.amount,
+    account.close_authority,
+    account.close_authority_option,
+    wallet.address,
+  ])
 
   return (
     <Row gutter={[16, 16]}>
@@ -49,6 +57,8 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
           <Card bordered={false} className="close-account">
             <Space>
               <IonIcon name="alert-circle-outline" />
+              {account.close_authority_option}
+              {account.close_authority}
               <Typography.Text>{errorMessage}</Typography.Text>
             </Space>
           </Card>
@@ -58,7 +68,7 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
         <Button
           type="primary"
           onClick={close}
-          disabled={Boolean(account.amount)}
+          disabled={!!errorMessage}
           block
           size="large"
         >
