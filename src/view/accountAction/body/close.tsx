@@ -1,5 +1,6 @@
+import { useMemo } from 'react'
 import { useDispatch } from 'react-redux'
-import { useAccount } from '@sentre/senhub'
+import { useAccount, useWallet } from '@sentre/senhub'
 
 import { Row, Col, Card, Typography, Button, Space } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -13,6 +14,7 @@ import { AppDispatch } from 'model'
 const Close = ({ accountAddr }: { accountAddr: string }) => {
   const dispatch = useDispatch<AppDispatch>()
   const { accounts } = useAccount()
+  const { wallet } = useWallet()
   const account = accounts[accountAddr] || {}
 
   const close = async () => {
@@ -33,19 +35,25 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
     }
   }
 
+  const errorMessage = useMemo(() => {
+    if (account.close_authority !== wallet.address)
+      return `You don't have permission to close this account!`
+    if (!!account.amount)
+      return 'Please transfer out all tokens in this account before closing!'
+  }, [account.amount, account.close_authority, wallet.address])
+
   return (
     <Row gutter={[16, 16]}>
-      <Col span={24}>
-        <Card bordered={false} className="close-account">
-          <Space>
-            <IonIcon name="alert-circle-outline" />
-            <Typography.Text>
-              Please transfer out all tokens in this account before closing!
-            </Typography.Text>
-          </Space>
-        </Card>
-      </Col>
-
+      {!!errorMessage && (
+        <Col span={24}>
+          <Card bordered={false} className="close-account">
+            <Space>
+              <IonIcon name="alert-circle-outline" />
+              <Typography.Text>{errorMessage}</Typography.Text>
+            </Space>
+          </Card>
+        </Col>
+      )}
       <Col span={24}>
         <Button
           type="primary"
