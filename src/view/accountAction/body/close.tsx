@@ -57,8 +57,6 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
           <Card bordered={false} className="close-account">
             <Space>
               <IonIcon name="alert-circle-outline" />
-              {account.close_authority_option}
-              {account.close_authority}
               <Typography.Text>{errorMessage}</Typography.Text>
             </Space>
           </Card>
