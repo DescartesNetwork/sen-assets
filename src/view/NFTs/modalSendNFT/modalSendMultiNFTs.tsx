@@ -42,7 +42,7 @@ const SendMultiNFTs = () => {
     if (!isAddress(receiverAddress))
       return window.notify({
         type: 'error',
-        description: 'Invalid mint address',
+        description: 'Invalid wallet address',
       })
 
     for (const mintNFT in listNFTsSelected) {

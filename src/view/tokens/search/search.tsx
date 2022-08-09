@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { AccountData } from '@senswap/sen-js'
-import { tokenProvider, usePool, useUI, useAccounts } from '@sentre/senhub'
+import { tokenProvider, useUI, useAccounts } from '@sentre/senhub'
 
 import { Input, Button, Space, Row, Col } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -22,7 +22,6 @@ const Search = ({
   )
   const [keyword, setKeyword] = useState('')
   const accounts = useAccounts()
-  const { pools } = usePool()
   const {
     ui: { width },
   } = useUI()
@@ -36,12 +35,9 @@ const Search = ({
 
       const mintData = await tokenProvider.findByAddress(mint)
       if (mintData) return true
-      for (const pool of Object.values(pools)) {
-        if (pool.mint_lpt === mint) return true
-      }
       return !hiddenUnknownTokens
     },
-    [hiddenUnknownTokens, hiddenZeros, pools],
+    [hiddenUnknownTokens, hiddenZeros],
   )
 
   const onSearch = useCallback(async () => {
