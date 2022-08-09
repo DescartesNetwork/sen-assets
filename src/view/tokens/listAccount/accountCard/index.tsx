@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAccount, useUI } from '@sentre/senhub'
+import { useAccounts, useUI } from '@sentre/senhub'
 
 import { Button, Card, Col, Divider, Modal, Row, Space } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -23,7 +23,7 @@ const AccountCard = ({
   isSol?: boolean
 }) => {
   const [visible, setVisible] = useState(false)
-  const { accounts } = useAccount()
+  const accounts = useAccounts()
   const mint = accounts[accountAddr]?.mint
   const {
     ui: { width },

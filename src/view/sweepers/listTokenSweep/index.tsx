@@ -1,5 +1,5 @@
 import { forwardRef, useImperativeHandle, useMemo, useState } from 'react'
-import { useAccount } from '@sentre/senhub'
+import { useAccounts } from '@sentre/senhub'
 
 import { Col, Row, Space, Typography } from 'antd'
 import CardToken from './cardToken'
@@ -12,7 +12,7 @@ type ListTokenSweepProps = {
 
 const ListTokenSweep = forwardRef(
   ({ setLoadingBtn }: ListTokenSweepProps, ref) => {
-    const { accounts } = useAccount()
+    const accounts = useAccounts()
     const [accountsSelected, setAccountsSelected] = useState<
       Record<string, boolean>
     >({})

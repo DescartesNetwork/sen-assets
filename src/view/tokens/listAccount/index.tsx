@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccountData } from '@senswap/sen-js'
 import LazyLoad from '@sentre/react-lazyload'
-import { useMint, useUI, useWallet } from '@sentre/senhub'
+import { tokenProvider, useUI, useWalletAddress } from '@sentre/senhub'
 
 import { Col, Row, Typography } from 'antd'
 import AccountCard from './accountCard'
@@ -18,8 +18,7 @@ const {
 
 const ListAccount = () => {
   const { accountSelected } = useSelector((state: AppState) => state.account)
-  const { tokenProvider } = useMint()
-  const { wallet } = useWallet()
+  const walletAddress = useWalletAddress()
   const [listAccount, setListAccount] = useState<string[]>([])
   const dispatch = useDispatch<AppDispatch>()
   const {
@@ -46,13 +45,13 @@ const ListAccount = () => {
       }
       return setListAccount([...prioritizeAccount, ...listAccount])
     },
-    [tokenProvider],
+    [],
   )
 
   useEffect(() => {
     if (accountSelected) return
-    dispatch(selectAccount({ account: wallet.address }))
-  }, [accountSelected, dispatch, wallet.address])
+    dispatch(selectAccount({ account: walletAddress }))
+  }, [accountSelected, dispatch, walletAddress])
 
   return (
     <Row gutter={[12, 12]}>
@@ -64,8 +63,8 @@ const ListAccount = () => {
       </Col>
       <Col span={24} style={{ paddingTop: 12 }}>
         <AccountCard
-          accountAddr={wallet.address}
-          active={accountSelected === wallet.address}
+          accountAddr={walletAddress}
+          active={accountSelected === walletAddress}
           onClick={(account) => {
             dispatch(selectAccount({ account }))
           }}

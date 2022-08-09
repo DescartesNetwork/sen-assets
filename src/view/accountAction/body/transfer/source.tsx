@@ -1,5 +1,5 @@
 import { utils } from '@senswap/sen-js'
-import { useWallet, util } from '@sentre/senhub'
+import { useWalletAddress, useWalletBalance, util } from '@sentre/senhub'
 
 import { Row, Col, Typography, Button } from 'antd'
 import { MintSymbol } from '@sen-use/components'
@@ -20,12 +20,11 @@ const Source = ({
   value: string
 }) => {
   const mintAccount = useMintAccount(accountAddr)
-  const {
-    wallet: { address, lamports },
-  } = useWallet()
+  const walletAddress = useWalletAddress()
+  const lamports = useWalletBalance()
 
   let max = mintAccount.balance
-  if (accountAddr === address)
+  if (accountAddr === walletAddress)
     max = utils.undecimalize(lamports - PLATFORM_FEE - NETWORK_FEE, 9)
 
   return (

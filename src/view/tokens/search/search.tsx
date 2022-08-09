@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { AccountData } from '@senswap/sen-js'
-import { useAccount, useMint, usePool, useUI } from '@sentre/senhub'
+import { tokenProvider, usePool, useUI, useAccounts } from '@sentre/senhub'
 
 import { Input, Button, Space, Row, Col } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -21,8 +21,7 @@ const Search = ({
     (state: AppState) => state.settings,
   )
   const [keyword, setKeyword] = useState('')
-  const { accounts } = useAccount()
-  const { tokenProvider } = useMint()
+  const accounts = useAccounts()
   const { pools } = usePool()
   const {
     ui: { width },
@@ -42,7 +41,7 @@ const Search = ({
       }
       return !hiddenUnknownTokens
     },
-    [hiddenUnknownTokens, hiddenZeros, pools, tokenProvider],
+    [hiddenUnknownTokens, hiddenZeros, pools],
   )
 
   const onSearch = useCallback(async () => {
@@ -58,7 +57,7 @@ const Search = ({
       if (visible) accountFilter[accAddr] = account
     }
     return onChange(accountFilter)
-  }, [accounts, keyword, onChange, tokenProvider, checkVisible])
+  }, [accounts, keyword, onChange, checkVisible])
 
   useEffect(() => {
     onSearch()

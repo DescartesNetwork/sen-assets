@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { useWallet } from '@sentre/senhub'
+import { useWalletAddress, useWalletBalance } from '@sentre/senhub'
 import { utils } from '@senswap/sen-js'
 
 import { Row, Col, Typography, Button, Divider } from 'antd'
@@ -29,9 +29,8 @@ const Source = ({
   mintAddress: string
 }) => {
   const mintAccount = useMintAccount(accountAddr)
-  const {
-    wallet: { address: walletAddress, lamports },
-  } = useWallet()
+  const walletAddress = useWalletAddress()
+  const lamports = useWalletBalance()
 
   const onSelectToken = async (mint: string) => {
     const { splt } = window.sentre

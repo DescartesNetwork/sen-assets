@@ -13,7 +13,7 @@
     "@sentre/connector": "^0.0.30",
     "@sentre/react-dynamic-remote-component": "^0.0.6",
     "@sentre/react-lazyload": "^3.2.2",
-    "@sentre/senhub": "^3.0.37",
+    "@sentre/senhub": "^3.1.16",
     "@sentre/utility": "^1.0.2",
     "@solana/spl-token-registry": "^0.2.3771",
     "abi-decoder": "^2.4.0",
@@ -45,7 +45,7 @@
     "web3": "^1.2.11"
   },
   "scripts": {
-    "start": "craco start",
+    "start": "REACT_APP_HMR=$PWD/src/bootstrap.app.tsx craco start",
     "build": "yarn build:production",
     "build:production": "craco --max_old_space_size=4096 build",
     "build:staging": "env-cmd -f .env.staging craco --max_old_space_size=4096 build",
@@ -76,7 +76,7 @@
   },
   "devDependencies": {
     "@craco/craco": "^7.0.0-alpha.5",
-    "@sentre/craco-plugins": "^1.0.31",
+    "@sentre/craco-plugins": "^1.0.37",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.2.1",

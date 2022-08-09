@@ -1,6 +1,11 @@
 import { Fragment, useState } from 'react'
 import { account } from '@senswap/sen-js'
-import { useAccount, useMint, useUI, useWallet } from '@sentre/senhub'
+import {
+  tokenProvider,
+  useUI,
+  useWalletAddress,
+  useAccounts,
+} from '@sentre/senhub'
 
 import { Row, Col, Typography, Button, Modal } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -12,11 +17,8 @@ const ImportToken = () => {
   const [visible, setVisible] = useState(false)
   const [mintAddress, setMintAddress] = useState<string>('')
   const [loading, setLoading] = useState(false)
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
-  const { tokenProvider } = useMint()
-  const { accounts } = useAccount()
+  const walletAddress = useWalletAddress()
+  const accounts = useAccounts()
   const {
     ui: { theme },
   } = useUI()

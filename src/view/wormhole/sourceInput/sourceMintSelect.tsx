@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useWallet } from '@sentre/senhub'
+import { useWalletBalance } from '@sentre/senhub'
 import { account, utils } from '@senswap/sen-js'
 import { CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 
@@ -19,9 +19,7 @@ const SourceMintSelect = () => {
   const {
     wormhole: { sourceTokens, sourceWalletAddress, tokenAddress, sourceChain },
   } = useSelector((state: AppState) => state)
-  const {
-    wallet: { lamports },
-  } = useWallet()
+  const lamports = useWalletBalance()
 
   const onChange = (tokenAddress: string) =>
     dispatch(setSourceToken({ tokenAddress }))
