@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { AccountData } from '@senswap/sen-js'
 import { tokenProvider, useUI, useAccounts } from '@sentre/senhub'
+import { forceCheck } from '@sentre/react-lazyload'
 
 import { Input, Button, Space, Row, Col } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -41,22 +42,27 @@ const Search = ({
   )
 
   const onSearch = useCallback(async () => {
-    const accountFilter: Record<string, AccountData> = {}
+    const filteredAccount: Record<string, AccountData> = {}
+    const tokens = await tokenProvider.find(keyword, 0)
+    const mints = tokens.map((token) => token.address)
+
     for (const accAddr in accounts) {
       const account = accounts[accAddr]
       if (keyword && keyword.length > KEY_SIZE) {
-        const tokens = await tokenProvider.find(keyword, 0)
-        const mints = tokens.map((token) => token.address)
         if (!mints.includes(account.mint)) continue
       }
       const visible = await checkVisible(account)
-      if (visible) accountFilter[accAddr] = account
+      if (visible) filteredAccount[accAddr] = account
     }
-    return onChange(accountFilter)
+    return onChange(filteredAccount)
   }, [accounts, keyword, onChange, checkVisible])
 
   useEffect(() => {
     onSearch()
+    const timeout = setTimeout(() => {
+      forceCheck()
+    }, 300)
+    return () => clearTimeout(timeout)
   }, [onSearch])
 
   return (
