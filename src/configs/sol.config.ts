@@ -11,6 +11,7 @@ type Conf = {
   sntrAddress: string
   metaplexNFT: metaplexNFT
   utility: Utility
+  lidoReferrerAddress: string
 }
 
 const conf: Record<Net, Conf> = {
@@ -22,6 +23,7 @@ const conf: Record<Net, Conf> = {
     sntrAddress: '5YwUkPdXLoujGkZuo9B4LsLKj3hdkDcfP4derpspifSJ',
     metaplexNFT: new metaplexNFT(rpc),
     utility: new Utility(new SafeWallet(), rpc),
+    lidoReferrerAddress: '8W6QginLcAydYyMYjxuyKQN56NzeakDE3aRFrAmocS6D',
   },
 
   /**
@@ -32,6 +34,7 @@ const conf: Record<Net, Conf> = {
     sntrAddress: '',
     metaplexNFT: new metaplexNFT('testnet'),
     utility: new Utility(new SafeWallet(), rpc),
+    lidoReferrerAddress: '',
   },
 
   /**
@@ -42,6 +45,7 @@ const conf: Record<Net, Conf> = {
     sntrAddress: 'SENBBKVCM7homnf5RX9zqpf1GFe935hnbU4uVzY1Y6M',
     metaplexNFT: new metaplexNFT(rpc),
     utility: new Utility(new SafeWallet(), rpc),
+    lidoReferrerAddress: '9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e',
   },
 }
 
