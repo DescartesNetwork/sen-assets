@@ -4,7 +4,7 @@ import { DEFAULT_WSOL, utils } from '@senswap/sen-js'
 import { useWalletAddress } from '@sentre/senhub'
 
 import { Button, Col, Row, Space, Typography } from 'antd'
-import { MintSymbol } from '@sen-use/components'
+import { MintSymbol } from '@sen-use/app'
 import NumericInput from 'shared/antd/numericInput'
 
 import { notifyError, notifySuccess } from 'helper'

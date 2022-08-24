@@ -2,7 +2,7 @@ import { utils } from '@senswap/sen-js'
 import { useWalletAddress, useWalletBalance, util } from '@sentre/senhub'
 
 import { Row, Col, Typography, Button } from 'antd'
-import { MintSymbol } from '@sen-use/components'
+import { MintSymbol } from '@sen-use/app'
 import NumericInput from 'shared/antd/numericInput'
 
 import { useMintAccount } from 'hooks/useMintAccount'

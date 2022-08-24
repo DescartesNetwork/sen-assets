@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { util } from '@sentre/senhub'
 import { utils } from '@senswap/sen-js'
-import { MintSymbol } from '@sen-use/components'
+import { MintSymbol } from '@sen-use/app'
 import BN from 'bn.js'
 
 import { Button, Col, Row, Typography } from 'antd'

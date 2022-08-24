@@ -9,7 +9,7 @@ import {
 
 import { Row, Col, Typography, Button, Modal } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
-import { MintSelection } from '@sen-use/components'
+import { MintSelection } from '@sen-use/app'
 
 import { notifyError, notifySuccess } from 'helper'
 
