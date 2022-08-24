@@ -1,7 +1,6 @@
-import { net } from '@sentre/senhub'
+import { net, PDB } from '@sentre/senhub'
 import { TransLog } from 'lib/stat/entities/trans-log'
 import { TransLogService } from 'lib/stat/logic/translog'
-import PDB from 'shared/pdb'
 import { DateHelper } from '../../helpers/date'
 
 const DATE_RANGE = 30

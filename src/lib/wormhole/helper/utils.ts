@@ -12,8 +12,7 @@ import {
   WormholeStoreKey,
 } from 'constant/types/wormhole'
 import WohEthSol from '../wohEthSol'
-import PDB from 'shared/pdb'
-import { net } from '@sentre/senhub'
+import { net, PDB } from '@sentre/senhub'
 
 export const getEtherNetwork = () => {
   const solNetwork = net

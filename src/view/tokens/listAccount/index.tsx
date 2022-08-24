@@ -5,6 +5,7 @@ import LazyLoad from '@sentre/react-lazyload'
 import { tokenProvider, useUI, useWalletAddress } from '@sentre/senhub'
 
 import { Col, Row, Typography } from 'antd'
+import { LidoStakeBanner } from '@lidofinance/solido-sdk'
 import AccountCard from './accountCard'
 import Search from 'view/tokens/search/search'
 
@@ -13,7 +14,7 @@ import { AppDispatch, AppState } from 'model'
 import configs from 'configs'
 
 const {
-  sol: { sntrAddress },
+  sol: { sntrAddress, lidoReferrerAddress },
 } = configs
 
 const ListAccount = () => {
@@ -69,6 +70,12 @@ const ListAccount = () => {
             dispatch(selectAccount({ account }))
           }}
           isSol
+        />
+      </Col>
+      <Col span={24}>
+        <LidoStakeBanner
+          referrerId={lidoReferrerAddress}
+          direction="horizontal"
         />
       </Col>
       {listAccount.map((address) => (
