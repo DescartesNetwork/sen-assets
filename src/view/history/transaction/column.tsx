@@ -3,7 +3,7 @@ import StatusTag from '../statusTags'
 import IonIcon from '@sentre/antd-ionicon'
 
 import { util } from '@sentre/senhub'
-import { MintSymbol } from '@sen-use/components'
+import { MintSymbol } from '@sen-use/app'
 
 export const TRANSACTION_COLUMNS = [
   {

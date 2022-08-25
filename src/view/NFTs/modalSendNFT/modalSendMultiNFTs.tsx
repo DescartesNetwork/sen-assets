@@ -1,6 +1,6 @@
 import { ChangeEvent, Fragment, useState } from 'react'
 import { isAddress } from '@sentre/utility'
-import { useWallet } from '@sentre/senhub'
+import { useWalletAddress } from '@sentre/senhub'
 import BN from 'bn.js'
 
 import { Button, Col, Input, Modal, Row, Typography } from 'antd'
@@ -23,9 +23,7 @@ const SendMultiNFTs = () => {
     Record<string, boolean>
   >({})
 
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
+  const walletAddress = useWalletAddress()
   const { nftsSortByCollection: nfts } = useOwnerNftByCollection(walletAddress)
 
   const onCloseModal = () => {
@@ -44,7 +42,7 @@ const SendMultiNFTs = () => {
     if (!isAddress(receiverAddress))
       return window.notify({
         type: 'error',
-        description: 'Invalid mint address',
+        description: 'Invalid wallet address',
       })
 
     for (const mintNFT in listNFTsSelected) {

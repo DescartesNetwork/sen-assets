@@ -1,4 +1,4 @@
-import { useAccount } from '@sentre/senhub'
+import { useAccounts } from '@sentre/senhub'
 
 import { Card, Checkbox, Col, Space } from 'antd'
 import { CheckboxChangeEvent } from 'antd/lib/checkbox'
@@ -15,7 +15,7 @@ const CardToken = ({
   onSelect,
   isChecked = false,
 }: CardTokenProps) => {
-  const { accounts } = useAccount()
+  const accounts = useAccounts()
   const onChange = (e: CheckboxChangeEvent) => {
     if (onSelect) onSelect(accountAddress, e.target.checked)
   }

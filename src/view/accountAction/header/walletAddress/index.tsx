@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useWallet } from '@sentre/senhub'
+import { useWalletAddress } from '@sentre/senhub'
 
 import { Tooltip, Space, Typography, Popover } from 'antd'
 import { QRCodeCanvas } from 'qrcode.react'
@@ -31,9 +31,7 @@ const QR = ({ address }: { address: string }) => {
 }
 
 const WalletAddress = () => {
-  const {
-    wallet: { address },
-  } = useWallet()
+  const walletAddress = useWalletAddress()
   const [copied, setCopied] = useState(false)
 
   const onCopy = async () => {
@@ -46,16 +44,16 @@ const WalletAddress = () => {
     <Space size={10}>
       <Typography.Text
         style={{ color: '#E9E9EB', cursor: 'pointer' }}
-        onClick={() => window.open(util.explorer(address), '_blank')}
+        onClick={() => window.open(util.explorer(walletAddress), '_blank')}
       >
-        {util.shortenAddress(address, 3, '...')}
+        {util.shortenAddress(walletAddress, 3, '...')}
       </Typography.Text>
       <Tooltip title="Copied" visible={copied}>
-        <CopyToClipboard text={address} onCopy={onCopy}>
+        <CopyToClipboard text={walletAddress} onCopy={onCopy}>
           <IconButton name="copy-outline" onClick={onCopy} />
         </CopyToClipboard>
       </Tooltip>
-      <QR address={address} />
+      <QR address={walletAddress} />
     </Space>
   )
 }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAccount, useWallet } from '@sentre/senhub'
+import { useAccounts, useWalletAddress } from '@sentre/senhub'
 
 import { Row, Col, Card, Typography } from 'antd'
 import CardNFT from '../cardNFT'
@@ -17,10 +17,8 @@ const DetailsNFT = () => {
   const { metadata, nftInfo, loading } = useNftMetaData(mintNFT)
   const [isShowSendBtn, setIsShowSendBtn] = useState(false)
 
-  const { accounts } = useAccount()
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
+  const accounts = useAccounts()
+  const walletAddress = useWalletAddress()
 
   const checkIsHasNFT = useCallback(async () => {
     const { splt } = window.sentre

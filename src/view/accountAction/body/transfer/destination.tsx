@@ -1,4 +1,4 @@
-import { useWallet } from '@sentre/senhub'
+import { useWalletAddress } from '@sentre/senhub'
 import { Row, Col, Typography, Input } from 'antd'
 
 const Destination = ({
@@ -8,9 +8,7 @@ const Destination = ({
   onChange: (amount: string) => void
   value: string
 }) => {
-  const {
-    wallet: { address },
-  } = useWallet()
+  const walletAddress = useWalletAddress()
 
   // TODO: validate address
 
@@ -22,7 +20,7 @@ const Destination = ({
       <Col span={24}>
         <Input
           size="large"
-          placeholder={`${address.substring(0, 12)}...`}
+          placeholder={`${walletAddress.substring(0, 12)}...`}
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />

@@ -1,28 +1,28 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useAccount, useWallet } from '@sentre/senhub'
+import { useAccounts, useWalletAddress } from '@sentre/senhub'
 
 import { Col, Row, Space, Switch, Typography } from 'antd'
 import InputCopy from 'components/inputCopy'
 import QRcode from 'qrcode.react'
 
 const Receive = ({ accountAddr }: { accountAddr: string }) => {
-  const { accounts } = useAccount()
-  const { wallet } = useWallet()
+  const accounts = useAccounts()
+  const walletAddress = useWalletAddress()
   const [devMode, setDevMode] = useState(false)
   const [addressDisplay, setAddressDisplay] = useState('')
 
   const getAccountWithMode = useCallback(async () => {
-    if (!devMode || accountAddr === wallet.address)
-      return setAddressDisplay(wallet.address)
+    if (!devMode || accountAddr === walletAddress)
+      return setAddressDisplay(walletAddress)
 
     const splt = window.sentre.splt
     const mint = accounts[accountAddr].mint
     const deriveAddress = await splt.deriveAssociatedAddress(
-      wallet.address,
+      walletAddress,
       mint,
     )
     return setAddressDisplay(deriveAddress)
-  }, [accountAddr, accounts, devMode, wallet.address])
+  }, [accountAddr, accounts, devMode, walletAddress])
 
   useEffect(() => {
     getAccountWithMode()
@@ -46,7 +46,7 @@ const Receive = ({ accountAddr }: { accountAddr: string }) => {
             </Typography.Text>
           </Col>
           <Col>
-            {accountAddr !== wallet.address && (
+            {accountAddr !== walletAddress && (
               <Space>
                 <Typography.Text>Developer mode</Typography.Text>
                 <Switch size="small" checked={devMode} onChange={setDevMode} />
