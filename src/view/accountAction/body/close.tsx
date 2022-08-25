@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useDispatch } from 'react-redux'
-import { useAccount, useWallet } from '@sentre/senhub'
+import { useAccounts, useWalletAddress } from '@sentre/senhub'
 
 import { Row, Col, Card, Typography, Button, Space } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -13,8 +13,8 @@ import { AppDispatch } from 'model'
 
 const Close = ({ accountAddr }: { accountAddr: string }) => {
   const dispatch = useDispatch<AppDispatch>()
-  const { accounts } = useAccount()
-  const { wallet } = useWallet()
+  const accounts = useAccounts()
+  const walletAddress = useWalletAddress()
   const account = accounts[accountAddr] || {}
 
   const close = async () => {
@@ -38,7 +38,7 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
   const errorMessage = useMemo(() => {
     if (
       !!account.close_authority_option &&
-      account.close_authority !== wallet.address
+      account.close_authority !== walletAddress
     )
       return `You don't have permission to close this account!`
     if (!!account.amount)
@@ -47,7 +47,7 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
     account.amount,
     account.close_authority,
     account.close_authority_option,
-    wallet.address,
+    walletAddress,
   ])
 
   return (

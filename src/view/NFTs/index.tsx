@@ -4,12 +4,10 @@ import { Row, Col, Typography } from 'antd'
 
 import ListNFTs from './listNFTs'
 import Search from './search.tsx'
-import { useUI } from '@sentre/senhub'
+import { useWidth } from '@sentre/senhub'
 
 const NFTs = () => {
-  const {
-    ui: { width },
-  } = useUI()
+  const width = useWidth()
   const isMobile = width < 992
   const [searchText, setSearchText] = useState<string>('')
 

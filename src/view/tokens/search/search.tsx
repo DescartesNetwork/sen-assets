@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { AccountData } from '@senswap/sen-js'
-import { useAccount, useMint, usePool, useUI } from '@sentre/senhub'
+import { tokenProvider,  useAccounts, useWidth } from '@sentre/senhub'
+import { forceCheck } from '@sentre/react-lazyload'
 
 import { Input, Button, Space, Row, Col } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -21,12 +22,8 @@ const Search = ({
     (state: AppState) => state.settings,
   )
   const [keyword, setKeyword] = useState('')
-  const { accounts } = useAccount()
-  const { tokenProvider } = useMint()
-  const { pools } = usePool()
-  const {
-    ui: { width },
-  } = useUI()
+  const accounts = useAccounts()
+  const width = useWidth()
   const isMobile = width < 992
 
   // Check visible account with settings
@@ -37,31 +34,33 @@ const Search = ({
 
       const mintData = await tokenProvider.findByAddress(mint)
       if (mintData) return true
-      for (const pool of Object.values(pools)) {
-        if (pool.mint_lpt === mint) return true
-      }
       return !hiddenUnknownTokens
     },
-    [hiddenUnknownTokens, hiddenZeros, pools, tokenProvider],
+    [hiddenUnknownTokens, hiddenZeros],
   )
 
   const onSearch = useCallback(async () => {
-    const accountFilter: Record<string, AccountData> = {}
+    const filteredAccount: Record<string, AccountData> = {}
+    const tokens = await tokenProvider.find(keyword, 0)
+    const mints = tokens.map((token) => token.address)
+
     for (const accAddr in accounts) {
       const account = accounts[accAddr]
       if (keyword && keyword.length > KEY_SIZE) {
-        const tokens = await tokenProvider.find(keyword, 0)
-        const mints = tokens.map((token) => token.address)
         if (!mints.includes(account.mint)) continue
       }
       const visible = await checkVisible(account)
-      if (visible) accountFilter[accAddr] = account
+      if (visible) filteredAccount[accAddr] = account
     }
-    return onChange(accountFilter)
-  }, [accounts, keyword, onChange, tokenProvider, checkVisible])
+    return onChange(filteredAccount)
+  }, [accounts, keyword, onChange, checkVisible])
 
   useEffect(() => {
     onSearch()
+    const timeout = setTimeout(() => {
+      forceCheck()
+    }, 300)
+    return () => clearTimeout(timeout)
   }, [onSearch])
 
   return (

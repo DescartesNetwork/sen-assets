@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { useWallet } from '@sentre/senhub'
+import { useWalletAddress } from '@sentre/senhub'
 import { useHistory } from 'react-router-dom'
 import LazyLoad from '@sentre/react-lazyload'
 
@@ -21,9 +21,7 @@ const {
 const nftPath = '/app/' + appId + '/nfts-asset'
 
 const ListNFTs = ({ searchText }: ListNFTsProps) => {
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
+  const walletAddress = useWalletAddress()
   const { nftsSortByCollection: nfts } = useOwnerNftByCollection(walletAddress)
   const [listNFTsUnknown, setListNFTsUnknown] = useState<
     Record<string, boolean>

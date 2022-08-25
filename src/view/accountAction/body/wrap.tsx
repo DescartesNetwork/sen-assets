@@ -1,10 +1,10 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { DEFAULT_WSOL, utils } from '@senswap/sen-js'
-import { useWallet } from '@sentre/senhub'
+import { useWalletAddress } from '@sentre/senhub'
 
 import { Button, Col, Row, Space, Typography } from 'antd'
-import { MintSymbol } from '@sen-use/components'
+import { MintSymbol } from '@sen-use/app'
 import NumericInput from 'shared/antd/numericInput'
 
 import { notifyError, notifySuccess } from 'helper'
@@ -22,9 +22,7 @@ const Wrap = () => {
   const [value, setValue] = useState('')
   const [loading, setLoading] = useState(false)
   const [wsolAddress, setWSolAddress] = useState('')
-  const {
-    wallet: { address: walletAddress },
-  } = useWallet()
+  const walletAddress = useWalletAddress()
 
   const wSolData = useMintAccount(wsolAddress)
   const solData = useMintAccount(walletAddress)

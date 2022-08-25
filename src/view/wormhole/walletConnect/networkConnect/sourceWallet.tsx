@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { ChainId, CHAIN_ID_ETH, CHAIN_ID_SOLANA } from '@certusone/wormhole-sdk'
 import detectEthereumProvider from '@metamask/detect-provider'
 import { utils } from '@senswap/sen-js'
-import { useAccount, useMint } from '@sentre/senhub'
+import { tokenProvider, useAccounts } from '@sentre/senhub'
 
 import { Col, Row, Tag } from 'antd'
 import Network, { NetworkConnect } from './network'
@@ -27,8 +27,7 @@ const SourceWallet = () => {
   const {
     wormhole: { sourceWalletAddress, sourceChain },
   } = useSelector((state: AppState) => state)
-  const { accounts } = useAccount()
-  const { tokenProvider } = useMint()
+  const accounts = useAccounts()
   const [hasProvider, setHasProvider] = useState(false)
   const getSourceEtherWallet = useCallback((fallback: string = '') => {
     const walletType = session.get(WOH_WALLET) || fallback
@@ -172,7 +171,7 @@ const SourceWallet = () => {
     } catch (er) {
       return notifyError(er)
     }
-  }, [accounts, dispatch, tokenProvider])
+  }, [accounts, dispatch])
 
   const autoConnectEtherWallet = useCallback(async () => {
     const walletType = session.get(WOH_WALLET)

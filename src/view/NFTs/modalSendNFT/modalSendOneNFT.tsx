@@ -29,7 +29,7 @@ const ModalSendOneNFT = ({ mintNFT }: ModalSendNFTProps) => {
     if (!isAddress(receiverAddress))
       return window.notify({
         type: 'error',
-        description: 'Invalid mint address',
+        description: 'Invalid wallet address',
       })
     setLoading(true)
     try {

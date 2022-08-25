@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { forceCheck } from '@sentre/react-lazyload'
 import { Redirect, Route, Switch } from 'react-router-dom'
-import { useUI } from '@sentre/senhub'
+import { useWidth, useTheme } from '@sentre/senhub'
 
 import { Avatar, Drawer } from 'antd'
 import { Layout } from 'antd'
@@ -24,9 +24,8 @@ const {
 } = configs
 
 const View = () => {
-  const {
-    ui: { width, theme },
-  } = useUI()
+  const width = useWidth()
+  const theme = useTheme()
   const isMobile = width < 992
   const [isToggled, setToggled] = useState(false)
 
