@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { AccountData } from '@senswap/sen-js'
-import { tokenProvider, useUI, useAccounts } from '@sentre/senhub'
+import { tokenProvider,  useAccounts, useWidth } from '@sentre/senhub'
 import { forceCheck } from '@sentre/react-lazyload'
 
 import { Input, Button, Space, Row, Col } from 'antd'
@@ -23,9 +23,7 @@ const Search = ({
   )
   const [keyword, setKeyword] = useState('')
   const accounts = useAccounts()
-  const {
-    ui: { width },
-  } = useUI()
+  const width = useWidth()
   const isMobile = width < 992
 
   // Check visible account with settings

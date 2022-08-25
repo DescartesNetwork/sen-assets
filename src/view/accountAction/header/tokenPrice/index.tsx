@@ -3,7 +3,7 @@ import { MintAvatar, MintSymbol } from '@sen-use/app'
 import Price, { PriceChange, PriceIndicator } from 'components/price'
 import IconButton from 'components/iconButton'
 
-export const TokenPrice = ({ mintAddress }: { mintAddress: string }) => {
+export const TokenPrice = ({ mintAddress = '' }: { mintAddress: string }) => {
   return (
     <Row>
       <Col flex="auto">

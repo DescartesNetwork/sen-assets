@@ -6,7 +6,7 @@ type LogoItemProps = {
   mint: string
 }
 
-const LogoItem = ({ mint }: LogoItemProps) => {
+const LogoItem = ({ mint = '' }: LogoItemProps) => {
   return (
     <Row gutter={[16, 16]} wrap={false} align="middle">
       <Col>

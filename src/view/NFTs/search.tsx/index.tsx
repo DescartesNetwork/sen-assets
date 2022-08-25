@@ -1,4 +1,4 @@
-import { useUI } from '@sentre/senhub'
+import { useWidth } from '@sentre/senhub'
 
 import { Row, Col, Input, Button } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -11,9 +11,7 @@ type SearchProps = {
 }
 
 const Search = ({ onSearch, searchText }: SearchProps) => {
-  const {
-    ui: { width },
-  } = useUI()
+  const width = useWidth()
   const isMobile = width < 992
 
   return (

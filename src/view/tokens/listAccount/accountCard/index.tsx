@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAccounts, useUI } from '@sentre/senhub'
+import { useAccounts, useWidth } from '@sentre/senhub'
 
 import { Button, Card, Col, Divider, Modal, Row, Space } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -25,9 +25,7 @@ const AccountCard = ({
   const [visible, setVisible] = useState(false)
   const accounts = useAccounts()
   const mint = accounts[accountAddr]?.mint
-  const {
-    ui: { width },
-  } = useUI()
+  const width = useWidth()
   const isMobile = width < 768
 
   return (

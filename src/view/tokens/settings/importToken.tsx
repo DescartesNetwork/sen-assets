@@ -2,9 +2,9 @@ import { Fragment, useState } from 'react'
 import { account } from '@senswap/sen-js'
 import {
   tokenProvider,
-  useUI,
   useWalletAddress,
   useAccounts,
+  useTheme,
 } from '@sentre/senhub'
 
 import { Row, Col, Typography, Button, Modal } from 'antd'
@@ -19,9 +19,7 @@ const ImportToken = () => {
   const [loading, setLoading] = useState(false)
   const walletAddress = useWalletAddress()
   const accounts = useAccounts()
-  const {
-    ui: { theme },
-  } = useUI()
+  const theme = useTheme()
   const initializeAccount = async () => {
     try {
       const { splt, wallet } = window.sentre

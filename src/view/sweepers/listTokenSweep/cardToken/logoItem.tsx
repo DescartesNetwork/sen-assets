@@ -5,7 +5,7 @@ type LogoItemProps = {
   mint: string
 }
 
-const LogoItem = ({ mint }: LogoItemProps) => {
+const LogoItem = ({ mint = '' }: LogoItemProps) => {
   return (
     <Space>
       <MintAvatar mintAddress={mint} size={24} />

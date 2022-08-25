@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccountData } from '@senswap/sen-js'
 import LazyLoad from '@sentre/react-lazyload'
-import { tokenProvider, useUI, useWalletAddress } from '@sentre/senhub'
+import { tokenProvider, useWalletAddress, useWidth } from '@sentre/senhub'
 
 import { Col, Row, Typography } from 'antd'
 import { LidoStakeBanner } from '@lidofinance/solido-sdk'
@@ -22,9 +22,7 @@ const ListAccount = () => {
   const walletAddress = useWalletAddress()
   const [listAccount, setListAccount] = useState<string[]>([])
   const dispatch = useDispatch<AppDispatch>()
-  const {
-    ui: { width },
-  } = useUI()
+  const width = useWidth()
   const isMobile = width < 992
 
   const onSearch = useCallback(
