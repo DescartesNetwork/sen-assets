@@ -63,7 +63,7 @@ const ModalSendOneNFT = ({ mintNFT }: ModalSendNFTProps) => {
       </Button>
 
       <Modal
-        visible={visible}
+        open={visible}
         footer={false}
         onCancel={onCloseModal}
         closeIcon={<IonIcon name="close-outline" />}

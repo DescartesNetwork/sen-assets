@@ -82,7 +82,7 @@ const AccountCard = ({
         </Col>
       </Row>
       <Modal
-        visible={visible}
+        open={visible}
         footer={false}
         onCancel={() => setVisible(false)}
         maskClosable={true}

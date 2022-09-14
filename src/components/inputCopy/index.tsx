@@ -19,7 +19,7 @@ const InputCopy = (props: InputProps) => {
     <Input
       {...props}
       suffix={
-        <Tooltip title="Copied" visible={copied}>
+        <Tooltip title="Copied" open={copied}>
           <CopyToClipboard text={String(props.value)} onCopy={onCopy}>
             <Button
               type="text"

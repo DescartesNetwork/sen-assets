@@ -63,7 +63,7 @@ const ImportToken = () => {
         Import token
       </Button>
       <Modal
-        visible={visible}
+        open={visible}
         footer={false}
         onCancel={() => setVisible(false)}
         width={445}
