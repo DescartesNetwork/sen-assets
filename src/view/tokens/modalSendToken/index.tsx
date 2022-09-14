@@ -51,7 +51,7 @@ const ModalSendToken = () => {
         Send
       </Button>
       <Modal
-        visible={visible}
+        open={visible}
         footer={false}
         onCancel={onCloseModal}
         centered

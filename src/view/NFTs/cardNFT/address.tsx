@@ -19,7 +19,7 @@ const Address = ({ address }: { address: string }) => {
       <Typography.Text type="secondary" className="t-16">
         {util.shortenAddress(address, 3)}
       </Typography.Text>
-      <Tooltip title="Copied" visible={copied}>
+      <Tooltip title="Copied" open={copied}>
         <CopyToClipboard text={address} onCopy={onCopy}>
           <Typography.Text style={{ cursor: 'pointer' }} className="t-16">
             <IonIcon name="copy-outline" />

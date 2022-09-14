@@ -48,7 +48,7 @@ const WalletAddress = () => {
       >
         {util.shortenAddress(walletAddress, 3, '...')}
       </Typography.Text>
-      <Tooltip title="Copied" visible={copied}>
+      <Tooltip title="Copied" open={copied}>
         <CopyToClipboard text={walletAddress} onCopy={onCopy}>
           <IconButton name="copy-outline" onClick={onCopy} />
         </CopyToClipboard>

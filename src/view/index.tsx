@@ -55,7 +55,7 @@ const View = () => {
           placement="left"
           onClose={onClose}
           closable={true}
-          visible={isToggled}
+          open={isToggled}
           width={338}
           bodyStyle={{ padding: 0 }}
           closeIcon={<IonIcon name="close-outline" />}

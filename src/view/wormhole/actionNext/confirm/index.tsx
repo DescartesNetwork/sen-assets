@@ -20,7 +20,7 @@ const ConfirmBridge = ({
 
   if (!sourceToken) return null
   return (
-    <Modal visible={visible} footer={false} closable={false} centered>
+    <Modal open={visible} footer={false} closable={false} centered>
       <Row gutter={[16, 16]} justify="center">
         <Col style={{ marginBottom: 50 }}>
           <Typography.Title level={4}>Confirm transfer</Typography.Title>
