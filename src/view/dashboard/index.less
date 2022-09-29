@@ -1,0 +1,35 @@
+@import '../../static/styles/common/vars.less';
+
+.assets-dashboard {
+  max-height: calc(100vh - 24px);
+  margin-top: -12px !important;
+  margin-bottom: -12px !important;
+
+  .@{ant-prefix}-tabs-nav {
+    position: sticky !important;
+    background: #fff;
+    padding: 12px;
+    top: 0;
+    justify-content: center;
+    z-index: 99;
+    &::before {
+      content: none !important;
+    }
+    .@{ant-prefix}-tabs-nav-wrap {
+      width: 100%;
+      max-width: 1440px;
+    }
+    .@{ant-prefix}-tabs-ink-bar{
+      display: none !important;
+    }
+  }
+  .@{ant-prefix}-tabs-content-holder {
+    padding: 0 12px;
+    display: flex;
+    justify-content: center;
+    .@{ant-prefix}-tabs-content {
+      width: 100%;
+      max-width: 1440px;
+    }
+  }
+}

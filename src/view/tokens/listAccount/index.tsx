@@ -53,7 +53,7 @@ const ListAccount = () => {
   }, [accountSelected, dispatch, walletAddress])
 
   return (
-    <Row gutter={[12, 12]}>
+    <Row gutter={[0, 12]}>
       <Col flex="auto">
         <Typography.Title level={2}>Token Assets</Typography.Title>
       </Col>

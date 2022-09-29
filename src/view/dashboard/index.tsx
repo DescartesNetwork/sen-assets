@@ -1,11 +1,13 @@
 import { Col, Row, Tabs } from 'antd'
 import { MENU_LIST } from 'helper/menuList'
 
+import './index.less'
+
 const Dashboard = () => {
   return (
-    <Row gutter={[24, 24]}>
+    <Row>
       <Col span={24}>
-        <Tabs items={MENU_LIST} />
+        <Tabs items={MENU_LIST} className="assets-dashboard scrollbar" />
       </Col>
     </Row>
   )

@@ -3,7 +3,7 @@ import { forceCheck } from '@sentre/react-lazyload'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import { useWidth } from '@sentre/senhub'
 
-import { Avatar } from 'antd'
+import { Avatar, Col, Row } from 'antd'
 import { Layout } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
 
@@ -35,17 +35,29 @@ const View = () => {
 
   return (
     <Layout>
-      <Content>
-        <Switch>
-          <Route exact path={`/app/${appId}/dashboard`} component={Dashboard} />
-          <Route
-            exact
-            path={`/app/${appId}/dashboard/:mintNFT`}
-            component={DetailsNFT}
-          />
-          <Redirect from="*" to={`/app/${appId}/dashboard`} />
-        </Switch>
-      </Content>
+      <Row gutter={[24, 24]}>
+        <Col
+          span={24}
+          style={{
+            paddingLeft: 0,
+            paddingRight: 0,
+          }}
+        >
+          <Switch>
+            <Route
+              exact
+              path={`/app/${appId}/dashboard`}
+              component={Dashboard}
+            />
+            <Route
+              exact
+              path={`/app/${appId}/dashboard/:mintNFT`}
+              component={DetailsNFT}
+            />
+            <Redirect from="*" to={`/app/${appId}/dashboard`} />
+          </Switch>
+        </Col>
+      </Row>
       {isMobile && !isToggled && (
         <Content>
           <div className="fixed-widgets">
