@@ -15,7 +15,7 @@ export const MENU_LIST = [
     label: (
       <Space size={4}>
         <IconSax name="WalletMoney" style={{ fontSize: 24 }} />
-        Token Assets
+        <span className="menu-typography">Token Assets</span>
       </Space>
     ),
     children: <Tokens />,
@@ -25,7 +25,7 @@ export const MENU_LIST = [
     label: (
       <Space size={4}>
         <IconSax name="ColorsSquare" style={{ fontSize: 24 }} />
-        NFT Assets
+        <span className="menu-typography">NFT Assets</span>
       </Space>
     ),
     children: <NFTs />,
@@ -35,7 +35,7 @@ export const MENU_LIST = [
     label: (
       <Space size={4}>
         <Icon component={PortalBridge} style={{ fontSize: 24 }} />
-        Portal Bridge
+        <span className="menu-typography">Portal Bridge</span>
       </Space>
     ),
     children: <WormHole />,
@@ -45,7 +45,7 @@ export const MENU_LIST = [
     label: (
       <Space size={4}>
         <IconSax name="Broom" style={{ fontSize: 24 }} />
-        Sweepers
+        <span className="menu-typography">Sweepers</span>
       </Space>
     ),
     children: <Sweepers />,
