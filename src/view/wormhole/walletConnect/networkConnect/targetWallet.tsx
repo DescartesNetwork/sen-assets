@@ -130,10 +130,13 @@ const TargetWallet = () => {
     if (targetChain === CHAIN_ID_SOLANA) {
       autoConnectSolWallet()
     }
+  }, [autoConnectSolWallet, targetChain])
+
+  useEffect(() => {
     if (targetChain === CHAIN_ID_ETH) {
       autoConnectEtherWallet()
     }
-  }, [autoConnectEtherWallet, autoConnectSolWallet, targetChain])
+  }, [autoConnectEtherWallet, targetChain])
 
   return (
     <Row gutter={[16, 16]} align="middle">

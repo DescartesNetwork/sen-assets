@@ -13,6 +13,7 @@ import {
   redeemOnSolana,
   transferFromEth,
   transferFromEthNative,
+  tryUint8ArrayToNative,
 } from '@certusone/wormhole-sdk'
 import { account, utils, WalletInterface } from '@senswap/sen-js'
 
@@ -70,6 +71,17 @@ class WohEthSol extends WormholeProvider {
       CHAIN_ID_ETH,
     )
 
+    if (originAsset.chainId === context.targetChainId) {
+      const wrappedMintAddress = tryUint8ArrayToNative(
+        originAsset.assetAddress,
+        context.targetChainId,
+      )
+      return {
+        attested: !!originAsset.assetAddress,
+        wrappedMintAddress: wrappedMintAddress,
+      }
+    }
+
     const wrappedMintAddress = await getForeignAssetSolana(
       this.getConnection(),
       context.targetTokenBridgeAddress,
@@ -123,6 +135,7 @@ class WohEthSol extends WormholeProvider {
       wrappedMintAddress,
       this.targetWallet,
     )
+    const dstAddressBuffer = account.fromAddress(dstAddress).toBuffer()
 
     const transferReceipt = this.isNative()
       ? await transferFromEthNative(
@@ -130,7 +143,7 @@ class WohEthSol extends WormholeProvider {
           signer,
           amountTransfer,
           CHAIN_ID_SOLANA,
-          account.fromAddress(dstAddress).toBuffer(),
+          dstAddressBuffer,
         )
       : await transferFromEth(
           context.srcTokenBridgeAddress,
@@ -138,7 +151,7 @@ class WohEthSol extends WormholeProvider {
           context.tokenInfo.address,
           amountTransfer,
           CHAIN_ID_SOLANA,
-          account.fromAddress(dstAddress).toBuffer(),
+          dstAddressBuffer,
         )
     const sequence = parseSequenceFromLogEth(
       transferReceipt,
