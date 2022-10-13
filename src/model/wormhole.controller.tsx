@@ -139,20 +139,16 @@ export const updateSolTokens = createAsyncThunk<
   }
 })
 
-export const disconnectSourceWallet = createAsyncThunk<
-  WohState,
-  void,
-  { state: any }
->(`${NAME}/disconnectSourceWallet`, async (_, { getState }) => {
-  const state = getState().wormhole
-
-  return {
-    ...state,
-    sourceWalletAddress: '',
-    sourceTokens: {},
-    tokenAddress: '',
-  }
-})
+export const disconnectSourceWallet = createAsyncThunk<Partial<WohState>>(
+  `${NAME}/disconnectSourceWallet`,
+  async () => {
+    return {
+      sourceWalletAddress: '',
+      sourceTokens: {},
+      tokenAddress: '',
+    }
+  },
+)
 
 export const disconnectTargetWallet = createAsyncThunk<Partial<WohState>>(
   `${NAME}/disconnectTargetWallet`,
@@ -164,7 +160,7 @@ export const disconnectTargetWallet = createAsyncThunk<Partial<WohState>>(
 )
 
 export const connectTargetWallet = createAsyncThunk<
-  { targetWalletAddress: string; targetChain: ChainId },
+  Partial<WohState>,
   { wallet: any; targetChain: ChainId }
 >(`${NAME}/connectTargetWallet`, async ({ wallet, targetChain }) => {
   switch (targetChain) {
@@ -183,7 +179,7 @@ export const connectTargetWallet = createAsyncThunk<
 })
 
 export const setSourceToken = createAsyncThunk<
-  WohState,
+  Partial<WohState>,
   { tokenAddress?: string; amount?: string },
   { state: { wormhole: WohState } }
 >(`${NAME}/setSourceToken`, async ({ tokenAddress, amount }, { getState }) => {
@@ -191,7 +187,7 @@ export const setSourceToken = createAsyncThunk<
   const newTokenAddress = tokenAddress || wormhole.tokenAddress
   const newAmount = amount === undefined ? wormhole.amount : amount
 
-  return { ...wormhole, tokenAddress: newTokenAddress, amount: newAmount }
+  return { tokenAddress: newTokenAddress, amount: newAmount }
 })
 
 export const setProcess = createAsyncThunk<Partial<WohState>, { id: string }>(

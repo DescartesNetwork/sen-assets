@@ -63,7 +63,7 @@ export class WormholeProvider {
       transferData.sequence = sequence
       transferData.nextStep = StepTransfer.WaitSigned
       const newState = await this.backup()
-      await onUpdate(newState)
+      onUpdate(newState)
     }
     if (transferData.nextStep === StepTransfer.WaitSigned) {
       const vaaHex = await this.getSignedVAA(
@@ -73,14 +73,14 @@ export class WormholeProvider {
       transferData.vaaHex = vaaHex
       transferData.nextStep = StepTransfer.Redeem
       const newState = await this.backup()
-      await onUpdate(newState)
+      onUpdate(newState)
     }
     if (transferData.nextStep === StepTransfer.Redeem) {
       const newTxId = await this.redeem(transferData.vaaHex)
       transferData.txId = newTxId
       transferData.nextStep = StepTransfer.Finish
       const newState = await this.backup()
-      await onUpdate(newState)
+      onUpdate(newState)
       return newTxId
     }
     throw new Error('Invalid step transfer')
@@ -181,7 +181,7 @@ export class WormholeProvider {
       attestData.sequence = sequence
       attestData.step++
       const newState = await this.backup()
-      await onUpdate(newState)
+      onUpdate(newState)
     }
     if (attestData.step === 1) {
       const vaaHex = await this.getSignedVAA(
@@ -191,14 +191,14 @@ export class WormholeProvider {
       attestData.vaaHex = vaaHex
       attestData.step++
       const newState = await this.backup()
-      await onUpdate(newState)
+      onUpdate(newState)
     }
     if (attestData.step === 2) {
       const txId = await this.wrapToken(attestData.vaaHex)
       attestData.txId = txId
       attestData.step++
       const newState = await this.backup()
-      await onUpdate(newState)
+      onUpdate(newState)
       return txId
     }
     throw new Error('Invalid step attest')
