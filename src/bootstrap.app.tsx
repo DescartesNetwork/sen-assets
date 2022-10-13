@@ -16,7 +16,7 @@ const {
 
 export const FrameWormhole = () => {
   return (
-    <AntdProvider appId={appId}>
+    <AntdProvider appId={appId} prefixCls={appId}>
       <Provider store={model}>
         <WormHoleFrame />
       </Provider>
@@ -26,7 +26,7 @@ export const FrameWormhole = () => {
 
 export const Page = () => {
   return (
-    <AntdProvider appId={appId}>
+    <AntdProvider appId={appId} prefixCls={appId}>
       <Provider store={model}>
         <View />
       </Provider>

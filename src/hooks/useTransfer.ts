@@ -1,10 +1,9 @@
+import { useCallback } from 'react'
 import BN from 'bn.js'
 import { isAddress } from '@sentre/utility'
-import { useCallback } from 'react'
 
 import { SOL_ADDRESS } from 'constant/sol'
 import configs from 'configs'
-import { splt } from '@sentre/senhub'
 
 const {
   sol: { utility, lamports },

@@ -14,7 +14,7 @@
     "@sentre/antd-iconsax": "^1.0.46",
     "@sentre/antd-ionicon": "^2.0.2",
     "@sentre/react-lazyload": "^3.2.2",
-    "@sentre/senhub": "^4.0.8",
+    "@sentre/senhub": "^4.1.1",
     "@sentre/utility": "^1.0.3",
     "@solana/spl-token-registry": "^0.2.3771",
     "abi-decoder": "^2.4.0",
@@ -62,7 +62,7 @@
   },
   "devDependencies": {
     "@craco/craco": "^7.0.0-alpha.5",
-    "@sentre/craco-plugins": "^1.0.43",
+    "@sentre/craco-plugins": "^2.0.2",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.2.1",
