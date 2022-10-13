@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { useDispatch } from 'react-redux'
-import { useAccounts, useWalletAddress } from '@sentre/senhub'
+import { useAccounts, useWalletAddress, splt } from '@sentre/senhub'
 
 import { Row, Col, Card, Typography, Button, Space } from 'antd'
 import IonIcon from '@sentre/antd-ionicon'
@@ -19,9 +19,9 @@ const Close = ({ accountAddr }: { accountAddr: string }) => {
 
   const close = async () => {
     try {
-      const { splt, wallet } = window.sentre
-      if (!wallet) return
-      const { txId } = await splt.closeAccount(accountAddr, wallet)
+      const { solana } = window.sentre
+      if (!solana) return
+      const { txId } = await splt.closeAccount(accountAddr, solana)
       await window.notify({
         type: 'success',
         description: `Close ${util.shortenAddress(

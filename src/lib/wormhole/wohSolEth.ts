@@ -14,6 +14,7 @@ import {
   ChainId,
 } from '@certusone/wormhole-sdk'
 import { utils, WalletInterface } from '@senswap/sen-js'
+import { splt } from '@sentre/senhub'
 
 import { sendTransaction } from './helper/utils'
 import { WormholeProvider } from './provider'
@@ -87,7 +88,6 @@ class WohSolEth extends WormholeProvider {
   protected submitTransfer = async () => {
     // Create inputs
     const { transferData, context } = this.getState()
-    const { splt } = window.sentre
     const connection = this.getConnection()
     const payerAddress = await this.srcWallet.getAddress()
     const targetAddress = await this.targetWallet.getAddress()

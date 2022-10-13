@@ -118,7 +118,7 @@ const SourceWallet = () => {
       try {
         await dispatch(
           connectSourceWallet({
-            wallet: window.sentre.wallet,
+            wallet: window.sentre.solana,
             chainID: value,
             sourceToken,
           }),
@@ -163,7 +163,7 @@ const SourceWallet = () => {
     try {
       await dispatch(
         connectSourceWallet({
-          wallet: window.sentre.wallet,
+          wallet: window.sentre.solana,
           chainID: CHAIN_ID_SOLANA,
           sourceToken,
         }),

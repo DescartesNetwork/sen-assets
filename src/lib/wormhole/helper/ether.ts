@@ -13,6 +13,7 @@ import {
   getForeignAssetSolana,
   uint8ArrayToHex,
 } from '@certusone/wormhole-sdk'
+import { DataLoader, splt, connection } from '@sentre/senhub'
 
 import {
   StepTransfer,
@@ -29,7 +30,6 @@ import {
 } from '../context'
 import { ABI_TOKEN_IMPLEMENTATION } from 'lib/wormhole/constant/abis'
 import { Moralis } from './moralis'
-import { DataLoader } from '@sentre/senhub'
 import { WETH_ADDRESS } from '../constant/ethConfig'
 import { getEtherNetwork } from './utils'
 import { provider } from 'lib/etherWallet/ethersConfig'
@@ -128,7 +128,7 @@ export const createTransferState = async (
   }
 
   const solWallet = await DataLoader.load('getWalletAddress', async () =>
-    window.sentre.wallet?.getAddress(),
+    window.sentre.solana?.getAddress(),
   )
   if (!solWallet) throw new Error('Wallet is not connected')
 
@@ -183,7 +183,7 @@ export const restoreEther = async (
     const isRedeemed = await getIsTransferCompletedSolana(
       context.targetTokenBridgeAddress,
       vaaBytes,
-      window.sentre.splt.connection,
+      connection,
     )
     if (isRedeemed) transferData.nextStep = StepTransfer.Finish
     else transferData.nextStep = StepTransfer.WaitSigned
@@ -198,10 +198,9 @@ const getSolReceipient = async (tokenEtherAddr: string) => {
     'getWrappedMintAddress' + tokenEtherAddr,
     () => getWrappedMintAddress(tokenEtherAddr),
   )
-  const solWallet = window.sentre.wallet
+  const solWallet = window.sentre.solana
   if (!wrapTokenAddr || !solWallet) return null
   const walletAddress = await solWallet.getAddress()
-  const { splt } = window.sentre
   const dstAddress = await splt.deriveAssociatedAddress(
     walletAddress,
     wrapTokenAddr,
@@ -222,7 +221,7 @@ const getWrappedMintAddress = async (tokenEtherAddr: string) => {
   )
   const solContext = getSolContext()
   const wrappedMintAddress = await getForeignAssetSolana(
-    window.sentre.splt.connection,
+    connection,
     solContext.tokenBridgeAddress,
     originAsset.chainId,
     originAsset.assetAddress,

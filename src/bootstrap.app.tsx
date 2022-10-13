@@ -1,11 +1,5 @@
 import { Provider } from 'react-redux'
-import {
-  WalletProvider,
-  UIProvider,
-  PoolProvider,
-  MintProvider,
-  AccountProvider,
-} from '@sentre/senhub'
+import { AntdProvider } from '@sentre/senhub'
 
 import View from 'view'
 import { WormHoleFrame } from 'view/wormhole'
@@ -22,37 +16,21 @@ const {
 
 export const FrameWormhole = () => {
   return (
-    <UIProvider appId={appId} antd>
-      <MintProvider>
-        <PoolProvider>
-          <AccountProvider>
-            <WalletProvider>
-              <Provider store={model}>
-                <WormHoleFrame />
-              </Provider>
-            </WalletProvider>
-          </AccountProvider>
-        </PoolProvider>
-      </MintProvider>
-    </UIProvider>
+    <AntdProvider appId={appId}>
+      <Provider store={model}>
+        <WormHoleFrame />
+      </Provider>
+    </AntdProvider>
   )
 }
 
 export const Page = () => {
   return (
-    <UIProvider appId={appId} antd={{ prefixCls: appId }}>
-      <WalletProvider>
-        <PoolProvider>
-          <MintProvider>
-            <AccountProvider>
-              <Provider store={model}>
-                <View />
-              </Provider>
-            </AccountProvider>
-          </MintProvider>
-        </PoolProvider>
-      </WalletProvider>
-    </UIProvider>
+    <AntdProvider appId={appId}>
+      <Provider store={model}>
+        <View />
+      </Provider>
+    </AntdProvider>
   )
 }
 

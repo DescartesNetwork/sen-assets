@@ -25,7 +25,7 @@ const Source = ({
 
   let max = mintAccount.balance
   if (accountAddr === walletAddress)
-    max = utils.undecimalize(lamports - PLATFORM_FEE - NETWORK_FEE, 9)
+    max = utils.undecimalize(BigInt(lamports) - PLATFORM_FEE - NETWORK_FEE, 9)
 
   return (
     <Row gutter={[8, 8]}>

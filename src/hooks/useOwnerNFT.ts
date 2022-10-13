@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useAccounts } from '@sentre/senhub'
+import { useAccounts, splt } from '@sentre/senhub'
 
 import { MetadataDataType } from 'lib/metaplex'
 import configs from 'configs'
@@ -30,7 +30,6 @@ const useOwnerNFT = (ownerPublickey: string) => {
 
   const filterNFTs = useCallback(async () => {
     if (!nfts) return setNftFiltered(undefined)
-    const { splt } = window.sentre
     let nftsFiltered: MetadataDataType[] = []
     await Promise.all(
       nfts.map(async (nft: MetadataDataType) => {

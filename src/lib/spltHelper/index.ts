@@ -7,7 +7,7 @@ import { getAnchorProvider } from './utils'
 
 class SpltHelper {
   private getProvider = async () => {
-    const wallet = window.sentre.wallet
+    const wallet = window.sentre.solana
     const walletAddress = await wallet.getAddress()
     return getAnchorProvider(rpc, walletAddress, wallet)
   }

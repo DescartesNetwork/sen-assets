@@ -8,7 +8,7 @@ import {
   WormholeContext,
   WormholeStoreKey,
 } from 'constant/types/wormhole'
-import { util } from '@sentre/senhub'
+import { rpc, util } from '@sentre/senhub'
 
 import { getWormholeDb, setWormholeDb } from './helper/utils'
 
@@ -87,8 +87,7 @@ export class WormholeProvider {
   }
 
   protected getConnection() {
-    const nodeUrl = window.sentre.splt.nodeUrl
-    return new Connection(nodeUrl, 'confirmed')
+    return new Connection(rpc, 'confirmed')
   }
 
   protected backup = async () => {

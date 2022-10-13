@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { util } from '@sentre/senhub'
+import { util, splt } from '@sentre/senhub'
 import { utils } from '@senswap/sen-js'
 import { MintSymbol } from '@sen-use/app'
 import BN from 'bn.js'
@@ -19,7 +19,7 @@ const Burn = ({ accountAddr }: { accountAddr: string }) => {
   const onBurn = useCallback(async () => {
     try {
       setLoading(true)
-      const { splt, wallet } = window.sentre
+      const { solana } = window.sentre
       const amountBN = new BN(
         utils.decimalize(amount, mintAccount.decimals).toString(),
       )
@@ -27,7 +27,7 @@ const Burn = ({ accountAddr }: { accountAddr: string }) => {
         BigInt(amountBN.toString()),
         accountAddr,
         mintAccount.mint,
-        wallet,
+        solana,
       )
       setAmount('')
       notifySuccess('Burn', txId)

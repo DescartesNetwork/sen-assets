@@ -13,7 +13,7 @@ export default class AssetsService {
   }
 
   private async getPDB(address: string) {
-    const walletAddress = await window.sentre.wallet?.getAddress()
+    const walletAddress = await window.sentre.solana?.getAddress()
     if (!walletAddress) throw new Error('Invalid wallet address')
     const key = `sen-assets:${net}:${address}`
     return new PDB(walletAddress).createInstance(key)

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useAccounts, useWalletAddress } from '@sentre/senhub'
+import { useAccounts, useWalletAddress, splt } from '@sentre/senhub'
 
 import { Col, Row, Space, Switch, Typography } from 'antd'
 import InputCopy from 'components/inputCopy'
@@ -15,7 +15,6 @@ const Receive = ({ accountAddr }: { accountAddr: string }) => {
     if (!devMode || accountAddr === walletAddress)
       return setAddressDisplay(walletAddress)
 
-    const splt = window.sentre.splt
     const mint = accounts[accountAddr].mint
     const deriveAddress = await splt.deriveAssociatedAddress(
       walletAddress,

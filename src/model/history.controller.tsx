@@ -6,7 +6,7 @@ import { SOL_ADDRESS } from 'constant/sol'
 import { TransactionTransferHistoryData } from 'constant/types/history'
 import { TransLog } from 'lib/stat/entities/trans-log'
 import AssetsService from 'lib/stat/logic/assets/assets'
-import { DataLoader } from '@sentre/senhub'
+import { DataLoader, splt } from '@sentre/senhub'
 
 /**
  * Interface & Utility
@@ -26,7 +26,7 @@ const initialState: State = {
 }
 
 const getWalletAddr = async () => {
-  const walletAddress = await window.sentre.wallet?.getAddress()
+  const walletAddress = await window.sentre.solana?.getAddress()
   if (!walletAddress) throw new Error('Wallet is not connected')
   return walletAddress
 }
@@ -41,7 +41,6 @@ const parseTransLog = async (accountAddress: string, transLog: TransLog) => {
   if (!dst || !source) return
 
   const mint = dst.mint
-  const splt = window.sentre.splt
   // filter with wallet address
   let associatedAddr = walletAddress
   if (mint !== SOL_ADDRESS) {
@@ -69,7 +68,7 @@ export const fetchTransactionHistory = createAsyncThunk<
   State,
   { accountAddress: string }
 >(`${NAME}/fetchTransactionHistory`, async ({ accountAddress }) => {
-  const walletAddress = await window.sentre.wallet?.getAddress()
+  const walletAddress = await window.sentre.solana?.getAddress()
   if (!walletAddress) throw new Error('Wallet is not connected')
 
   const transLogService = new AssetsService(accountAddress)

@@ -81,7 +81,7 @@ const TargetWallet = () => {
       try {
         await dispatch(
           connectTargetWallet({
-            wallet: window.sentre.wallet,
+            wallet: window.sentre.solana,
             targetChain: value,
           }),
         ).unwrap()
@@ -99,7 +99,7 @@ const TargetWallet = () => {
     try {
       await dispatch(
         connectTargetWallet({
-          wallet: window.sentre.wallet,
+          wallet: window.sentre.solana,
           targetChain: CHAIN_ID_SOLANA,
         }),
       ).unwrap()
