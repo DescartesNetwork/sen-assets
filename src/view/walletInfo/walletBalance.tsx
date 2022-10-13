@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { util } from '@sentre/senhub'
 
 import IonIcon from '@sentre/antd-ionicon'
-import { Button, Skeleton, Space, Typography } from 'antd'
+import { Button, Skeleton, Space, Tooltip, Typography } from 'antd'
 
 import useTotalUSD from 'hooks/useTotalBalanceUDS'
 
@@ -44,7 +44,15 @@ const WalletTotalUSD = () => {
         {util.numeric(!!totalUSD ? totalUSD / solPrice : 0).format('0,0.[000]')}{' '}
         SOL
       </Typography.Text>
-      <IonIcon name="alert-outline" />
+      <Tooltip
+        arrowPointAtCenter
+        placement="bottom"
+        title="Total assets are based on the value of the token, excluding LP token."
+      >
+        <Typography.Text type="secondary" style={{ cursor: 'pointer' }}>
+          <IonIcon name="alert-circle-outline" />
+        </Typography.Text>
+      </Tooltip>
     </Space>
   )
 }
@@ -59,7 +67,7 @@ const WalletBalance = () => {
         <Button
           type="text"
           shape="circle"
-          icon={<IonIcon name="eye-outline" />}
+          icon={<IonIcon name={visible ? 'eye-off-outline' : 'eye-outline'} />}
           onClick={() => setVisible(!visible)}
         />
       </Space>

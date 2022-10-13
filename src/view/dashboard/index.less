@@ -7,7 +7,6 @@
 
   .@{ant-prefix}-tabs-nav {
     position: sticky !important;
-    background: #fff;
     padding: 12px;
     top: 0;
     justify-content: center;
@@ -37,6 +36,22 @@
       .menu-typography {
         display: none;
       }
+    }
+  }
+}
+
+#dark {
+  .assets-dashboard {
+    .@{ant-prefix}-tabs-nav {
+      background: #212433;
+    }
+  }
+}
+
+#light {
+  .assets-dashboard {
+    .@{ant-prefix}-tabs-nav {
+      background: #fff;
     }
   }
 }
