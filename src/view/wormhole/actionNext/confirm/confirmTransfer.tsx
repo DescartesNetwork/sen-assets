@@ -17,7 +17,7 @@ import {
 } from 'model/wormhole.controller'
 import { WohEthSol } from 'lib/wormhole'
 import { notifyError, notifySuccess } from 'helper'
-import { util } from '@sentre/senhub'
+import { util, splt } from '@sentre/senhub'
 import {
   StepTransfer,
   TransferState,
@@ -103,7 +103,6 @@ const ConfirmAction = ({
     }
 
     if (sourceChain === CHAIN_ID_SOLANA) {
-      const { splt } = window.sentre
       let amount = BigInt(0)
       if (tokenAddress === SOL_ADDRESS) {
         const accountData = await splt.connection.getBalance(

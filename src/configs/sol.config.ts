@@ -1,5 +1,7 @@
 import { Net, rpc } from '@sentre/senhub'
 import { Utility } from '@sentre/utility'
+import { Lamports } from '@senswap/sen-js'
+
 import metaplexNFT from 'lib/metaplex'
 import SafeWallet from 'helper/safeWallet'
 
@@ -12,6 +14,7 @@ type Conf = {
   metaplexNFT: metaplexNFT
   utility: Utility
   lidoReferrerAddress: string
+  lamports: Lamports
 }
 
 const conf: Record<Net, Conf> = {
@@ -24,6 +27,7 @@ const conf: Record<Net, Conf> = {
     metaplexNFT: new metaplexNFT(rpc),
     utility: new Utility(new SafeWallet(), rpc),
     lidoReferrerAddress: '8W6QginLcAydYyMYjxuyKQN56NzeakDE3aRFrAmocS6D',
+    lamports: new Lamports(rpc),
   },
 
   /**
@@ -35,6 +39,7 @@ const conf: Record<Net, Conf> = {
     metaplexNFT: new metaplexNFT('testnet'),
     utility: new Utility(new SafeWallet(), rpc),
     lidoReferrerAddress: '',
+    lamports: new Lamports(rpc),
   },
 
   /**
@@ -46,6 +51,7 @@ const conf: Record<Net, Conf> = {
     metaplexNFT: new metaplexNFT(rpc),
     utility: new Utility(new SafeWallet(), rpc),
     lidoReferrerAddress: '9doo2HZQEmh2NgfT3Yx12M89aoBheycYqH1eaR5gKb3e',
+    lamports: new Lamports(rpc),
   },
 }
 

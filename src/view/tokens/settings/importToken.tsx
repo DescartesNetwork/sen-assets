@@ -5,6 +5,7 @@ import {
   useWalletAddress,
   useAccounts,
   useTheme,
+  splt,
 } from '@sentre/senhub'
 
 import { Row, Col, Typography, Button, Modal } from 'antd'
@@ -22,13 +23,13 @@ const ImportToken = () => {
   const theme = useTheme()
   const initializeAccount = async () => {
     try {
-      const { splt, wallet } = window.sentre
+      const { solana } = window.sentre
       const accountAddress = await splt.deriveAssociatedAddress(
         walletAddress,
         mintAddress,
       )
       const token = await tokenProvider.findByAddress(mintAddress)
-      if (!account.isAddress(walletAddress) || !wallet)
+      if (!account.isAddress(walletAddress) || !solana)
         throw new Error('Wallet is not connected')
 
       if (!account.isAddress(mintAddress))
@@ -41,7 +42,7 @@ const ImportToken = () => {
       const { txId } = await splt.initializeAccount(
         mintAddress,
         walletAddress,
-        wallet,
+        solana,
       )
       setMintAddress('')
       return notifySuccess(`Import ${token?.symbol}`, txId)

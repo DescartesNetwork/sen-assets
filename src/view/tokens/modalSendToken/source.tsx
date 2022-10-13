@@ -1,5 +1,5 @@
 import { Fragment } from 'react'
-import { useWalletAddress, useWalletBalance } from '@sentre/senhub'
+import { useWalletAddress, useWalletBalance, splt } from '@sentre/senhub'
 import { utils } from '@senswap/sen-js'
 
 import { Row, Col, Typography, Button, Divider } from 'antd'
@@ -33,7 +33,6 @@ const Source = ({
   const lamports = useWalletBalance()
 
   const onSelectToken = async (mint: string) => {
-    const { splt } = window.sentre
     if (mint === SOL_ADDRESS) return onChange(walletAddress, amount, mint)
     const accountAddress = await splt.deriveAssociatedAddress(
       walletAddress,
@@ -45,7 +44,7 @@ const Source = ({
 
   let max = mintAccount.balance
   if (mintAddress === SOL_ADDRESS)
-    max = utils.undecimalize(lamports - PLATFORM_FEE - NETWORK_FEE, 9)
+    max = utils.undecimalize(BigInt(lamports) - PLATFORM_FEE - NETWORK_FEE, 9)
 
   return (
     <Row gutter={[8, 8]}>

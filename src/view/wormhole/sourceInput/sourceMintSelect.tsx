@@ -26,7 +26,7 @@ const SourceMintSelect = () => {
 
   useEffect(() => {
     ;(async () => {
-      const solBalance = utils.undecimalize(lamports, 9)
+      const solBalance = utils.undecimalize(BigInt(lamports), 9)
       if (
         !!sourceTokens[SOL_ADDRESS] ||
         !solBalance ||

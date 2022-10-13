@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { DEFAULT_WSOL, utils } from '@senswap/sen-js'
-import { useWalletAddress } from '@sentre/senhub'
+import { useWalletAddress, splt } from '@sentre/senhub'
 
 import { Button, Col, Row, Space, Typography } from 'antd'
 import { MintSymbol } from '@sen-use/app'
@@ -31,7 +31,10 @@ const Wrap = () => {
   // amount = 0 => unwrap
   const isWrap = wSolData.amount === undefined
 
-  const unWrapAmount = utils.undecimalize(wSolData.amount, wSolData.decimals)
+  const unWrapAmount = utils.undecimalize(
+    BigInt(wSolData.amount),
+    wSolData.decimals,
+  )
 
   const maxWrapAmount = useMemo(() => {
     const solAmount = Number(solData.balance)
@@ -47,14 +50,14 @@ const Wrap = () => {
   const wrap = async () => {
     setLoading(true)
     try {
-      const { splt, wallet } = window.sentre
-      if (!wallet) throw new Error('Wallet is not connected')
+      const { solana } = window.sentre
+      if (!solana) throw new Error('Wallet is not connected')
 
       const wrapAmount = utils.decimalize(Number(value), SOL_DECIMALS)
       const { txId } = await splt.wrap(
         wrapAmount + COMPENSATION,
         walletAddress,
-        wallet,
+        solana,
       )
       notifySuccess(`Wrap ${value} SOL`, txId)
     } catch (er) {
@@ -67,10 +70,10 @@ const Wrap = () => {
   const unwrap = async () => {
     setLoading(true)
     try {
-      const { splt, wallet } = window.sentre
-      if (!wallet) throw new Error('Wallet is not connected')
+      const { solana } = window.sentre
+      if (!solana) throw new Error('Wallet is not connected')
 
-      const { txId } = await splt.unwrap(wallet)
+      const { txId } = await splt.unwrap(solana)
       await dispatch(selectAccount({ account: walletAddress }))
       return notifySuccess(`Unwrap ${wSolData.balance} SOL`, txId)
     } catch (er) {
@@ -82,7 +85,6 @@ const Wrap = () => {
 
   useEffect(() => {
     ;(async () => {
-      const { splt } = window.sentre
       const wsolAddress = await splt.deriveAssociatedAddress(
         walletAddress,
         DEFAULT_WSOL,

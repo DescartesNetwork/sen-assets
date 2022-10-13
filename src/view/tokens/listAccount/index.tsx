@@ -12,6 +12,7 @@ import Search from 'view/tokens/search/search'
 import { selectAccount } from 'model/account.controller'
 import { AppDispatch, AppState } from 'model'
 import configs from 'configs'
+import WalletInfo from 'view/walletInfo'
 
 const {
   sol: { sntrAddress, lidoReferrerAddress },
@@ -53,14 +54,18 @@ const ListAccount = () => {
   }, [accountSelected, dispatch, walletAddress])
 
   return (
-    <Row gutter={[12, 12]}>
+    <Row gutter={[0, 12]}>
       <Col flex="auto">
         <Typography.Title level={2}>Token Assets</Typography.Title>
       </Col>
       <Col span={isMobile ? 24 : undefined}>
         <Search onChange={onSearch} />
       </Col>
-      <Col span={24} style={{ paddingTop: 12 }}>
+      <Col span={24} /> {/* safe space */}
+      <Col span={24}>
+        <WalletInfo />
+      </Col>
+      <Col span={24}>
         <AccountCard
           accountAddr={walletAddress}
           active={accountSelected === walletAddress}

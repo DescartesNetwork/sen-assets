@@ -24,7 +24,7 @@ const Balance = ({
   const cgkData = useMintCgk(mint)
 
   const balanceDisplay = useMemo(() => {
-    let balance = Number(utils.undecimalize(amount, decimals))
+    let balance = Number(utils.undecimalize(BigInt(amount), decimals))
     if (inUSD) balance = Number(balance) * cgkData.price
     const prefix = inUSD ? '$' : ''
     let balanceUI = util.numeric(balance).format(format)

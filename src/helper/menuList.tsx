@@ -1,30 +1,53 @@
 import Icon from '@ant-design/icons'
+import Tokens from 'view/tokens'
+import NFTs from 'view/NFTs'
+import WormHole from 'view/wormhole'
+import Sweepers from 'view/sweepers'
 
-import { ReactComponent as TokenAssets } from 'static/images/aside/token-assets.svg'
-import { ReactComponent as NFTsAssets } from 'static/images/aside/nft-assets.svg'
+import { TabAssets } from 'constant/dashboard'
+import { Space } from 'antd'
+import IconSax from '@sentre/antd-iconsax'
 import { ReactComponent as PortalBridge } from 'static/images/aside/portal-bridge.svg'
-
-import configs from 'configs'
-
-const {
-  manifest: { appId },
-} = configs
-const appPath = '/app/' + appId
 
 export const MENU_LIST = [
   {
-    key: appPath + '/tokens-asset',
-    label: 'Token Assets',
-    icon: <Icon component={TokenAssets} style={{ fontSize: '24px' }} />,
+    key: TabAssets.TokenAssets,
+    label: (
+      <Space size={4}>
+        <IconSax name="WalletMoney" style={{ fontSize: 24 }} />
+        <span className="menu-typography">Token Assets</span>
+      </Space>
+    ),
+    children: <Tokens />,
   },
   {
-    key: appPath + '/nfts-asset',
-    label: 'NFT Assets',
-    icon: <Icon component={NFTsAssets} style={{ fontSize: '24px' }} />,
+    key: TabAssets.NFTAssets,
+    label: (
+      <Space size={4}>
+        <IconSax name="ColorsSquare" style={{ fontSize: 24 }} />
+        <span className="menu-typography">NFT Assets</span>
+      </Space>
+    ),
+    children: <NFTs />,
   },
   {
-    key: appPath + '/portal-bridge',
-    label: 'Portal Bridge',
-    icon: <Icon component={PortalBridge} style={{ fontSize: '24px' }} />,
+    key: TabAssets.PortalBridge,
+    label: (
+      <Space size={4}>
+        <Icon component={PortalBridge} style={{ fontSize: 24 }} />
+        <span className="menu-typography">Portal Bridge</span>
+      </Space>
+    ),
+    children: <WormHole />,
+  },
+  {
+    key: TabAssets.Sweepers,
+    label: (
+      <Space size={4}>
+        <IconSax name="Broom" style={{ fontSize: 24 }} />
+        <span className="menu-typography">Sweepers</span>
+      </Space>
+    ),
+    children: <Sweepers />,
   },
 ]

@@ -4,14 +4,14 @@ import {
   getSignedVAA,
   parseSequenceFromLogSolana,
 } from '@certusone/wormhole-sdk'
+import { connection, rpc } from '@sentre/senhub'
 import { Connection } from '@solana/web3.js'
 
 import { StepTransfer, TransferState } from 'constant/types/wormhole'
 import { web3ProviderEther } from 'lib/etherWallet/ethersConfig'
 
 export const getSolConnection = () => {
-  const nodeUrl = window.sentre.splt.nodeUrl
-  return new Connection(nodeUrl, 'confirmed')
+  return new Connection(rpc, 'confirmed')
 }
 
 export const restoreSol = async (
@@ -23,7 +23,6 @@ export const restoreSol = async (
 
   if (!txHash) throw new Error('Invalid txHash')
 
-  const { connection } = window.sentre.splt
   const value = await connection.getTransaction(txHash)
 
   if (!value) return cloneState

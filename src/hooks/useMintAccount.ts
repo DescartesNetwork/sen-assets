@@ -25,7 +25,7 @@ export const useMintAccount = (accountAddr: string) => {
   const decimals = useMintDecimals({ mintAddress: mint }) || 0
   const mintInfo = useMemo(() => {
     return {
-      balance: utils.undecimalize(amount, decimals),
+      balance: utils.undecimalize(BigInt(amount || 0), decimals),
       mint,
       amount,
       decimals,

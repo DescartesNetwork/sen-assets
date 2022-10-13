@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAccounts, useWalletAddress } from '@sentre/senhub'
+import { useAccounts, useWalletAddress, splt } from '@sentre/senhub'
 
 import { Row, Col, Card, Typography } from 'antd'
 import CardNFT from '../cardNFT'
@@ -21,7 +21,6 @@ const DetailsNFT = () => {
   const walletAddress = useWalletAddress()
 
   const checkIsHasNFT = useCallback(async () => {
-    const { splt } = window.sentre
     const nftTokenAccount = await splt.deriveAssociatedAddress(
       walletAddress,
       mintNFT,

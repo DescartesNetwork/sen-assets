@@ -118,7 +118,7 @@ const SourceWallet = () => {
       try {
         await dispatch(
           connectSourceWallet({
-            wallet: window.sentre.wallet,
+            wallet: window.sentre.solana,
             chainID: value,
             sourceToken,
           }),
@@ -163,7 +163,7 @@ const SourceWallet = () => {
     try {
       await dispatch(
         connectSourceWallet({
-          wallet: window.sentre.wallet,
+          wallet: window.sentre.solana,
           chainID: CHAIN_ID_SOLANA,
           sourceToken,
         }),
@@ -198,10 +198,13 @@ const SourceWallet = () => {
     if (sourceChain === CHAIN_ID_SOLANA) {
       autoConnectSolWallet()
     }
+  }, [autoConnectSolWallet, sourceChain])
+
+  useEffect(() => {
     if (sourceChain === CHAIN_ID_ETH) {
       autoConnectEtherWallet()
     }
-  }, [autoConnectEtherWallet, autoConnectSolWallet, dispatch, sourceChain])
+  }, [autoConnectEtherWallet, sourceChain])
 
   return (
     <Row gutter={[16, 16]}>

@@ -12,7 +12,7 @@ import {
   WormholeStoreKey,
 } from 'constant/types/wormhole'
 import WohEthSol from '../wohEthSol'
-import { net, PDB } from '@sentre/senhub'
+import { connection, net, PDB, splt } from '@sentre/senhub'
 
 export const getEtherNetwork = () => {
   const solNetwork = net
@@ -43,7 +43,7 @@ export const getNextStep = async (
   const isRedeemed = await getIsTransferCompletedSolana(
     context.targetTokenBridgeAddress,
     vaaBytes,
-    window.sentre.splt.connection,
+    connection,
   )
   return isRedeemed ? StepTransfer.Finish : StepTransfer.WaitSigned
 }
@@ -70,7 +70,6 @@ export const getAssociatedAddress = async (
 ) => {
   if (!account.isAddress(mintAddress)) throw new Error('Invalid mint address')
   const walletAddress = await wallet.getAddress()
-  const splt = window.sentre.splt
 
   const targetAddress = await splt.deriveAssociatedAddress(
     walletAddress,
@@ -89,21 +88,21 @@ export const getAssociatedAddress = async (
 }
 
 export const getWormholeDb = async <T>(key: WormholeStoreKey) => {
-  const address = await window.sentre.wallet?.getAddress()
+  const address = await window.sentre.solana?.getAddress()
   if (!address) throw new Error('Wallet is not connected')
   const db = new PDB(address).createInstance('wormhole')
   const data = db.getItem<T>(key)
   return data
 }
 export const setWormholeDb = async (key: WormholeStoreKey, data: any) => {
-  const address = await window.sentre.wallet?.getAddress()
+  const address = await window.sentre.solana?.getAddress()
   if (!address) throw new Error('Wallet is not connected')
   const db = new PDB(address).createInstance('wormhole')
   return db.setItem(key, data)
 }
 
 export const clearWormholeDb = async () => {
-  const address = await window.sentre.wallet?.getAddress()
+  const address = await window.sentre.solana?.getAddress()
   if (!address) throw new Error('Wallet is not connected')
   const db = new PDB(address).dropInstance('wormhole')
   return db

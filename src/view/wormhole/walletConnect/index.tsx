@@ -1,3 +1,6 @@
+import { useState } from 'react'
+import { util } from '@sentre/senhub'
+
 import { Card, Col, Row, Tooltip, Typography } from 'antd'
 
 import IonIcon from '@sentre/antd-ionicon'
@@ -6,8 +9,6 @@ import TargetWallet from './networkConnect/targetWallet'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, AppState } from 'model'
 import { changeSourceAndTargetChain } from 'model/wormhole.controller'
-import { util } from '@sentre/senhub'
-import { useState } from 'react'
 
 const WormWallet = () => {
   const {

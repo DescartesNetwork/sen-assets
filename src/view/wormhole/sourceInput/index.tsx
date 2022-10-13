@@ -18,7 +18,7 @@ const SelectMintInput = () => {
   const onChange = (amount: string) => dispatch(setSourceToken({ amount }))
 
   return (
-    <Row gutter={[8, 8]}>
+    <Row gutter={[0, 8]}>
       <Col flex="auto">
         <Typography.Text>Amount</Typography.Text>
       </Col>
